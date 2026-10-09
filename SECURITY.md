@@ -5,8 +5,8 @@ HaPaPay handles real assets, so security reports are taken seriously and handled
 ## Reporting a vulnerability
 
 Please **do not open a public issue** for a security problem. Use GitHub's private reporting instead:
-**Security → Report a vulnerability** on this repository. If that button is not available, open an issue that asks for
-a private contact, without any details of the problem.
+[report a vulnerability](https://github.com/furkan3152/HaPaPay/security/advisories/new). If that form is not
+available, open an issue that asks for a private contact, without any details of the problem.
 
 Include what you can:
 

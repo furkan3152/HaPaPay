@@ -6,6 +6,9 @@ import { neonConfig } from "@neondatabase/serverless";
 import type { Server } from "node:http";
 import { randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve as resolvePath } from "node:path";
 import { Client, Pool } from "pg";
 import { createApp } from "../server/app";
 import { WalletAuthService } from "../server/wallet-auth";
@@ -468,6 +471,31 @@ describe("Vercel database readiness seam", () => {
     }
   });
 
+  it("native CLI names the missing DATABASE_URL instead of a generic failure", () => {
+    const environment = { ...process.env };
+    delete environment.DATABASE_URL;
+    delete environment.NODE_OPTIONS;
+    // Run from an empty folder so a developer's own .env cannot supply the setting.
+    const folder = mkdtempSync(join(tmpdir(), "hapapay-migrate-"));
+    try {
+      const command = spawnSync(process.execPath, [resolvePath("node_modules/tsx/dist/cli.mjs"), resolvePath("scripts/migrate-database.ts")], {
+        cwd: folder, encoding: "utf8", env: environment,
+      });
+      assert.equal(command.status, 1);
+      assert.equal(command.stderr.trim(), "DATABASE_URL is required in production.");
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+
+  it("native CLI names an unsupported option instead of a generic failure", () => {
+    const command = spawnSync(process.execPath, [resolvePath("node_modules/tsx/dist/cli.mjs"), resolvePath("scripts/migrate-database.ts"), "--nope"], {
+      encoding: "utf8",
+    });
+    assert.equal(command.status, 1);
+    assert.equal(command.stderr.trim(), "Unsupported migration option.");
+  });
+
   it("native CLI check-only leaves an empty isolated PostgreSQL schema untouched", { skip: !(process.env.REAL_DATABASE_URL && process.env.HAPAPAY_ISOLATED_POSTGRES === "1") }, async () => {
     const connectionString = process.env.REAL_DATABASE_URL!;
     const adminConfig = isolatedPostgresConfig(connectionString);
@@ -568,7 +596,12 @@ describe("Vercel database readiness seam", () => {
     }
   });
 
-  it("keeps direct/local wallet quotas independent of forwarded-header values", async () => {
+  it("keeps direct/local wallet quotas independent of forwarded-header values", async (t) => {
+    // The rate limiter reports the untrusted X-Forwarded-For once on console.error; expect it instead of printing it.
+    const print = console.error;
+    const logged = t.mock.method(console, "error", (...args: unknown[]) => {
+      if ((args[0] as { code?: string } | undefined)?.code !== "ERR_ERL_UNEXPECTED_X_FORWARDED_FOR") print(...args);
+    });
     const app = createApp({
       auth: new WalletAuthService({ domain: "localhost", sessionSecret: "direct-quota-test-secret-32-characters" }),
     });
@@ -585,6 +618,7 @@ describe("Vercel database readiness seam", () => {
         });
         assert.equal(response.status, attempt === 10 ? 429 : 200);
       }
+      assert.deepEqual(logged.mock.calls.map((call) => (call.arguments[0] as { code?: string } | undefined)?.code), ["ERR_ERL_UNEXPECTED_X_FORWARDED_FOR"]);
     } finally {
       await new Promise<void>((resolve, reject) => listener.close((error) => error ? reject(error) : resolve()));
     }

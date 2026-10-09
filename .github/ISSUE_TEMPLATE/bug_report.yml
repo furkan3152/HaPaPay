@@ -1,0 +1,61 @@
+name: Bug report
+description: Something in HaPaPay does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. For a security problem, do not open an issue: follow the
+        [security policy](https://github.com/furkan3152/HaPaPay/security/policy) instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The exact request text helps when the desk misread one.
+      placeholder: |
+        1. Open the desk
+        2. Type "Send 2 TSLA to @toly on X"
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Desk (browser)
+        - API (server)
+        - Contracts
+        - Solana program
+        - Deployment or configuration
+        - Documentation
+    validations:
+      required: true
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network
+      options:
+        - Robinhood Chain
+        - Solana
+        - Arc
+        - Not network-specific
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit or deployment
+      description: The commit you run, if you run your own instance.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs, transaction hashes or screenshots
+      description: Remove keys, tokens, connection strings and personal data first.
