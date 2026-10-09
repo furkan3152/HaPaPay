@@ -261,7 +261,7 @@ code, kbd { font-family: var(--font-mono); }
 .topbar-open { min-height: 44px; padding: 0 18px; font-size: 14px; }
 .wallet-button { min-height: 44px; padding: 0 18px 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-size: 14px; line-height: 1; font-variant-numeric: tabular-nums; }
 .wallet-address { text-transform: none; letter-spacing: .02em; }
-.network-popover { position: absolute; top: calc(100% + 10px); right: 0; z-index: 50; width: min(360px, calc(100vw - 32px)); padding: 16px; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: var(--shadow-3); transform-origin: top right; animation: pop-in .18s var(--ease-out) both; }
+.network-popover { position: absolute; top: calc(100% + 10px); right: 0; z-index: 50; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 84px); max-height: calc(100dvh - 84px); overflow-y: auto; overscroll-behavior: contain; padding: 16px; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: var(--shadow-3); transform-origin: top right; animation: pop-in .18s var(--ease-out) both; }
 .network-popover-head { display: grid; gap: 2px; }
 .network-popover-head strong { font-size: 15px; line-height: 1.2; }
 .network-popover-head span { color: var(--green); font-size: 12px; font-weight: 500; }

@@ -111,7 +111,8 @@ HaPaPay is not tied to one network. Each request runs where its asset lives, and
   <img src="docs/assets/screens/home.png" alt="The HaPaPay home page" width="49%" />
   <img src="docs/assets/screens/desk.png" alt="The payment desk with the Stock Token board" width="49%" />
   <br />
-  <sub>A local install. Vault links open once the operator registers a vault on a network.</sub>
+  <sub>A local install configured for mainnet; with the <code>.env.example</code> defaults, USDC runs on Arc Testnet
+  and Stock Tokens and Solana show as locked. Vault links open once the operator registers a vault on a network.</sub>
 </p>
 
 ## How it works
@@ -120,6 +121,7 @@ A payment is a conversation that ends in your wallet. The server reads and check
 record.
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "mirrorActors": false}}}%%
 sequenceDiagram
     autonumber
     actor S as Sender
@@ -153,6 +155,7 @@ cannot be looked up by name, wait for the name (as X does without lookups) and a
 confirmed after the link was made and, where the platform's IDs carry a creation time, an account older than the link.
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "mirrorActors": false}}}%%
 sequenceDiagram
     autonumber
     actor P as Payer
@@ -174,13 +177,13 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     Q["A request that names no network"] --> X{"An xStock written with its x (TSLAx),<br/>or a ticker Robinhood Chain does not list?"}
-    X -->|yes| SOL["Solana"]
+    X -->|yes| SOLX["Solana"]
     X -->|no| G{"Solana switched on, the sender (when signed in)<br/>has a Solana address, and every recipient has one,<br/>or the only recipient can wait in the Solana vault?"}
     G -->|no| HOME["The asset's home network:<br/>Robinhood Chain for tickers and USDG,<br/>Arc for USDC"]
     G -->|yes| A{"Which asset?"}
     A -->|"Stock Token ticker or USDG"| RH{"Robinhood Chain can pay everyone now,<br/>and the wallet does not hold enough<br/>only on Solana?"}
     RH -->|yes| RHC["Robinhood Chain"]
-    RH -->|no| SOL
+    RH -->|no| SOL["Solana"]
     A -->|USDC| U{"Arc can pay everyone now, Solana holds<br/>less than the payment and its fee,<br/>and Arc holds enough?"}
     U -->|no| SOL
     U -->|yes| ARC["Arc"]
@@ -253,10 +256,12 @@ itself. More in [docs/architecture.md](docs/architecture.md) and [docs/protocol.
 ```text
 .
 ├── src/                      Desk (React SPA) and the domain rules shared with the server
-│   ├── components/           Home, desk, docs, operator and admin pages; the dot-matrix UI kit
-│   ├── domain/               Pure logic: intent parsing, assets, fees, vault locks, contract artifacts
+│   ├── components/           Home, desk, docs, operator and admin pages; dot-matrix UI kit
+│   ├── domain/               Pure logic: intent parsing, assets, fees, vault locks,
+│   │                         contract artifacts
 │   └── wallet/               Privy and injected-wallet bridges
-├── server/                   Express API: chat, identity, payments, vaults, receipts, SP, admin
+├── server/                   Express API: chat, identity, payments, vaults, receipts,
+│                             SP and the admin panel
 ├── contracts/                Solidity: StockClaimEscrow, HaPaPayRouter, HaPaPayBurnVault,
 │                             HaPaPayFeeForwarder, ArcIdentityRegistry
 ├── foundry-test/             Forge unit, fuzz and invariant tests for the contracts
@@ -314,23 +319,27 @@ reason the server reports.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Vite and the API together (the desk hot-reloads; restart it for API changes) |
+| `npm run dev` | Vite and the API together (restart for API changes) |
 | `npm run check` | TypeScript project check |
 | `npm test` | The Node test suite |
 | `npm run test:forge` | Forge tests for the contracts (unit, fuzz, invariants) |
 | `npm run test:slither` | Slither static analysis of the contracts |
 | `npm run build` | Production build of the desk |
 | `npm run migrate:database` | Apply the PostgreSQL migrations (explicit, never at request time) |
-| `npm run sync:stock-tokens` | Rebuild the Robinhood Stock Token allowlist from the official registry and chain |
+| `npm run sync:stock-tokens` | Rebuild the Stock Token allowlist from the registry and chain |
 | `npm run sync:solana-stocks` | Rebuild the xStocks allowlist from the xStocks API and Solana |
 | `npm run generate:stock-escrow` | Regenerate the contract artifacts from `contracts/` |
 | `npm run build:solana-vault` | Build the Solana program and pin its size and hash |
-| `npm run readiness` | Check the session secret, database, sign-in apps, Farcaster RPC and OpenRouter and X keys, and verify the Arc network and contracts on chain; missing settings are printed by name only |
+| `npm run readiness` | Check the settings and Arc's contracts on chain (see below) |
+
+`npm run readiness` checks the session secret, database, sign-in apps, Farcaster RPC and OpenRouter and X keys, and
+verifies the Arc network and contracts on chain; missing settings are printed by name only.
 
 To include the real-PostgreSQL suites, point the tests at an empty, disposable database:
 
 ```bash
-REAL_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres HAPAPAY_ISOLATED_POSTGRES=1 npm test
+REAL_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres HAPAPAY_ISOLATED_POSTGRES=1 \
+  npm test
 ```
 
 ### Deploying

@@ -19,7 +19,7 @@ All contracts compile with solc 0.8.28, optimizer at 200 runs, EVM `cancun`. No 
 ## Fees
 
 ```mermaid
-flowchart LR
+flowchart TD
     W["Sender's wallet"] -- "amount" --> R["Recipient"]
     W -- "fee = amount × 1%<br/>rounded down" --> Split{"Network"}
     Split -- "Robinhood Chain: 50%" --> BV["HaPaPayBurnVault"]

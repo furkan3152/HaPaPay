@@ -21,9 +21,13 @@ async function main() {
   console.log(options.checkOnly ? "HaPaPay PostgreSQL schema verification completed." : "HaPaPay PostgreSQL migrations and schema verification completed.");
 }
 
+/** Errors raised with fixed text, which cannot quote the connection string, so they are shown as written. */
+const SETUP_ERRORS = new Set(["Unsupported migration option.", "DATABASE_URL is required in production."]);
+
 try {
   await main();
 } catch (error) {
-  console.error(error instanceof NeonHttpMigrationError ? error.message : "Database migration failed. Check configuration and schema read-only.");
+  const shown = error instanceof NeonHttpMigrationError || (error instanceof Error && SETUP_ERRORS.has(error.message));
+  console.error(shown ? (error as Error).message : "Database migration failed. Check configuration and schema read-only.");
   process.exitCode = 1;
 }

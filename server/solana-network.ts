@@ -29,7 +29,10 @@ export type SolanaConfig = {
   browserRpcUrl?: string;
   /** Where the 1% fee goes, all of it. Payments are off without it. */
   treasury?: string;
-  /** SOL, USDC and USDG. On by default once a treasury is set; `SOLANA_TRANSFERS=disabled` turns them off. */
+  /**
+   * USDC and USDG, and claims of SOL vault links (HaPaPay no longer sends SOL). On by default once a treasury is set;
+   * `SOLANA_TRANSFERS=disabled` turns them off.
+   */
   transfers: SolanaSwitch;
   /** xStocks move only when the operator sets `SOLANA_STOCK_TRANSFERS=enabled`, as Stock Tokens on Robinhood Chain. */
   stocks: SolanaSwitch;

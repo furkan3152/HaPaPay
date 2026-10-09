@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest a change to what HaPaPay does.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: Who runs into it, and when.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The change you propose
+      description: >-
+        If it touches a rule in docs/invariants.md or a decision in docs/decisions.md, say which one and why it should
+        change.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

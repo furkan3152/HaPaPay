@@ -616,7 +616,9 @@ function safeAttestorAddress(value: string | undefined) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   bootApplication("local").then(({ app, close }) => {
-    const listener = app.listen(8787, () => console.log("HaPaPay API listening on http://localhost:8787"));
+    const ready = () => console.log("HaPaPay API listening on http://localhost:8787");
+    // A development server answers this machine only; production (the container) listens on every interface.
+    const listener = process.env.NODE_ENV === "production" ? app.listen(8787, ready) : app.listen(8787, "127.0.0.1", ready);
     process.once("SIGTERM", () => listener.close(() => { void close(); }));
     process.once("SIGINT", () => listener.close(() => { void close(); }));
   }).catch((error) => {
