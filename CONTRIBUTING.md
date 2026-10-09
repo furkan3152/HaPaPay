@@ -57,3 +57,7 @@ npx tsc --noEmit --strict --module ESNext --moduleResolution Bundler --target ES
 
 Write the subject as what the change does, in the imperative and in plain words ("Refuse a second asset in one
 request"), and use the body for the why.
+
+## License
+
+By contributing, you agree that your contributions are released under the [MIT License](LICENSE).
