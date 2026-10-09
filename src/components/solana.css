@@ -1,0 +1,12 @@
+/* A Solana payment's recipients, in the desk's own style. */
+.solana-recipients { margin: 14px 0 0; padding: 0; list-style: none; display: grid; }
+.solana-recipients li { padding: 11px 0; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 100% / 6px 2px repeat-x; }
+.solana-recipients li:last-child { background: none; }
+.solana-recipients svg { width: 18px; height: 18px; }
+.solana-recipients b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.solana-recipients span { font: 600 13px var(--font-mono); }
+.solana-recipients code { color: var(--muted); font: 500 12px var(--font-mono); }
+@media (max-width: 480px) {
+  .solana-recipients li { grid-template-columns: 22px minmax(0, 1fr) auto; }
+  .solana-recipients code { display: none; }
+}
