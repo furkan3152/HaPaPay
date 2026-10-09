@@ -20,6 +20,7 @@
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" />
   <img alt="Tests" src="https://img.shields.io/badge/tests-600%2B%20node%20%C2%B7%2056%20forge-CCFF00" />
   <img alt="Custody" src="https://img.shields.io/badge/custody-none-111111" />
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111" /></a>
 </p>
 
 <p align="center">
@@ -374,3 +375,7 @@ Robinhood Stock Tokens and xStocks give economic exposure, not ownership of the 
 U.S. persons, and other regional restrictions apply; the eligibility statements HaPaPay asks for are self-attestations,
 not a legal review. Nothing here is financial advice. The software is provided as is, without warranty, and its
 contracts are unaudited.
+
+## License
+
+HaPaPay is released under the [MIT License](LICENSE).
