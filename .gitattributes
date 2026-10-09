@@ -1,0 +1,11 @@
+# Written by the scripts in scripts/: collapsed in diffs and left out of the language statistics.
+src/domain/arc-identity-registry-artifact.ts linguist-generated=true
+src/domain/fee-artifacts.ts linguist-generated=true
+src/domain/stock-claim-escrow-artifact.ts linguist-generated=true
+src/domain/solana-vault-artifact.ts linguist-generated=true
+src/domain/robinhood-stock-tokens.ts linguist-generated=true
+src/domain/solana-stock-tokens.ts linguist-generated=true
+src/domain/solana-stock-count.ts linguist-generated=true
+
+# The pinned Solana program build is compared byte for byte.
+*.so binary

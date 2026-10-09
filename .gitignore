@@ -1,0 +1,33 @@
+# Dependencies and build output
+node_modules/
+dist/
+/public/index.html
+/public/assets/
+*.tsbuildinfo
+npm-debug.log*
+
+# Contract and program build output
+foundry-out/
+foundry-cache/
+deployments/
+
+# Local tooling state
+.playwright-mcp/
+.playwright-cli/
+output/playwright/
+.vercel
+
+# Credentials stay local. Keep the documented template tracked.
+.env
+.env.*
+*.env
+!.env.example
+.secrets/
+.npmrc
+*.pem
+*.key
+*.secret
+
+# Agent credentials and machine-local session databases must never be versioned.
+.codex/auth.json
+.codex/*.sqlite*

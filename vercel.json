@@ -1,0 +1,44 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "express",
+  "regions": ["fra1"],
+  "buildCommand": "npm run build:vercel",
+  "git": { "deploymentEnabled": { "main": false } },
+  "crons": [{ "path": "/api/cron/sp-sync", "schedule": "17 3 * * *" }],
+  "routes": [
+    {
+      "src": "^/$",
+      "dest": "/index.html",
+      "methods": ["GET", "HEAD"],
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://telegram.org https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://explorer-api.walletconnect.com; connect-src 'self' https://oauth.telegram.org https://auth.privy.io wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org https://*.rpc.privy.systems https://explorer-api.walletconnect.com https://api.mainnet-beta.solana.com wss://api.mainnet-beta.solana.com https://*.solana-mainnet.quiknode.pro wss://*.solana-mainnet.quiknode.pro https://rpc.mainnet.arc.io https://rpc.mainnet.chain.robinhood.com; frame-src https://oauth.telegram.org https://t.me https://auth.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://challenges.cloudflare.com; child-src https://auth.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; script-src-attr 'none'; frame-ancestors 'none'",
+        "Referrer-Policy": "no-referrer",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Cache-Control": "no-store"
+      }
+    }
+  ],
+  "rewrites": [
+    { "source": "/((?!api(?:/|$)|assets(?:/|$)|favicon.svg$).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://telegram.org https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://explorer-api.walletconnect.com; connect-src 'self' https://oauth.telegram.org https://auth.privy.io wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org https://*.rpc.privy.systems https://explorer-api.walletconnect.com https://api.mainnet-beta.solana.com wss://api.mainnet-beta.solana.com https://*.solana-mainnet.quiknode.pro wss://*.solana-mainnet.quiknode.pro https://rpc.mainnet.arc.io https://rpc.mainnet.chain.robinhood.com; frame-src https://oauth.telegram.org https://t.me https://auth.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://challenges.cloudflare.com; child-src https://auth.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; script-src-attr 'none'; frame-ancestors 'none'" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "headers": [ { "key": "Cache-Control", "value": "no-store" } ]
+    },
+    {
+      "source": "/((?!api(?:/|$)|assets/|favicon.svg).*)",
+      "headers": [ { "key": "Cache-Control", "value": "no-store" } ]
+    }
+  ]
+}

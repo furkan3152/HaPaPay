@@ -1,0 +1,87 @@
+{
+  "name": "hapapay",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "concurrently \"vite --host 0.0.0.0\" \"tsx server/index.ts\"",
+    "dev:web": "vite --host 0.0.0.0",
+    "dev:api": "tsx server/index.ts",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "build": "tsc -b && vite build",
+    "build:vercel": "npm run build && tsx scripts/build-vercel.ts",
+    "deploy:vercel:production": "npm run build:vercel && npx --yes vercel@59.16.0 build --prod --yes && npx --yes --package node@24 -- npm ci && HAPAPAY_VERIFY_VERCEL_OUTPUT=1 npm test && npx --yes vercel@59.16.0 deploy --prebuilt --prod --yes",
+    "migrate:database": "tsx scripts/migrate-database.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "test:contracts": "tsx --test tests/contract-compile.test.ts tests/identity-registry.test.ts tests/claim-escrow-lifecycle.test.ts tests/contract-security.test.ts tests/stock-claim-escrow-artifact.test.ts tests/stock-claim-lifecycle.test.ts tests/robinhood-mainnet-assets-lifecycle.test.ts",
+    "test:forge": "tsx scripts/run-forge.ts test --root .",
+    "test:slither": "tsx scripts/run-slither.ts",
+    "test:postgres-real": "tsx scripts/run-real-postgres-smoke.ts",
+    "test:robinhood-fork": "ROBINHOOD_TESTNET_FORK_URL=${ROBINHOOD_TESTNET_FORK_URL:-https://rpc.testnet.chain.robinhood.com} tsx --test tests/robinhood-testnet-fork.test.ts",
+    "check": "tsc -b --pretty false",
+    "readiness": "tsx scripts/check-readiness.ts",
+    "sync:stock-tokens": "tsx scripts/sync-stock-tokens.ts",
+    "sync:solana-stocks": "tsx scripts/sync-solana-stocks.ts",
+    "build:solana-vault": "tsx scripts/build-solana-vault.ts",
+    "generate:stock-escrow": "tsx scripts/generate-stock-claim-escrow-artifact.ts",
+    "init:testnet-env": "tsx scripts/init-testnet-environment.ts",
+    "init:arc-mainnet": "tsx scripts/init-mainnet-authorities.ts",
+    "init:solana-attestor": "tsx scripts/init-solana-attestor.ts"
+  },
+  "dependencies": {
+    "@farcaster/auth-client": "^0.7.1",
+    "@neondatabase/serverless": "1.1.0",
+    "@privy-io/react-auth": "3.47.0",
+    "@solana-program/compute-budget": "0.19.0",
+    "@solana-program/memo": "0.15.0",
+    "@solana-program/system": "0.15.0",
+    "@solana-program/token": "0.17.0",
+    "@solana-program/token-2022": "0.19.0",
+    "@solana/kit": "8.4.0",
+    "@vercel/functions": "^3.9.7",
+    "@wallet-standard/app": "1.1.1",
+    "dotenv": "^16.6.1",
+    "express": "5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.1.0",
+    "pg": "8.23.0",
+    "qrcode": "^1.5.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tsx": "^4.23.13",
+    "viem": "2.56.5",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@foundry-rs/anvil": "1.7.1",
+    "@foundry-rs/forge": "1.7.1",
+    "@types/express": "5.0.0",
+    "@types/node": "22.10.2",
+    "@types/pg": "8.23.1",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "@vitejs/plugin-react": "4.3.4",
+    "concurrently": "9.1.2",
+    "pg-mem": "3.0.14",
+    "solc": "0.8.28",
+    "typescript": "5.7.2",
+    "vite": "^6.4.3"
+  },
+  "overrides": {
+    "qs": "6.16.0",
+    "tmp": "0.2.7",
+    "permissionless": {
+      "ox": "0.14.44"
+    },
+    "viem": {
+      "ws": "8.21.0"
+    }
+  },
+  "optionalDependencies": {
+    "@foundry-rs/forge-linux-amd64": "1.7.1"
+  }
+}

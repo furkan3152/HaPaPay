@@ -1,0 +1,68 @@
+/* Stock board: a quiet list in the side panel. Ticker and name on the left, the price on the right, no logos; dots light
+   up under the pointer on the row it is over. */
+.stock-board { min-width: 0; display: grid; gap: 12px; color: var(--ink); }
+.stock-board-head h2 { margin: 0; font: 600 15px/1.25 var(--font-text); letter-spacing: -.01em; }
+.stock-board-head p { margin: 0; color: var(--muted); font: 500 12px var(--font-mono); letter-spacing: .02em; }
+.stock-search { min-width: 0; display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.stock-search > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.stock-search > div { min-width: 0; display: flex; align-items: center; gap: 9px; padding: 0 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-field); transition: border-color .15s, box-shadow .15s, background .15s; }
+.stock-search > div:hover { border-color: var(--line-strong); }
+.stock-search > div:focus-within { border-color: color-mix(in srgb, var(--accent-text) 70%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-text) 18%, transparent); }
+.stock-search svg { flex: none; color: var(--muted); }
+.stock-search input { width: 100%; min-width: 0; min-height: 42px; padding: 4px 0; color: var(--ink); background: transparent; border: 0; outline: none; font: 400 14px var(--font-text); }
+.stock-search input::placeholder { color: var(--muted); }
+.stock-search input:focus-visible { outline: none; }
+/* View tabs: a segmented control whose thumb slides to the chosen view. */
+.stock-views { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); padding: 3px; background: var(--rail); border-radius: var(--r-field); }
+.stock-views::before { content: ''; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / var(--segments, 4)); background: var(--raised); border-radius: calc(var(--r-field) - 3px); box-shadow: var(--shadow-1); transform: translateX(calc(var(--segment, 0) * 100%)); transition: transform .3s var(--ease-out); }
+.stock-views button { position: relative; z-index: 1; min-width: 0; min-height: 36px; padding: 4px; color: var(--muted); background: transparent; border: 0; border-radius: calc(var(--r-field) - 3px); font: 800 11.5px var(--font-display); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; transition: color .15s; }
+.stock-views button span { margin-left: 3px; color: var(--muted); font: 500 11px var(--font-mono); }
+.stock-views button[aria-pressed='true'] { color: var(--ink); }
+.stock-views button:hover:not([aria-pressed='true']) { color: var(--slate); }
+.stock-rows { margin: 0 -10px; padding: 0; display: grid; list-style: none; }
+.stock-rows li { position: relative; animation: row-in .3s var(--ease-out) both; animation-delay: calc(var(--row, 0) * 16ms); }
+.stock-row { position: relative; isolation: isolate; overflow: hidden; width: 100%; min-width: 0; min-height: 54px; padding: 8px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; color: var(--ink); background: transparent; border: 0; border-radius: var(--r-control); transition: background .15s; }
+.stock-row::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: radial-gradient(circle, color-mix(in srgb, var(--accent-text) 45%, transparent) 1px, transparent 1.5px) 0 0 / 6px 6px; -webkit-mask-image: radial-gradient(64px circle at var(--px, 50%) var(--py, 50%), #000, transparent 75%); mask-image: radial-gradient(64px circle at var(--px, 50%) var(--py, 50%), #000, transparent 75%); opacity: 0; transition: opacity .25s; }
+.stock-row:hover::after { opacity: 1; }
+.stock-row:hover { background: var(--paper); }
+.stock-row:active { background: var(--rail); }
+.stock-row-active { background: var(--accent-soft); }
+.stock-row-active:hover { background: var(--accent-soft); }
+.stock-row-name { min-width: 0; }
+/* Tickers in dot-matrix capitals, like a quote board. */
+.stock-row-name b { display: block; font: 900 15px/1.3 var(--font-display); letter-spacing: .06em; }
+.stock-row-name small { display: block; overflow: hidden; color: var(--muted); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.stock-row-price { text-align: right; }
+.stock-row-price b { display: block; font: 500 13.5px var(--font-mono); font-variant-numeric: tabular-nums; }
+.stock-row-price small { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 600; }
+.stock-row-no-price { color: var(--muted); font-weight: 400; }
+/* Prices are loading: a shimmer stands in for the number until it arrives. */
+.stock-board[aria-busy='true'] .stock-row-no-price { width: 52px; height: 12px; margin: 3px 0 3px auto; overflow: hidden; color: transparent; background: linear-gradient(90deg, var(--rail) 30%, var(--raised) 50%, var(--rail) 70%) 0 0 / 300% 100%; border-radius: 4px; animation: price-loading 1.2s linear infinite; }
+.stock-row-send { color: var(--accent-text); opacity: 0; transform: translateX(-4px); transition: opacity .15s, transform .15s; }
+.stock-row:hover .stock-row-send, .stock-row:focus-visible .stock-row-send, .stock-row-active .stock-row-send { opacity: 1; transform: none; }
+.stock-halted { color: var(--red); }
+.stock-test-tag { padding: 2px 7px; color: var(--locked-text); background: var(--locked); border-radius: 5px; font: 600 11px var(--font-mono) !important; }
+.stock-empty { margin: 4px 0; color: var(--muted); font-size: 13px; }
+.stock-empty button { margin-left: 4px; padding: 0; color: var(--accent-text); background: none; border: 0; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.stock-more { width: 100%; min-height: 44px; font: 600 13.5px var(--font-text); }
+.stock-notes { padding-top: 14px; display: grid; gap: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.55; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 0 / 6px 2px repeat-x; }
+.stock-notes p { margin: 0; }
+.stock-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.stock-links a { min-height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 500; }
+
+/* Ticker tile on a slip: two mono letters on the rail color. USDG and other listed tokens are not Stock Tokens, so
+   their tiles differ from every company and fund tile. */
+.stock-tile { width: 34px; height: 34px; flex: none; display: grid; place-items: center; color: var(--ink); background: var(--rail); border: 1px solid var(--line); border-radius: 9px; font: 900 12px/1 var(--font-display); letter-spacing: -.02em; }
+.stock-tile-etf { box-shadow: inset 0 0 0 2px var(--panel), inset 0 0 0 3px var(--line-strong); }
+.stock-tile-large { width: 46px; height: 46px; border-radius: 12px; font-size: 15px; }
+.stock-tile.stock-tile-cash { color: var(--gold-text); border-color: color-mix(in srgb, #E2A93B 45%, var(--line)); }
+.stock-tile.stock-tile-community { color: var(--gold-text); border-style: dashed; border-color: color-mix(in srgb, #E2A93B 60%, var(--line)); }
+
+@keyframes price-loading { from { background-position: 100% 0; } to { background-position: 0 0; } }
+
+@media (hover: none) {
+  .stock-row-send { opacity: 1; transform: none; }
+}
+@media (max-width: 760px) {
+  .stock-search input { font-size: 16px; }
+}

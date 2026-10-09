@@ -1,0 +1,23 @@
+[package]
+name = "hapapay_vault"
+version = "1.0.0"
+edition = "2021"
+description = "HaPaPay's Solana vault: holds a payment for a social account until its verified owner claims it or the payer takes it back."
+license = "UNLICENSED"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+solana-program = "=2.3.0"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+opt-level = 3

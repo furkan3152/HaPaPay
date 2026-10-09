@@ -1,0 +1,22 @@
+/* Status marks in dots: a check that fills in once a receipt is verified, and dots chasing while a transfer is pending. */
+.verified-mark { width: 46px; height: 46px; flex: none; margin-left: auto; display: block; overflow: visible; }
+.verified-ring { fill: var(--green); opacity: 0; animation: dot-in .2s var(--ease-out) both; animation-delay: calc(var(--i) * 22ms); }
+.verified-check { fill: var(--green); transform-box: fill-box; transform-origin: center; animation: dot-pop .32s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(.42s + var(--i) * 55ms); }
+.pending-mark { width: 30px; height: 30px; display: block; overflow: visible; }
+.pending-dot, .pending-core { fill: var(--accent-text); opacity: .28; }
+.pending-core { opacity: .5; }
+.pending .pending-mark .pending-dot { animation: dot-chase 1.2s linear infinite; animation-delay: calc(var(--i) * .15s - 1.2s); }
+.verification_failed .pending-mark :is(.pending-dot, .pending-core) { fill: var(--red); opacity: .8; }
+.empty-mark { display: block; }
+.empty-edge { fill: var(--line-strong); }
+.empty-line { fill: var(--muted); opacity: .45; }
+
+@keyframes dot-in { from { opacity: 0; } to { opacity: .55; } }
+@keyframes dot-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+@keyframes dot-chase { 0% { opacity: 1; } 35% { opacity: .28; } 100% { opacity: .28; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .verified-ring, .verified-check, .pending-mark * { animation: none !important; }
+  .verified-ring { opacity: .55; }
+  .pending .pending-mark .pending-dot { opacity: .7; }
+}

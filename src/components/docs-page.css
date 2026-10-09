@@ -1,0 +1,77 @@
+/* HaPaPay docs: a contents rail and one reading column, with the desk's hairlines and the dot field in the hero. */
+.docs-page { width: 100%; max-width: 1240px; margin: 20px auto 0; padding: 0 24px; display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: start; gap: 32px; }
+.docs-toc { position: sticky; top: 80px; padding: 4px 0; color: var(--ink); animation: panel-in .45s var(--ease-out) both; }
+.docs-toc-title { margin: 4px 12px 12px; color: var(--accent-text); font: 900 15px/1 var(--font-display); font-variation-settings: "ROND" 100; letter-spacing: .08em; text-transform: uppercase; }
+.docs-toc ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; counter-reset: docs; }
+.docs-toc li { counter-increment: docs; }
+.docs-toc ol a { position: relative; min-height: 40px; padding: 6px 14px 6px 12px; display: flex; align-items: center; gap: 10px; color: var(--slate); text-decoration: none; border-radius: var(--r-control); font-size: 13.5px; transition: background .15s, color .15s; }
+.docs-toc ol a::before { content: counter(docs, decimal-leading-zero); min-width: 20px; color: var(--muted); font: 500 11px var(--font-mono); }
+.docs-toc ol a:hover { color: var(--ink); background: var(--paper); }
+.docs-toc ol a[aria-current='true'] { color: var(--accent-text); background: var(--accent-soft); font-weight: 500; }
+.docs-back { position: relative; isolation: isolate; overflow: hidden; margin-top: 14px; min-height: 46px; padding: 0 18px; display: flex; align-items: center; justify-content: center; color: var(--on-accent); background: var(--accent); border-radius: var(--r-control); text-decoration: none; font: 800 13.5px var(--font-display); letter-spacing: .06em; text-transform: uppercase; transition: filter .15s, transform .15s; }
+.docs-back::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle, color-mix(in srgb, var(--on-accent) 20%, transparent) 1px, transparent 1.5px) 0 0 / 6px 6px; }
+.docs-back:hover { filter: brightness(1.06); }
+.docs-back:active { transform: scale(.97); }
+.docs-body { min-width: 0; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: var(--card); box-shadow: var(--shadow-2); overflow: hidden; animation: panel-in .45s var(--ease-out) .05s both; }
+.docs-hero { position: relative; padding: 46px 40px 36px; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 100% / 6px 2px repeat-x; isolation: isolate; }
+/* A still dot field behind the title, fading out toward the text. */
+.docs-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(circle at center, var(--line-strong) 1px, transparent 1.6px); background-size: 14px 14px; -webkit-mask-image: linear-gradient(105deg, transparent 35%, #000 100%); mask-image: linear-gradient(105deg, transparent 35%, #000 100%); }
+.docs-kicker { margin: 0 0 12px; color: var(--accent-text); font: 500 11.5px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+.docs-hero h1 { margin: 0 0 14px; font: 900 clamp(28px, 3.2vw, 44px)/1.04 var(--font-display); font-variation-settings: "ROND" 100; letter-spacing: .02em; text-transform: uppercase; }
+.docs-hero p { max-width: 760px; margin: 0; color: var(--slate); font-size: 16.5px; line-height: 1.6; }
+.docs-section { padding: 30px 40px; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 100% / 6px 2px repeat-x; scroll-margin-top: 80px; }
+.docs-section:last-child { background: none; }
+.docs-section h2 { margin: 0 0 14px; font: 900 22px/1.15 var(--font-display); letter-spacing: .03em; text-transform: uppercase; }
+.docs-section h3 { margin: 22px 0 8px; font: 800 15px/1.3 var(--font-display); letter-spacing: .05em; text-transform: uppercase; }
+.docs-section p, .docs-section li { max-width: 800px; color: var(--slate); font-size: 15px; line-height: 1.7; }
+.docs-section p { margin: 0 0 12px; }
+.docs-section ul, .docs-section ol { margin: 0 0 12px; padding-left: 22px; display: grid; gap: 4px; }
+.docs-section a { color: var(--accent-text); font-weight: 500; }
+.docs-section code { padding: 1px 6px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 5px; font: 13px var(--font-mono); overflow-wrap: anywhere; }
+.docs-steps { counter-reset: step; list-style: none; padding-left: 0 !important; }
+.docs-steps > li { position: relative; padding-left: 40px; counter-increment: step; }
+.docs-steps > li::before { content: counter(step); position: absolute; left: 0; top: 2px; width: 26px; height: 26px; display: grid; place-items: center; color: var(--accent-text); background: var(--accent-soft); border-radius: 50%; font: 600 12px var(--font-mono); }
+.docs-table { width: 100%; margin: 6px 0 16px; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r-field); font-size: 13.5px; line-height: 1.5; }
+.docs-table th, .docs-table td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.docs-table tr:last-child td { border-bottom: 0; }
+.docs-table th { color: var(--ink); background: var(--paper); font: 800 12.5px var(--font-display); letter-spacing: .05em; text-transform: uppercase; }
+.docs-table td { color: var(--slate); }
+.docs-callout { margin: 0 0 16px; padding: 12px 16px; color: var(--green-text); background: var(--green-soft); border-radius: var(--r-field); }
+.docs-callout-pending { color: var(--locked-text); background: var(--locked); }
+.docs-callout p { margin: 0; color: inherit; }
+.docs-address { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; }
+.docs-address code { overflow-wrap: anywhere; }
+.docs-contracts { margin: 0; display: grid; border-top: 1px solid var(--line); }
+.docs-contracts > div { padding: 12px 0; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.docs-contracts dt { font-weight: 600; }
+.docs-contracts dd { min-width: 0; margin: 0; display: grid; gap: 4px; }
+.docs-contracts small { color: var(--muted); }
+.docs-live { margin: 0 0 20px; padding: 18px; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; }
+.docs-live h3 { margin: 0 0 12px; }
+.docs-live-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.docs-live-grid > div { display: grid; align-content: start; gap: 6px; }
+.docs-live-grid b { font-size: 13.5px; font-weight: 600; }
+.docs-state { width: fit-content; max-width: 100%; padding: 3px 10px; display: inline-flex; align-items: center; gap: 5px; color: var(--slate); background: var(--rail); border-radius: var(--r-badge); font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.docs-state.on { color: var(--green-text); background: var(--green-soft); }
+.docs-state.off { color: var(--locked-text); background: var(--locked); }
+.docs-section details { max-width: 800px; margin-bottom: 8px; padding: 12px 18px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; transition: border-color .15s, background .15s; }
+.docs-section details[open] { background: var(--panel); border-color: var(--line-strong); }
+.docs-section details summary { color: var(--ink); cursor: pointer; font-weight: 500; }
+.docs-section details p { margin: 8px 0 0; }
+
+@media (max-width: 1050px) {
+  .docs-page { grid-template-columns: minmax(0, 1fr); }
+  .docs-toc { position: static; }
+  .docs-toc ol { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .docs-page { padding: 0 10px; gap: 10px; }
+  .docs-hero, .docs-section { padding: 22px 16px; }
+  .docs-section { scroll-margin-top: 12px; }
+  .docs-table { display: block; overflow-x: auto; }
+  .docs-contracts > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .docs-section h2 { font-size: 20px; }
+}
+/* The SP coin beside the SP section's heading. */
+.docs-section h2 .sp-mark { margin-right: 8px; vertical-align: -4px; }
