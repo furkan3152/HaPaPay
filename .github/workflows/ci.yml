@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Typecheck, tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      # A disposable database for the real-PostgreSQL suites; each suite works in its own schema.
+      REAL_DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
+      HAPAPAY_ISOLATED_POSTGRES: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Type check
+        run: npm run check
+      - name: Type check the serverless entry for ES2021
+        run: npx tsc --noEmit --strict --module ESNext --moduleResolution Bundler --target ES2021 --skipLibCheck server.ts
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  contracts:
+    name: Contract tests (Forge)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Forge unit, fuzz and invariant tests
+        run: npm run test:forge

@@ -1,0 +1,10 @@
+/* The hero's dot field. Colors follow the theme and the network through these three tokens. */
+.dot-morph { --dot-glyph: var(--accent-text); --dot-hot: var(--ink); --dot-base: var(--line-strong); position: relative; width: 100%; height: clamp(150px, 27vh, 250px); touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.dot-morph canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dot-morph-pause { position: absolute; right: 0; bottom: 0; width: 36px; height: 36px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 10px; opacity: .55; transition: opacity .2s, color .15s, background .15s, border-color .15s; }
+.dot-morph:hover .dot-morph-pause, .dot-morph-pause:focus-visible, .dot-morph-pause[aria-pressed='true'] { opacity: 1; }
+.dot-morph-pause:hover { color: var(--ink); background: var(--panel); border-color: var(--line-strong); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-morph-pause { display: none; }
+}

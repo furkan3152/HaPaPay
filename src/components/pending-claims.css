@@ -1,0 +1,50 @@
+.pending-claims { min-width: 0; display: flex; flex: 1; flex-direction: column; gap: 12px; color: var(--ink); }
+.pending-claims-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pending-claims-heading h2 { margin: 0; font: 600 15px/1.2 var(--font-text); }
+.pending-claims-heading p { margin: 0; color: var(--muted); font: 500 12px var(--font-mono); letter-spacing: .02em; }
+.pending-claims button { min-height: 44px; padding: 8px 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 12.5px; }
+.pending-claims .claims-refresh { width: 44px; padding: 0; flex: none; color: var(--slate); }
+.pending-claims .claims-refresh svg { transition: transform .5s var(--ease-out); }
+.pending-claims .claims-refresh:hover:not(:disabled) svg { transform: rotate(180deg); }
+.claims-group { min-width: 0; display: grid; gap: 8px; }
+.claims-group h3 { margin: 0; color: var(--muted); font: 800 12px var(--font-display); font-variation-settings: "ROND" 100; letter-spacing: .06em; text-transform: uppercase; }
+.claims-list { min-width: 0; margin: 0; padding: 0; display: grid; gap: 8px; list-style: none; }
+/* One vault link: the amount, who it is from or for, the deadline, then what you can do with it. */
+.claim-item { min-width: 0; padding: 12px; display: grid; gap: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; animation: row-in .3s var(--ease-out) both; }
+.claim-item[data-status='claimable'] { border-color: color-mix(in srgb, var(--accent-text) 45%, var(--line)); }
+.claim-item[data-status='refundable'] { border-color: color-mix(in srgb, var(--locked-text) 45%, var(--line)); }
+.claim-item-head { min-width: 0; display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: start; gap: 10px; }
+.claim-coin { width: 34px; height: 34px; display: grid; place-items: center; color: var(--accent-text); background: var(--accent-soft); border-radius: 50%; font: 800 17px var(--font-display); font-variation-settings: "ROND" 100; }
+.claim-item-head .stock-tile { width: 34px; height: 34px; font-size: 11px; }
+.claim-item-main { min-width: 0; overflow-wrap: anywhere; }
+.claim-item-main strong { display: block; font-size: 15px; font-weight: 600; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.claim-item-main strong > span { color: var(--muted); font: 500 11.5px var(--font-mono); }
+.claim-item-main small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.claim-item-main .claim-item-route { display: flex; align-items: center; gap: 5px; }
+.claim-item-route svg { width: 13px; height: 13px; flex: none; }
+.claim-item-deadline { margin: 0; color: var(--slate); font: 500 12px/1.4 var(--font-mono); }
+.claim-item[data-status='refundable'] .claim-item-deadline { color: var(--locked-text); }
+.claim-item .claim-item-statement { margin-top: 0; padding: 10px 12px; font-size: 12px; }
+.claim-item-actions { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.claim-item-actions button { flex: 1 1 auto; }
+.claim-item-actions a { margin-left: auto; padding: 10px 4px; color: var(--accent-text); font-size: 12.5px; font-weight: 600; text-decoration: none; }
+.claim-item-actions a:hover { text-decoration: underline; }
+.claim-item-receipt { min-height: 44px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; color: var(--slate); background: var(--rail); border-radius: var(--r-control); font: 600 12.5px var(--font-text); text-align: center; text-decoration: none; overflow-wrap: anywhere; }
+.claim-item-receipt.confirmed { color: var(--on-green); background: var(--green); }
+.claim-item-receipt.failed { color: var(--on-red); background: var(--red); }
+.claims-message { display: grid; justify-items: start; gap: 10px; padding: 4px 0; }
+.claims-message p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.claims-message-empty { flex: 1; min-height: 170px; justify-items: center; align-content: center; padding: 16px 4px; text-align: center; }
+.claims-message-empty strong { font-size: 14.5px; font-weight: 600; }
+.claims-message-empty p { max-width: 250px; }
+.claims-message .empty-mark { width: 104px; height: auto; margin-bottom: 8px; }
+.claims-loading { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.claims-unavailable { margin: 0; padding: 10px 12px; color: var(--locked-text); background: var(--locked); border-radius: 12px; font-size: 12px; line-height: 1.5; }
+.claims-load-error { padding: 12px 14px; color: var(--locked-text); background: var(--locked); border-radius: 14px; }
+.claim-item-error { margin: 0; padding: 10px 12px; color: var(--locked-text); background: var(--locked); border-radius: var(--r-control); font: 500 12.5px/1.5 var(--font-text); overflow-wrap: anywhere; }
+.claims-load-error p { margin: 0 0 8px; font-size: 12.5px; line-height: 1.5; }
+.claims-load-error button { width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .claim-item { animation: none; }
+  .pending-claims .claims-refresh svg { transition: none; }
+}
