@@ -3,7 +3,7 @@ name = "hapapay_vault"
 version = "1.0.0"
 edition = "2021"
 description = "HaPaPay's Solana vault: holds a payment for a social account until its verified owner claims it or the payer takes it back."
-license = "UNLICENSED"
+license = "MIT"
 publish = false
 
 [lib]
