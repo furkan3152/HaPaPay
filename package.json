@@ -7,8 +7,8 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "concurrently \"vite --host 0.0.0.0\" \"tsx server/index.ts\"",
-    "dev:web": "vite --host 0.0.0.0",
+    "dev": "concurrently \"vite\" \"tsx server/index.ts\"",
+    "dev:web": "vite",
     "dev:api": "tsx server/index.ts",
     "start": "NODE_ENV=production tsx server/index.ts",
     "build": "tsc -b && vite build",
