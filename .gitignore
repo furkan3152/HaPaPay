@@ -10,6 +10,7 @@ npm-debug.log*
 foundry-out/
 foundry-cache/
 deployments/
+target/
 
 # Local tooling state
 .playwright-mcp/
@@ -27,6 +28,10 @@ output/playwright/
 *.pem
 *.key
 *.secret
+# Solana keypairs (program and wallet keys)
+*-keypair.json
+*keypair*.json
+id.json
 
 # Agent credentials and machine-local session databases must never be versioned.
 .codex/auth.json
