@@ -39,15 +39,8 @@ export function parseSolanaBrowserRpcUrl(value: unknown): string | undefined {
 /** SOL itself: 9 decimals (lamports). */
 export const SOL_DECIMALS = 9;
 
-/** A Solana address (base58 of 32 bytes): 32 to 44 characters from the base58 alphabet. Shape only; see `isAddress`. */
-export const SOLANA_ADDRESS_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 /** A transaction signature (base58 of 64 bytes): 64 to 88 characters. */
 export const SOLANA_SIGNATURE_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{64,88}$/;
-
-/** The explorer page for a transaction or an account on Solana mainnet. */
-export function solanaExplorerUrl(kind: "tx" | "account", value: string) {
-  return `${SOLANA_MAINNET.explorerUrl}/${kind}/${value}`;
-}
 
 /** Where a Solana vault link is claimed: the payment ID in hex, like the EVM vault's links. */
 export function solanaClaimPath(paymentId: string) {

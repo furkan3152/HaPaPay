@@ -16,6 +16,8 @@ import {
   type Instruction,
 } from "@solana/kit";
 import { getSetComputeUnitLimitInstruction, getSetComputeUnitPriceInstruction } from "@solana-program/compute-budget";
+// Notes go through the memo package's program (`Memo4c2p…`, on mainnet and read back by RPCs as an SPL memo). The
+// older Memo v2 program checks UTF-8 so expensively that a 140-emoji note ran out of compute on a local validator.
 import { getAddMemoInstruction } from "@solana-program/memo";
 import { getTransferSolInstruction } from "@solana-program/system";
 import { findAssociatedTokenPda, getCreateAssociatedTokenIdempotentInstruction, getTransferCheckedInstruction } from "@solana-program/token";
@@ -24,12 +26,6 @@ import { PAYMENT_NOTE_PREFIX } from "./payment-note.js";
 import { SOLANA_TOKEN_PROGRAM_ADDRESSES, type SolanaAssetListing } from "./solana-assets.js";
 import { solanaFee, SOLANA_FEE_BPS } from "./solana-amounts.js";
 import { SOLANA_MAINNET } from "./solana-chains.js";
-
-/**
- * Notes go through the memo package's program (`Memo4c2p…`, on mainnet and read back by RPCs as an SPL memo). The
- * older Memo v2 program checks UTF-8 so expensively that a 140-emoji note ran out of compute on a local validator.
- */
-export { MEMO_PROGRAM_ADDRESS as SOLANA_MEMO_PROGRAM_ADDRESS } from "@solana-program/memo";
 
 /** A Solana transaction's wire size limit (bytes). Bigger batches are split into several transactions. */
 export const SOLANA_TRANSACTION_MAX_BYTES = 1232;
