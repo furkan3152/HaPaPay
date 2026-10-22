@@ -28,4 +28,3 @@ export async function verifyArcRuntime(network: ReadyArcNetwork, client: ArcRunt
   if (decimals !== 6) throw new Error(`Configured Arc ERC-20 USDC must report 6 decimals; received ${decimals}.`);
 }
 
-export const verifyArcMainnetRuntime = verifyArcRuntime;

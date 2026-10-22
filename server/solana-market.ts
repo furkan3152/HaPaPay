@@ -14,7 +14,6 @@ const priceSchema = z.record(z.object({
   stockData: z.object({ price: z.number().positive().optional() }).passthrough().optional(),
 }).passthrough());
 
-export type SolanaQuote = { symbol: string; price?: number };
 export type SolanaMarketSnapshot = { asOf?: string; status: "live" | "unavailable"; source: string; quotes: Record<string, number> };
 
 /**

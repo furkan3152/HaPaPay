@@ -3,7 +3,6 @@
  * payment on; it offers no choice, because each request runs where its asset lives.
  */
 export type PaymentNetworkId = "arc-testnet" | "arc-mainnet" | "robinhood-testnet" | "robinhood-mainnet";
-export type PaymentNetworkPreference = "auto" | PaymentNetworkId;
 export type PaymentNetworkCatalogEntry = { id: PaymentNetworkId; label: string; available: boolean; reason?: string };
 
 export class PaymentNetworkSelectionError extends Error {
