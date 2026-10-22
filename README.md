@@ -12,14 +12,6 @@
 
 <p align="center">
   <a href="https://github.com/furkan3152/HaPaPay/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/furkan3152/HaPaPay/actions/workflows/ci.yml/badge.svg" /></a>
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white" />
-  <img alt="React" src="https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white" />
-  <img alt="Node.js" src="https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white" />
-  <img alt="Solidity" src="https://img.shields.io/badge/Solidity-0.8.28-363636?logo=solidity&logoColor=white" />
-  <img alt="Rust" src="https://img.shields.io/badge/Solana_program-Rust-B7410E?logo=rust&logoColor=white" />
-  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" />
-  <img alt="Tests" src="https://img.shields.io/badge/tests-600%2B%20node%20%C2%B7%2056%20forge-CCFF00" />
-  <img alt="Custody" src="https://img.shields.io/badge/custody-none-111111" />
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111" /></a>
 </p>
 
@@ -30,6 +22,10 @@
   <a href="#architecture">Architecture</a> ·
   <a href="#getting-started">Getting started</a> ·
   <a href="#documentation">Docs</a>
+</p>
+
+<p align="center">
+  <sub>Stack: TypeScript · React · Vite · Express · PostgreSQL · Solidity (Foundry) · Rust (Solana program) · Node.js 24</sub>
 </p>
 
 ---
@@ -366,6 +362,11 @@ Farcaster, the OAuth apps you want, and the operator steps that deploy the contr
 
 The desk also serves its own user and operator guide at `/docs`.
 
+## Live deployment
+
+An earlier build of this codebase, still under its previous name **Siglos Pay**, runs at
+[siglos-pay.vercel.app](https://siglos-pay.vercel.app) (configured for Arc Mainnet). It may lag behind this repository.
+
 ## Disclaimer
 
 HaPaPay is an independent project. It is not affiliated with, endorsed by, or officially connected with Robinhood
@@ -379,3 +380,7 @@ contracts are unaudited.
 ## License
 
 HaPaPay is released under the [MIT License](LICENSE).
+
+---
+
+Built by Furkan Akdogan ([@furkan3152](https://github.com/furkan3152)).
