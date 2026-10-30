@@ -126,7 +126,7 @@ const completeColumns = [
   ...[
     ["key", "text", true], ["value", "jsonb", true], ["updated_by", "text", true], ["updated_at", "timestamp with time zone", true],
   ].map((row) => ["admin_settings", ...row]),
-  // Invites (2026-10-05).
+  // Invites.
   ...[["code", "text", true], ["account", "text", true], ["created_at", "timestamp with time zone", true]].map((row) => ["sp_referral_codes", ...row]),
   ...[["invitee", "text", true], ["referrer", "text", true], ["code", "text", true], ["created_at", "timestamp with time zone", true]].map((row) => ["sp_referrals", ...row]),
   ...[
