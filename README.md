@@ -366,8 +366,8 @@ The desk also serves its own user and operator guide at `/docs`.
 
 ## Live deployment
 
-An earlier build of this codebase, still under its previous name **Siglos Pay**, runs at
-[siglos-pay.vercel.app](https://siglos-pay.vercel.app) (configured for Arc Mainnet). It may lag behind this repository.
+A live instance runs on Arc Mainnet at
+[siglos-pay.vercel.app](https://siglos-pay.vercel.app), served under the project's earlier name **Siglos Pay**.
 
 ## Disclaimer
 
