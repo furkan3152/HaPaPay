@@ -1,0 +1,21 @@
+# Vercel reads this file instead of .gitignore. The build stages the Vite output into public/index.html and
+# public/assets/ (scripts/build-vercel.ts), which .gitignore keeps out of Git; listing them here would hide them from
+# the CDN, so they are deliberately not ignored.
+node_modules
+dist
+.vercel
+.env
+.env.*
+*.env
+!.env.example
+.secrets
+foundry-out
+foundry-cache
+deployments
+target
+*.pem
+*.key
+*.secret
+*-keypair.json
+*keypair*.json
+id.json
