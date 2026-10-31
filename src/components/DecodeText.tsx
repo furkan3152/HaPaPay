@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
+/** The Greek capitals a label passes through before it settles. */
+export const GREEK = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ";
+
 /**
- * A label that decodes from binary digits, like the dots of the hero: when the pointer enters its button (or `replay`
- * changes), the letters run through 0 and 1 and settle from left to right in about a third of a second. The real label
+ * A label that decodes from ancient Greek, like an inscription read aloud: when the pointer enters its button (or
+ * `replay` changes), the letters run through Greek capitals and settle from left to right in about a third of a second. The real label
  * stays in the accessibility tree and reserves the width, so the button never changes size. Reduced motion shows the
  * label as is.
  */
@@ -26,7 +29,7 @@ export function DecodeText({ text, replay }: { text: string; replay?: unknown })
           return;
         }
         const settled = Math.floor(text.length * progress);
-        setShown([...text].map((character, index) => index < settled || /\s|[.…·]/.test(character) ? character : Math.random() < 0.5 ? "0" : "1").join(""));
+        setShown([...text].map((character, index) => index < settled || /\s|[.…·]/.test(character) ? character : GREEK[Math.floor(Math.random() * GREEK.length)]).join(""));
         frame = requestAnimationFrame(step);
       };
       cancelAnimationFrame(frame);

@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { DotMorph } from "./DotMorph";
+import { ElysianHero, LaurelMark } from "./ElysianHero";
 import { DecodeText } from "./DecodeText";
 import { DotArrow } from "./DotIcon";
 import { DotText } from "./DotText";
 import { ProviderIcon } from "./ProviderIcon";
-import { BrandMark } from "./BrandMark";
 import { platformName } from "../domain/payment-intent";
 import { countdown, ELYSIUM_MAINNET_LAUNCH, type ElysiumMarket, type ElysiumNetworkView } from "../domain/elysium";
 import "./home-page.css";
@@ -120,7 +119,8 @@ export function HomePage({ status, stockCount, xstockCount, motion, onToggleMoti
         </ul>
       </div>
       <div className="home-art">
-        <DotMorph shapes={["elysium", "$"]} motion={motion} onToggleMotion={onToggleMotion} />
+        <ElysianHero motion={motion} />
+        <button type="button" className="motion-toggle home-motion" aria-pressed={!motion} onClick={onToggleMotion}>{motion ? "Pause animations" : "Play animations"}</button>
       </div>
     </section>
 
@@ -130,12 +130,19 @@ export function HomePage({ status, stockCount, xstockCount, motion, onToggleMoti
         <p>Elysium is Kinetiq's layer 2 for the Hyperliquid ecosystem: an Arbitrum Orbit chain with ~100 ms blocks that settles to HyperEVM and runs on HYPE. ElysaPay brings handle payments to it from the first block of mainnet.</p>
         {hype && <p className="home-hype">HYPE <b>${hype.mid.toLocaleString("en-US", { maximumFractionDigits: 2 })}</b>{hype.change24h !== null && <i data-up={hype.change24h >= 0}>{hype.change24h >= 0 ? "+" : ""}{(hype.change24h * 100).toFixed(2)}% 24h</i>}<small>Hyperliquid perp mid</small></p>}
       </div>
+      <div className="home-pillars">
+        <div className="home-pillar"><b>Ὄνομα</b><i>The name</i><span>A verified handle is the address. Nobody copies forty-two characters again.</span></div>
+        <div className="home-pillar"><b>Σφραγίς</b><i>The seal</i><span>Your own wallet seals every payment; ElysaPay never holds a key.</span></div>
+        <div className="home-pillar"><b>Μαρτυρία</b><i>The witness</i><span>The chain is the record: a payment counts once its receipt is read back.</span></div>
+      </div>
       <ul className="home-facts">{elysiumFacts.map(([value, label, note]) => <li key={label}><DotText as="strong" text={value} /><b>{label}</b><span>{note}</span></li>)}</ul>
       <div className="home-launch">
-        <div><DotText as="h3" text="Mainnet" /><p>Elysium's public mainnet is planned for November 9, 2026. Every ElysaPay feature runs on Elysium Testnet now.</p></div>
+        <div><DotText as="h3" text="Mainnet" /><p>Elysium's public mainnet is planned for November 9, 2026. Every ElysaPay feature runs on Elysium Testnet now.</p><p className="home-roman" aria-label="9 November 2026">IX · XI · MMXXVI</p></div>
         <LaunchClock />
       </div>
     </section>
+
+    <blockquote className="home-quote">“Where the fields are gold and the river runs clear, every name is known and every debt is paid.”<cite>On the Elysian Fields</cite></blockquote>
 
     <section className="home-section" id="how" aria-labelledby="how-title">
       <DotText as="h2" id="how-title" text="How it works" />
@@ -156,7 +163,7 @@ export function HomePage({ status, stockCount, xstockCount, motion, onToggleMoti
         {!status.checking && !status.vault && <p className="home-note">Vault links are not open yet. {status.vaultReason ?? ""}</p>}
         <a className="home-more" href="/docs/vault">How the vault works <DotArrow direction="right" /></a>
       </div>
-      <div className="home-route" aria-hidden="true"><DotText text="You" /><i /><DotText text="Vault" /><i /><DotText text="@toly" /><span className="route-bird"><BrandMark /></span></div>
+      <div className="home-route" aria-hidden="true"><DotText text="You" /><i /><DotText text="Vault" /><i /><DotText text="@toly" /><span className="route-bird"><LaurelMark size={30} /></span></div>
     </section>
 
     <section className="home-section" aria-labelledby="assets-title">

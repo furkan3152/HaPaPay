@@ -695,8 +695,10 @@ describe("English payment desk", () => {
     assert.match(app, /<a className="brand" href="\/" aria-label="ElysaPay home">/);
     assert.match(app, /\{homePage \|\| notFoundPage \? <a className="home-open topbar-open" href=\{DESK_PATH\}>/);
     assert.match(docs, /<a className="docs-back" href="\/app">Open the payment desk<\/a>/);
-    // The home page: the Elysian gate turning into the dollar, the steps, and only what the server reports as running.
-    assert.match(home, /<DotMorph shapes=\{\["elysium", "\$"\]\}/, "the home hero starts with the Elysian gate, as on the desk");
+    // The home page: the Elysian Fields scene (a temple drawn in gold under a rising sun), the steps, and only what the
+    // server reports as running. The scene follows the page's pause control and has a visible pause button.
+    assert.match(home, /<ElysianHero motion=\{motion\} \/>/, "the home hero is the Elysian scene");
+    assert.match(home, /className="motion-toggle home-motion" aria-pressed=\{!motion\} onClick=\{onToggleMotion\}/, "the scene can be paused from the page");
     assert.match(home, /<a className="home-open" href="\/app"><DecodeText text="Open the desk" \/> <DotArrow direction="right" \/><\/a>/);
     assert.match(home, /Stock Tokens · \{state\(status\.stockTokens, "wallet-signed", "signing locked"\)\}/);
     assert.match(home, /Vault links · \{state\(status\.vault, "open", "not open yet"\)\}/);
@@ -912,5 +914,30 @@ describe("WCAG A/AA checks from an axe scan", () => {
     assert.equal(docs.match(/<table className="docs-table" tabIndex=\{0\}>/g)?.length, docs.match(/<table /g)?.length, "every docs table scrolls from the keyboard on a phone");
     for (const board of [tokens, solana]) assert.doesNotMatch(board, /aria-label=\{`Send \$\{/, "a row is named by the words it shows");
     assert.match(listStyles, /\.stock-empty button \{[^}]*color: var\(--accent-text\)/);
+  });
+});
+
+describe("Elysian theme", () => {
+  it("keeps the scene decorative, pausable and still under reduced motion", async () => {
+    const [hero, heroStyles, theme, sound] = await Promise.all([
+      readFile(new URL("../src/components/ElysianHero.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../src/components/elysian-hero.css", import.meta.url), "utf8"),
+      readFile(new URL("../src/elysian.css", import.meta.url), "utf8"),
+      readFile(new URL("../src/sound.ts", import.meta.url), "utf8"),
+    ]);
+    assert.match(hero, /className="elysian-hero" data-motion=\{motion \? "on" : "off"\} aria-hidden="true"/, "the scene is decoration and carries the pause state");
+    assert.match(hero, /if \(!motion \|\| reduced\.matches\) return;/, "the gold motes stop with the pause control and reduced motion");
+    // Every endless loop in the scene is scoped to motion being on.
+    for (const [, selector, value] of heroStyles.matchAll(/([^{}]+)\{[^}]*?animation:\s*([^;]+);/g)) {
+      if (value.includes("infinite")) assert.match(selector, /\[data-motion='on'\]/, `${selector.trim()} loops only with motion on`);
+    }
+    assert.match(heroStyles, /@media \(prefers-reduced-motion: reduce\)/);
+    for (const [, selector, value] of theme.matchAll(/([^{}]+)\{[^}]*?animation:\s*([^;]+);/g)) {
+      if (value.includes("infinite")) assert.match(selector, /data-motion='on'/, `${selector.trim()} loops only with motion on`);
+    }
+    assert.match(theme, /@media \(forced-colors: active\)/, "textures and gilding give way in high contrast");
+    // Sound: per-viewer choices; ambience and the voice are off unless chosen.
+    assert.match(sound, /let musicOn = browser \? read\(MUSIC_KEY, false\) : false;/);
+    assert.match(sound, /let voiceOn = browser \? read\(VOICE_KEY, false\) : false;/);
   });
 });
