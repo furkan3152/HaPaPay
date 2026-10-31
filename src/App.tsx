@@ -15,7 +15,6 @@ import { PaymentActivity } from "./components/PaymentActivity";
 import type { PaymentHistoryItem } from "./domain/payment-activity";
 import { createWalletSessionController, type WalletSessionSnapshot } from "./domain/wallet-session-controller";
 import { BrandMark } from "./components/BrandMark";
-import { LaurelMark } from "./components/ElysianHero";
 import { EmptyMark, PendingMark, VerifiedMark } from "./components/StatusMarks";
 import { DotBurst } from "./components/DotBurst";
 import { DotMorph } from "./components/DotMorph";
@@ -48,7 +47,7 @@ import { SpMark } from "./components/SpMark";
 import { formatSp, type SpEntry, type SpRules } from "./domain/sp";
 import { SP_EVENT, reportSpClaim, retrySpClaimReports } from "./sp-desk";
 import { joinWithPendingInvite, readReferral, type ReferralSummary } from "./referral-desk";
-import { musicEnabled, onSoundChange, setMusic, setSound, setVoice, soundEnabled, voiceAvailable, voiceEnabled } from "./sound";
+import { onSoundChange, setSound, setVoice, soundEnabled, voiceAvailable, voiceEnabled } from "./sound";
 import { DESK_FEATURES, isDeskFeature, type DeskControlsView, type DeskFeature, type DeskPause } from "./domain/desk-controls";
 
 // The operator console carries the escrow's creation code, so it loads only on its own page.
@@ -350,10 +349,8 @@ function SoundToggles() {
   useEffect(() => onSoundChange(rerender), []);
   const sound = soundEnabled();
   const voice = voiceEnabled();
-  const music = musicEnabled();
   return <span className="sound-toggles">
     <button className="theme-toggle" type="button" aria-pressed={sound} onClick={() => setSound(!sound)} aria-label={sound ? "Turn sound off" : "Turn sound on"} title={sound ? "Sound on" : "Sound off"}><DotIcon name={sound ? "sound" : "mute"} size={17} /></button>
-    <button className="theme-toggle" type="button" aria-pressed={music} onClick={() => setMusic(!music)} aria-label={music ? "Stop the Elysian music" : "Play the Elysian music"} title={music ? "Music on" : "Music off"}><DotIcon name="lyre" size={17} /></button>
     {voiceAvailable() && <button className="theme-toggle" type="button" aria-pressed={voice} onClick={() => setVoice(!voice)} aria-label={voice ? "Stop reading reviews aloud" : "Read reviews aloud"} title={voice ? "Voice on" : "Voice off"}><DotIcon name="voice" size={17} /></button>}
   </span>;
 }
@@ -2575,7 +2572,7 @@ export function App() {
       {spToast && <div className="sp-toast" role="status" key={spToast.key}><SpMark size={18} /> {[spToast.text, spToast.amount ? `+${formatSp(spToast.amount)} SP` : undefined].filter(Boolean).join(" · ")}</div>}
       <header className={`topbar ${homePage ? "topbar-home" : ""}`}>
         <a className="brand" href="/" aria-label="ElysaPay home">
-          <LaurelMark className="brand-mark" />
+          <BrandMark className="brand-mark" tile />
           <DotText text="ElysaPay" />
         </a>
         <nav className="primary-nav" aria-label="Primary">
@@ -3083,7 +3080,7 @@ export function App() {
       </section>}
 
       {(docsPage || homePage) && <footer className="site-footer">
-        <p className="footer-brand"><LaurelMark className="brand-mark" size={26} /> <DotText text="ElysaPay" /> <small>Wallet-signed payments to verified handles, under Elysian skies</small></p>
+        <p className="footer-brand"><BrandMark tile /> <DotText text="ElysaPay" /> <small>Wallet-signed payments to verified handles</small></p>
         {footerLinks}
       </footer>}
 

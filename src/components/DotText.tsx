@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useRef, type ElementType } from "react";
-import { GREEK } from "./DecodeText";
 
-/** Letters that flicker into Greek capitals when warm; punctuation and symbols stay as they are. */
+/** Letters that flicker into binary digits when warm; punctuation and symbols stay as they are. */
 const DECODABLE = /[a-z0-9]/i;
 /** How long a pointer that has stopped keeps the letters around it warm. */
 const REST_MS = 380;
@@ -76,7 +75,7 @@ function attachDotText(root: HTMLElement) {
       }
       if (!reduced.matches && decodable[index] && heat[index] > 0.42) {
         if (now >= flipAt[index]) {
-          chars[index].textContent = GREEK[Math.floor(Math.random() * GREEK.length)];
+          chars[index].textContent = Math.random() < 0.5 ? "0" : "1";
           flipAt[index] = now + 60 + Math.random() * 110;
         }
       } else if (chars[index].textContent !== original[index]) {

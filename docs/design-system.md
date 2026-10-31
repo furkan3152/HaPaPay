@@ -26,28 +26,21 @@ on it. This document records the rules that keep it that way.
 - `/docs`, `/operator/stock-escrow` and `/admin` reuse the same surfaces and type.
 - A slip (a review) lists its facts as rows: network, recipient, amount, fee, total, gas, note, then one primary action.
 
-## The Elysian theme (ElysaPay)
+## Elysium (ElysaPay)
 
-ElysaPay dresses the desk as the Elysian Fields: classical antiquity under Elysium's night sky. The theme lives in
-`src/elysian.css`, which loads after `styles.css` and only restyles; layout, behaviour and accessibility stay put.
+ElysaPay keeps every dot rule above and adds Elysium's look:
 
-- **Palette.** Night (`#080A14`) with a dawn on the horizon, marble cards with soft veins, gold leaf (`--gilded`,
-  `--gold`, `--gold-bright`) for actions and figures, and Elysium mint (`--elysium-mint`) only for what is live on chain.
-  The light theme is parchment and marble with deeper gold.
-- **Type.** Cinzel (Roman capitals) for the brand, headings, buttons and tabs; Cormorant Garamond for the voice (leads,
-  eyebrows, quotes); Space Grotesk for sentences and IBM Plex Mono for figures and addresses.
-- **Ornament.** The Greek key (meander) as a frieze on every card and under the top bar, gold rosettes on the hero
-  card, pillars with capital and base for the three principles (Ὄνομα, Σφραγίς, Μαρτυρία), the mainnet date in Roman
-  numerals, and a laurel wreath around an Ε coin as the mark.
-- **Motion.** The home hero (`ElysianHero.tsx`) draws a temple in gold lines while the sun rises behind it, joins two
-  constellations star by star, drifts clouds and the river Lethe, and lets gold motes rise from the steps; layers follow
-  the pointer and a click strikes a bell. Labels decode from Greek capitals instead of binary. The desk's dot hero stays,
-  now as gold stardust. A confirmed Elysium payment draws a laurel wreath. Every endless loop runs only while the
-  page's pause control is on, and nothing moves under reduced motion.
-- **Sound.** Lyre strings (Karplus–Strong synthesis in D Dorian) for presses and reviews, a bronze bell for success,
-  a low lyre for errors, an optional Elysian ambience (drone and occasional lyre phrases) and an optional voice for
-  reviews. All are synthesised, all are per-viewer toggles in the top bar, and none carries information the text does
-  not.
+- **Palette.** Deep night canvas (`#06090E`), Elysian mint (`#5CF2C9`) as the desk's accent for Elysium and HYPE, a pale
+  gold (`#E8C477`) for the mainnet countdown and rewards, and a night violet (`#8B7CFF`) only in the sky. Tokens:
+  `--elysium-mint`, `--elysium-gold`, `--elysium-violet`; the desk wears `data-network-theme="elysium"`.
+- **The hero** gathers into the *Elysian gate* (an arch over a four-pointed star, drawn in `DotMorph.tsx`) and the
+  dollar; typing `HYPE` focuses the gate. The morph engine itself is unchanged.
+- **The sky** is a dotted aurora: the desk's own lattice lights up in mint inside a soft band that drifts across the
+  page. It is driven by the ambient-motion pause control, stops under reduced motion, high contrast and print, and
+  never glows.
+- **Sound.** Short cues synthesised with Web Audio in a pentatonic scale (taps, opening a review, sending, success,
+  an error) and an optional voice that reads each review aloud. Both are per-viewer toggles in the top bar; sound never
+  carries information the text does not.
 
 ## Color
 

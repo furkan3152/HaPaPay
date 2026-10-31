@@ -201,20 +201,6 @@ export default function ElysiumPanel({ wallet, onConnect, visible }: { wallet?: 
         </div>}
     </article> : phase.kind === "done" ? <article className="payment-slip elysium-slip elysium-done" data-network-theme="elysium" role="status">
       <div className="elysium-burst" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} style={{ "--i": index } as CSSProperties} />)}</div>
-      <svg className="elysium-wreath" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-        <defs><linearGradient id="ew-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FBE7AE" /><stop offset="55%" stopColor="#D8B15A" /><stop offset="100%" stopColor="#9C7A2E" /></linearGradient></defs>
-        <path d="M44 106 C18 92 10 60 26 30" pathLength={1} />
-        <path d="M76 106 C102 92 110 60 94 30" pathLength={1} />
-        {Array.from({ length: 7 }, (_, index) => {
-          const t = index / 6;
-          const left = { x: 44 - 30 * Math.sin(t * 1.7) - 4 * t, y: 106 - 74 * t };
-          return <g key={index}>
-            <ellipse className="ew-leaf" style={{ "--i": index } as CSSProperties} cx={left.x - 6} cy={left.y - 3} rx="7" ry="3" transform={`rotate(${-30 - index * 8} ${left.x - 6} ${left.y - 3})`} />
-            <ellipse className="ew-leaf" style={{ "--i": index } as CSSProperties} cx={120 - left.x + 6} cy={left.y - 3} rx="7" ry="3" transform={`rotate(${30 + index * 8} ${120 - left.x + 6} ${left.y - 3})`} />
-          </g>;
-        })}
-        <text x="60" y="72" textAnchor="middle">Ε</text>
-      </svg>
       <DotText as="h3" text="Sent" />
       <p>@{phase.payment.username} received <b>{phase.payment.amount} HYPE</b> on {view.chainName}.</p>
       <div className="elysium-actions">
