@@ -69,7 +69,7 @@
     "concurrently": "9.1.2",
     "pg-mem": "3.0.14",
     "solc": "0.8.28",
-    "typescript": "5.7.2",
+    "typescript": "7.0.2",
     "vite": "^6.4.4"
   },
   "overrides": {
