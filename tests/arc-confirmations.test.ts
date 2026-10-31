@@ -10,6 +10,7 @@ import { DuplicatePaymentError, MemoryPaymentRepository, PaymentHistoryService }
 import { StockReceiptPendingError, StockTransferRejectedError, StockTransferUnavailableError } from "../server/stock-transfer-service";
 import { VerifiedIdentityService } from "../server/verified-identity-service";
 import { WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0, ANVIL_PRIVATE_KEY_1 } from "./fixtures/test-accounts";
 
 /**
  * Regression: Arc confirmations refused a receipt the server's RPC had not seen yet as a failed verification,
@@ -21,7 +22,7 @@ const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a
 const PAYMENT_CREATED = toEventSelector("PaymentCreated(bytes32,address,bytes32,address,uint256,uint256,uint256)");
 const USDC = "0x3600000000000000000000000000000000000000" as const;
 const ESCROW = "0x4444444444444444444444444444444444444444" as const;
-const PAYER = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+const PAYER = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
 const RECIPIENT = "0x2222222222222222222222222222222222222222" as const;
 const HASH = `0x${"cd".repeat(32)}` as const;
 const LABELLED_HASH = `0x${"ce".repeat(32)}` as const;
@@ -157,7 +158,7 @@ describe("Arc confirmations", () => {
           chainId: 5042,
           escrow: ESCROW,
           usdc: USDC,
-          attestor: privateKeyToAccount("0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"),
+          attestor: privateKeyToAccount(ANVIL_PRIVATE_KEY_1),
           readPayment: async () => {
             throw new Error(`HTTP request failed.\nURL: ${PROVIDER_URL}`);
           },

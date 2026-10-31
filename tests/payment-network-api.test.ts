@@ -6,6 +6,7 @@ import { createApp } from "../server/app";
 import { readArcNetworkConfig } from "../server/arc-network";
 import { VerifiedIdentityService } from "../server/verified-identity-service";
 import { WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 describe("payment network preference before preparation side effects", () => {
   let server: Server;
@@ -15,7 +16,7 @@ describe("payment network preference before preparation side effects", () => {
   let claimCalls = 0;
 
   before(async () => {
-    const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "network-preference-secret-with-32-characters" });
     const identities = new class extends VerifiedIdentityService {
       override resolve(platform: Parameters<VerifiedIdentityService["resolve"]>[0], username: string) {

@@ -10,6 +10,7 @@ import { MemoryStockTransferRepository, StockTransferService, stockTokenTransfer
 import { VerifiedIdentityService } from "../server/verified-identity-service";
 import { WalletAuthService } from "../server/wallet-auth";
 import { STOCK_TOKEN_ALLOWLISTS } from "../src/domain/robinhood-stock-tokens";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" as const;
 const TSLA = STOCK_TOKEN_ALLOWLISTS["robinhood-testnet"].tokens.find((token) => token.symbol === "TSLA")!;
@@ -37,7 +38,7 @@ describe("wallet-signed stock-token transfer HTTP API", () => {
   let origin: string;
   let cookie: string;
   let failList = false;
-  const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+  const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
   const identities = new VerifiedIdentityService();
 
   const post = (path: string, body: unknown, withSession = true) => fetch(`${origin}${path}`, {
@@ -221,7 +222,7 @@ describe("stock-token transfers on a server without them", () => {
 describe("the chat reads the signed-in sender's own holdings to choose a network", () => {
   it("sends NVDA on Robinhood Chain, the main network, reading only the sender's own balances, and nothing for a visitor", async () => {
     // The sender's wallets choose the network, and Robinhood Chain is the main one.
-    const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const identities = new VerifiedIdentityService();
     identities.link(RECIPIENT, { platform: "x", providerUserId: "x-22", username: "nora", verifiedAt: "2026-09-28T10:00:00.000Z" });
     const solanaAddresses: Record<string, string> = {

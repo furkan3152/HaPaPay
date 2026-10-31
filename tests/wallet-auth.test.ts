@@ -2,12 +2,11 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { privateKeyToAccount } from "viem/accounts";
 import { InvalidWalletError, SignInRejectedError, WALLET_SESSION_SECONDS, WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0, ANVIL_PRIVATE_KEY_1 } from "./fixtures/test-accounts";
 
 describe("wallet authentication seam", () => {
   it("creates a one-time wallet session from a valid signed challenge", async () => {
-    const account = privateKeyToAccount(
-      "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    );
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const auth = new WalletAuthService({
       domain: "hapapay.example",
       sessionSecret: "test-secret-with-at-least-32-characters",
@@ -32,7 +31,7 @@ describe("wallet authentication seam", () => {
 
   it("asks for a Sign-In with Ethereum message for this site, so a wallet warns when another site relays it", async () => {
     // Regression: the free-form message let a phishing site relay the sign-in without any wallet warning.
-    const account = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const auth = new WalletAuthService({
       domain: "hapapay.example",
       uri: "https://hapapay.example",
@@ -62,7 +61,7 @@ describe("wallet authentication seam", () => {
   });
 
   it("counts a session as fresh for ten minutes after its signature", async () => {
-    const account = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     let now = new Date("2026-10-06T08:00:00.000Z");
     const auth = new WalletAuthService({ domain: "hapapay.example", sessionSecret: "test-secret-with-at-least-32-characters", now: () => now });
     const challenge = await auth.createChallenge(account.address);
@@ -78,9 +77,7 @@ describe("wallet authentication seam", () => {
   });
 
   it("keeps one wallet signature valid for 30 days and never extends it", async () => {
-    const account = privateKeyToAccount(
-      "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    );
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     let now = new Date("2026-10-04T10:00:00.000Z");
     const auth = new WalletAuthService({
       domain: "hapapay.example",
@@ -105,12 +102,8 @@ describe("wallet authentication seam", () => {
   });
 
   it("rejects a signature made by a different wallet", async () => {
-    const expected = privateKeyToAccount(
-      "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    );
-    const attacker = privateKeyToAccount(
-      "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-    );
+    const expected = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
+    const attacker = privateKeyToAccount(ANVIL_PRIVATE_KEY_1);
     const auth = new WalletAuthService({
       domain: "hapapay.example",
       sessionSecret: "test-secret-with-at-least-32-characters",

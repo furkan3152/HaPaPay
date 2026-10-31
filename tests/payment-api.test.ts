@@ -9,6 +9,7 @@ import { VerifiedIdentityService } from "../server/verified-identity-service";
 import { ClaimablePaymentService } from "../server/claimable-payment-service";
 import { ClaimRedemptionService } from "../server/claim-redemption-service";
 import { ARC_TESTNET, readArcNetworkConfig } from "../server/arc-network";
+import { ANVIL_PRIVATE_KEY_0, ANVIL_PRIVATE_KEY_1 } from "./fixtures/test-accounts";
 
 const FEES = {
   router: "0x5555555555555555555555555555555555555555",
@@ -27,7 +28,7 @@ describe("authenticated payment preparation HTTP API", () => {
 
   before(async () => {
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "payment-api-secret-with-32-characters" });
-    const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     identities = new VerifiedIdentityService();
     identities.link("0x2222222222222222222222222222222222222222", {
       platform: "x", providerUserId: "x-22", username: "nora", verifiedAt: new Date().toISOString(),
@@ -62,7 +63,7 @@ describe("authenticated payment preparation HTTP API", () => {
         chainId: 9_999_999,
         escrow: "0x4444444444444444444444444444444444444444",
         usdc: ARC_TESTNET.usdcAddress,
-        attestor: privateKeyToAccount("0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"),
+        attestor: privateKeyToAccount(ANVIL_PRIVATE_KEY_1),
         readPayment: async (paymentId) => paymentId === activePaymentId
           ? { payer: "0x9999999999999999999999999999999999999999", token: ARC_TESTNET.usdcAddress, identityKey: githubIdentityKey, amount: 3_250_000n, fee: 32_500n, expiry: 1_800_000_000n }
           : paymentId === expiredPaymentId
@@ -288,7 +289,7 @@ describe("authenticated payment preparation HTTP API", () => {
 describe("Arc Mainnet payment preparation", () => {
   it("never prepares a fee-free payment on Arc Mainnet: without verified fee contracts it waits", async () => {
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "payment-api-mainnet-secret-32-chars!" });
-    const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const identities = new VerifiedIdentityService();
     identities.link("0x2222222222222222222222222222222222222222", { platform: "x", providerUserId: "x-22", username: "nora", verifiedAt: new Date().toISOString() });
     const app = createApp({ auth, identities, network: readArcNetworkConfig({ ARC_NETWORK_MODE: "mainnet" }) });

@@ -6,6 +6,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createApp } from "../server/app";
 import type { IdentityStore } from "../server/identity-store";
 import { WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 describe("wallet session HTTP API", () => {
   let server: Server;
@@ -31,9 +32,7 @@ describe("wallet session HTTP API", () => {
   after(async () => new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve())));
 
   it("authenticates a wallet without exposing the session token to JavaScript", async () => {
-    const account = privateKeyToAccount(
-      "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    );
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const challengeResponse = await fetch(`${origin}/api/auth/challenge`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -85,7 +84,7 @@ describe("wallet session HTTP API", () => {
 describe("linked accounts read", () => {
   it("answers a failed read with a retryable 503 that says nothing was removed", async () => {
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "integration-secret-with-32-characters" });
-    const account = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const account = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     let failing = true;
     const identities: IdentityStore = {
       link: () => { throw new Error("not used"); },

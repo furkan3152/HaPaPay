@@ -7,6 +7,7 @@ import { createApp } from "../server/app";
 import { MemoryPaymentRepository, PaymentHistoryService } from "../server/payment-history-service";
 import { VerifiedIdentityService } from "../server/verified-identity-service";
 import { WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" as const;
 
@@ -17,7 +18,7 @@ describe("verified Arc payment history HTTP API", () => {
   const hash = `0x${"ab".repeat(32)}` as const;
 
   before(async () => {
-    const sender = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const sender = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const recipient = "0x2222222222222222222222222222222222222222" as const;
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "payment-history-secret-with-32-characters" });
     const identities = new VerifiedIdentityService();

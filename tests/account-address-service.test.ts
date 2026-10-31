@@ -9,6 +9,7 @@ import { createApp } from "../server/app";
 import { WalletAuthService } from "../server/wallet-auth";
 import { AccountAddressService, AddressTakenError, MemoryAccountAddressRepository, WalletConsentError } from "../server/account-address-service";
 import { readSolanaAttestorKey, readSolanaConfig, verifySolanaSignature } from "../server/solana-network";
+import { ANVIL_PRIVATE_KEY_0, ANVIL_PRIVATE_KEY_1 } from "./fixtures/test-accounts";
 
 const walletA = getAddress("0x00000000000000000000000000000000000000a1");
 const walletB = getAddress("0x00000000000000000000000000000000000000b2");
@@ -62,8 +63,8 @@ describe("a Solana address on a HaPaPay account", () => {
 describe("changing where Solana payments reach an account", () => {
   it("needs the account wallet's own signature of the same message once the sign-in is older than ten minutes", async () => {
     // Regression: a copied session alone could point the account's Solana payments and vault claims elsewhere.
-    const owner = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-    const stranger = privateKeyToAccount("0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd");
+    const owner = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
+    const stranger = privateKeyToAccount(ANVIL_PRIVATE_KEY_1);
     const service = new AccountAddressService({ domain: "hapapay.example", repository: new MemoryAccountAddressRepository() });
     const solana = await solanaWallet();
     const attempt = async (walletSignature?: (message: string) => Promise<string>) => {
@@ -85,7 +86,7 @@ describe("changing where Solana payments reach an account", () => {
 
 describe("POST /api/auth/solana/challenge and /verify", () => {
   it("ask a sign-in older than ten minutes for the wallet's signature too, and answer 403 without it", async () => {
-    const owner = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const owner = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     let now = new Date("2026-10-06T08:00:00.000Z");
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "solana-consent-secret-with-32-characters", now: () => now });
     const addresses = new AccountAddressService({ domain: "127.0.0.1", repository: new MemoryAccountAddressRepository(), now: () => now });

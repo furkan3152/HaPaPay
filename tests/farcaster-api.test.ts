@@ -5,6 +5,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createApp } from "../server/app";
 import { WalletAuthService } from "../server/wallet-auth";
 import { VerifiedIdentityService } from "../server/verified-identity-service";
+import { ANVIL_ADDRESS_0, ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 describe("Sign in with Farcaster HTTP API", () => {
   let server: Server;
@@ -30,7 +31,7 @@ describe("Sign in with Farcaster HTTP API", () => {
         resolve();
       });
     });
-    const wallet = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const wallet = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const challenge = await fetch(`${origin}/api/auth/challenge`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: wallet.address }) }).then((response) => response.json()) as { id: string; message: string };
     const signature = await wallet.signMessage({ message: challenge.message });
     const login = await fetch(`${origin}/api/auth/verify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: wallet.address, challengeId: challenge.id, signature }) });
@@ -44,6 +45,6 @@ describe("Sign in with Farcaster HTTP API", () => {
     assert.deepEqual(await start.json(), { requestId: "request-id", url: "farcaster://connect", expiresAt: "2026-09-13T10:10:00.000Z" });
     const complete = await fetch(`${origin}/api/oauth/farcaster/complete`, { method: "POST", headers: { Cookie: cookie, "Content-Type": "application/json" }, body: JSON.stringify({ requestId: "request-id" }) });
     assert.equal(complete.status, 200);
-    assert.equal(await identities.resolve("farcaster", "arc-user"), "0xFCAd0B19bB29D4674531d6f115237E16AfCE377c");
+    assert.equal(await identities.resolve("farcaster", "arc-user"), ANVIL_ADDRESS_0);
   });
 });

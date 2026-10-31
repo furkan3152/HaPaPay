@@ -6,6 +6,7 @@ import { createApp } from "../server/app";
 import { OAuthFlowStore } from "../server/oauth-flow-store";
 import { GitHubOAuthProvider } from "../server/social-providers";
 import { WalletAuthService } from "../server/wallet-auth";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 describe("OAuth return-path HTTP flow", () => {
   let server: Server;
@@ -30,7 +31,7 @@ describe("OAuth return-path HTTP flow", () => {
         resolve();
       });
     });
-    const wallet = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const wallet = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     const challenge = await fetch(`${origin}/api/auth/challenge`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: wallet.address }) }).then((response) => response.json()) as { id: string; message: string };
     const signature = await wallet.signMessage({ message: challenge.message });
     const login = await fetch(`${origin}/api/auth/verify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: wallet.address, challengeId: challenge.id, signature }) });

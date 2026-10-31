@@ -5,6 +5,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createApp } from "../server/app";
 import { WalletAuthService } from "../server/wallet-auth";
 import { VerifiedIdentityService } from "../server/verified-identity-service";
+import { ANVIL_ADDRESS_0, ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 describe("verified identity unlink HTTP API", () => {
   let server: Server;
@@ -14,7 +15,7 @@ describe("verified identity unlink HTTP API", () => {
   before(async () => {
     const auth = new WalletAuthService({ domain: "127.0.0.1", sessionSecret: "unlink-api-secret-with-at-least-32-characters" });
     const identities = new VerifiedIdentityService();
-    const wallet = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const wallet = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
     identities.link(wallet.address, {
       platform: "github", providerUserId: "github-42", username: "octocat", verifiedAt: new Date().toISOString(),
     });
@@ -43,7 +44,7 @@ describe("verified identity unlink HTTP API", () => {
   it("stops resolving a social handle as soon as its owner removes it", async () => {
     const removed = await fetch(`${origin}/api/identity/github`, { method: "DELETE", headers: { Cookie: cookie } });
     assert.equal(removed.status, 200);
-    assert.deepEqual(await removed.json(), { wallet: "0xFCAd0B19bB29D4674531d6f115237E16AfCE377c", accounts: [] }, "nothing about an onchain record");
+    assert.deepEqual(await removed.json(), { wallet: ANVIL_ADDRESS_0, accounts: [] }, "nothing about an onchain record");
 
     const resolved = await fetch(`${origin}/api/resolve/github/octocat`);
     assert.equal(resolved.status, 404);

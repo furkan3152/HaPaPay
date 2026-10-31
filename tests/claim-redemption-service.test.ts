@@ -3,13 +3,14 @@ import { describe, it } from "node:test";
 import { decodeFunctionData, encodeAbiParameters, keccak256, parseAbiParameters, recoverMessageAddress, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { ClaimRedemptionService, claimActionsAbi } from "../server/claim-redemption-service";
+import { ANVIL_PRIVATE_KEY_0 } from "./fixtures/test-accounts";
 
 const paymentId = `0x${"ab".repeat(32)}` as const;
 const escrow = "0x3333333333333333333333333333333333333333" as const;
 const payer = "0x4444444444444444444444444444444444444444" as const;
 const recipient = "0x5555555555555555555555555555555555555555" as const;
 const usdc = "0x3600000000000000000000000000000000000000" as const;
-const attestor = privateKeyToAccount("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+const attestor = privateKeyToAccount(ANVIL_PRIVATE_KEY_0);
 const identityKey = keccak256(new Uint8Array([
   ...hexBytes(keccak256(stringToHex("github"))),
   ...hexBytes(keccak256(stringToHex("424242"))),
