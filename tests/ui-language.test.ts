@@ -27,22 +27,22 @@ describe("English payment desk", () => {
     ]);
 
     assert.match(html, /<html lang="en">/);
-    assert.match(html, /<meta name="description" content="Send money and stocks to a verified social handle\./);
+    assert.match(html, /<meta name="description" content="Pay any verified social handle in HYPE on Elysium/);
     assert.doesNotMatch(html, /Robinhood Chain|in development/, "the description no longer calls the product a stock-token project in development");
     // A shared link shows the same words and the dotted bird, from a file served beside the favicon.
     for (const tag of ["og:title", "og:description", "og:image", "twitter:card", "twitter:image"]) assert.match(html, new RegExp(`(?:property|name)="${tag}"`), tag);
     assert.doesNotMatch(html, /og:url|https:\/\/[a-z0-9.-]+\.(com|app|io)\//, "the page names no fixed domain: it is served from the operator's own");
     assert.match(html, /<meta property="og:image" content="\/share\.png" \/>/);
     await access(new URL("../public/share.png", import.meta.url));
-    assert.match(html, /<meta name="theme-color" content="#0B0C0E" \/>/, "the browser chrome starts dark");
+    assert.match(html, /<meta name="theme-color" content="#06090E" \/>/, "the browser chrome starts dark (Elysian night)");
     assert.match(app, /<nav className="primary-nav" aria-label="Primary">/);
     assert.match(app, /href="#payment">Payment/);
     assert.match(app, /setManageOpen\(true\)\}>Identities/);
     assert.match(app, /href="#panel-activity" onClick=\{\(event\) => openPanel\(event, "activity"\)\}>Activity/, "header links open the side panel tabs");
-    // Robinhood Chain is the main network: the desk
-    // wears Robin Neon, USDC slips and USDC claim pages on Arc wear Arc's blue, and Solana's slips and claim pages keep
+    // Elysium is the main network: the desk
+    // wears Elysian mint, Robinhood Chain's slips keep Robin Neon, USDC slips and USDC claim pages on Arc wear Arc's blue, and Solana's slips and claim pages keep
     // Solana's purple.
-    assert.match(app, /data-network-theme=\{claimTarget \? "arc" : solanaClaimTarget \? "solana" : "robinhood"\}/);
+    assert.match(app, /data-network-theme=\{claimTarget \? "arc" : solanaClaimTarget \? "solana" : "elysium"\}/);
     assert.match(app, /useState<"solana" \| "robinhood">\("robinhood"\)/, "the board opens on Robinhood Chain");
     assert.match(styles, /\.shell\[data-network-theme='solana'\],\n\.payment-slip\[data-network-theme='solana'\] \{/, "Solana's slips keep its purple on the Robin Neon desk");
     assert.equal(app.match(/data-network-theme="arc"/g)?.length, 2, "both USDC slips are drawn in Arc's colors");
@@ -68,8 +68,8 @@ describe("English payment desk", () => {
     assert.doesNotMatch(app, /intro-steps|className="disclaimer"/, "the desk itself is the heading and the request box");
     assert.doesNotMatch(app, /\/illustrations\/|function SocialExchangeIllustration|Pixel[A-Z]/, "the pixel artwork and its images are gone");
     assert.match(app, /: "What do you want to send\?"\} \/>\}/);
-    assert.match(home, /<DotText as="h1" id="home-title" text="Send money and stocks to a verified handle" \/>/);
-    assert.match(home, /<p className="home-eyebrow">Social payments on Robinhood Chain<\/p>/, "Robinhood Chain is the main network");
+    assert.match(home, /<DotText as="h1" id="home-title" text="Pay any handle in HYPE" \/>/);
+    assert.match(home, /<p className="home-eyebrow">Social payments on Elysium<\/p>/, "Elysium is the main network");
     assert.match(home, /your own wallet signs it\./);
     assert.match(app, /`Send  to @\$\{payTarget\.username\} on \$\{platform\}`/, "pay links leave room for an amount and any asset");
     assert.match(app, /setSelectionRange\(5, 5\)/);
@@ -450,14 +450,14 @@ describe("English payment desk", () => {
     assert.doesNotMatch(app, /"Remove\?"|name="unlink"/);
     assert.match(app, /Remove \{handleLabel\(linked\.username\)\} from this wallet\? Payments sent to this \{provider\.name\} account stop reaching it until you connect it again\./);
     assert.match(app, /className="unlink-keep"[^>]*onClick=\{\(\) => setUnlinkConfirm\(undefined\)\}>Keep<\/button>/);
-    // Links live on HaPaPay's servers: no identity record is written on chain, so linking and removing sign nothing.
-    assert.match(app, /HaPaPay keeps the link on its own servers; the link itself is never written on chain\./);
+    // Links live on ElysaPay's servers: no identity record is written on chain, so linking and removing sign nothing.
+    assert.match(app, /ElysaPay keeps the link on its own servers; the link itself is never written on chain\./);
     assert.doesNotMatch(app, /Record on Arc|Register on Arc|\/api\/identity\/registry|prepare-registry|matchesArcRegistryCall/);
     const remove = app.slice(app.indexOf("async function unlinkIdentity("), app.indexOf("async function copyPaymentLink("));
     assert.ok(remove.length > 300);
     assert.doesNotMatch(remove, /eth_sendTransaction|switchToArc/, "removing an account opens no wallet");
     // A sign-in that came back without a link says why.
-    for (const text of ["Your wallet session ended before ${name} answered", "sign-in was cancelled. Nothing was linked.", "expired or was already used", "is already linked to another wallet. Verify that wallet and remove ${name} there", "refused HaPaPay's sign-in settings, so nothing was linked. This is a site setting, not your account", "did not confirm the account"]) {
+    for (const text of ["Your wallet session ended before ${name} answered", "sign-in was cancelled. Nothing was linked.", "expired or was already used", "is already linked to another wallet. Verify that wallet and remove ${name} there", "refused ElysaPay's sign-in settings, so nothing was linked. This is a site setting, not your account", "did not confirm the account"]) {
       assert.ok(app.includes(text), text);
     }
     assert.match(app, /linkFailureMessage\(failedProvider, params\.get\("reason"\)\)/);
@@ -517,7 +517,7 @@ describe("English payment desk", () => {
     // Docs load only on /docs and read public status endpoints; they never touch a wallet or a secret.
     assert.match(app, /const DocsPage = lazy\(\(\) => import\("\.\/components\/DocsPage"\)\)/);
     assert.match(app, /class ChunkBoundary extends Component/, "a failed lazy chunk shows a retry instead of a blank app");
-    assert.equal(app.match(/<ChunkBoundary fallback=/g)?.length, 6, "every lazy chunk is wrapped: the docs, the admin panel, the operator page, the Solana slips, the Solana board and the sign-in");
+    assert.equal(app.match(/<ChunkBoundary fallback=/g)?.length, 7, "every lazy chunk is wrapped: the docs, the admin panel, the operator page, the Solana slips, the Solana board, the Elysium panel and the sign-in");
     assert.match(app, /const AdminPage = lazy\(\(\) => import\("\.\/components\/AdminPage"\)\)/, "the admin panel loads only on /admin");
     assert.match(app, /The admin panel could not be loaded\./);
     assert.match(app, /The docs could not be loaded\./);
@@ -611,11 +611,11 @@ describe("English payment desk", () => {
     const forcedColors = styles.slice(styles.indexOf("@media (forced-colors: active)"), styles.indexOf("\n}\n", styles.indexOf("@media (forced-colors: active)")));
     assert.match(forcedColors, /\.dot-char \{ color: inherit; transform: none; \}/, "high-contrast mode shows the plain letters");
     // Dot-matrix text everywhere it appears: the brand, headings, step numbers, asset names, slip amounts and the docs.
-    assert.match(app, /<DotText text="HaPaPay" \/>/);
+    assert.match(app, /<DotText text="ElysaPay" \/>/);
     assert.equal(app.match(/<strong><DotText text=\{/g)?.length, 6, "every slip amount answers the pointer");
     assert.match(home, /<DotText className="home-step-number" text=\{number\} \/>/);
     assert.match(home, /<DotText as="strong" text=\{name\} \/>/);
-    assert.match(docs, /<DotText as="h1" id="docs-title" text="How HaPaPay works" \/>/);
+    assert.match(docs, /<DotText as="h1" id="docs-title" text="How ElysaPay works" \/>/);
     assert.match(operator, /<DotText as="strong" id="setup-checklist-title" text="Server setup" \/>/);
     // A key the platform refuses is not a missing key.
     assert.match(docs, /X\{health\?\.recipientLookup\?\.x === "refused_by_x" \? " · refusing this server's lookups" : health && health\.recipientLookup\?\.x !== "configured" \? " · needs an API bearer token" : ""\}/);
@@ -692,11 +692,11 @@ describe("English payment desk", () => {
     assert.match(app, /return !params\.has\("linked"\) && !params\.has\("link_error"\);/);
     assert.match(app, /window\.history\.replaceState\(\{\}, "", window\.location\.pathname === "\/" \? DESK_PATH : window\.location\.pathname\)/);
     assert.match(oauth, /if \(!input \|\| input === "\/"\) return "\/";/, "the server's return paths are unchanged");
-    assert.match(app, /<a className="brand" href="\/" aria-label="HaPaPay home">/);
+    assert.match(app, /<a className="brand" href="\/" aria-label="ElysaPay home">/);
     assert.match(app, /\{homePage \|\| notFoundPage \? <a className="home-open topbar-open" href=\{DESK_PATH\}>/);
     assert.match(docs, /<a className="docs-back" href="\/app">Open the payment desk<\/a>/);
-    // The home page: the dollar turning into €, the steps, and only what the server reports as running.
-    assert.match(home, /<DotMorph shapes=\{\["\$", "\u20ac"\]\}/, "the home hero starts with the dollar, as on the desk");
+    // The home page: the Elysian gate turning into the dollar, the steps, and only what the server reports as running.
+    assert.match(home, /<DotMorph shapes=\{\["elysium", "\$"\]\}/, "the home hero starts with the Elysian gate, as on the desk");
     assert.match(home, /<a className="home-open" href="\/app"><DecodeText text="Open the desk" \/> <DotArrow direction="right" \/><\/a>/);
     assert.match(home, /Stock Tokens · \{state\(status\.stockTokens, "wallet-signed", "signing locked"\)\}/);
     assert.match(home, /Vault links · \{state\(status\.vault, "open", "not open yet"\)\}/);
@@ -710,7 +710,7 @@ describe("English payment desk", () => {
     assert.ok(home.indexOf("Stock Tokens · {state(") < home.indexOf("Solana · {state("), "Robinhood Chain leads the home page's status");
     assert.doesNotMatch(home, /Arc mainnet stays off/, "the home page no longer says Arc mainnet is off");
     assert.match(home, /Stock Tokens give economic exposure, not ownership of the underlying shares\./);
-    assert.match(home, /HaPaPay is not affiliated with, endorsed by, or officially connected with the Solana Foundation, the xStocks issuer, Robinhood Markets, Inc\., Paxos, Circle or Arc\./);
+    assert.match(home, /ElysaPay is not affiliated with, endorsed by, or officially connected with Kinetiq, Elysium, Hyperliquid, the Solana Foundation, the xStocks issuer, Robinhood Markets, Inc\., Paxos, Circle or Arc\./);
     assert.doesNotMatch(home, /tokeni[sz]ed (stock|equit)|\bfees?\b|\byield\b|guarantee/i);
     // Firmer corners: controls are rectangles with rounded corners, no pills are left.
     assert.match(sheets[0], /--r-control: 10px;/);
@@ -736,7 +736,7 @@ describe("English payment desk", () => {
     // The cartoon set is gone: no scenes, couriers, mailboxes or tickets anywhere.
     await assert.rejects(access(new URL("../src/components/Scenes.tsx", import.meta.url)));
     assert.doesNotMatch(`${app}\n${marks}\n${docs}\n${claims}\n${board}`, /Courier|CityScene|VaultScene|NightTown|MailRack|PassTicket|EmptyMailbox|StepArt|\.\/Scenes/);
-    // The mark is the HaPaPay swallow as a halftone: its outline filled with dots of many sizes that never touch, the
+    // The mark is the ElysaPay swallow as a halftone: its outline filled with dots of many sizes that never touch, the
     // raised wing its own group so it can flap. The favicon is a coarser bird of the same dots.
     assert.doesNotMatch(`${mark}\n${favicon}`, /<path /, "no outline anywhere in the bird");
     assert.equal(favicon.match(/<circle /g)?.length, 90);
@@ -759,7 +759,7 @@ describe("English payment desk", () => {
     assert.match(app, /<span className="send-flight" key=\{conversation\.turns\.at\(-1\)\?\.id\} aria-hidden="true"><BrandMark \/><\/span>/, "a sent request leaves as the bird, once");
     // The hero: dots that gather into $ and €, the typed asset, or a lock on vault pages.
     assert.match(app, /<DotMorph shapes=\{heroShapes\} focus=\{heroFocus\} motion=\{ambientMotion\} onToggleMotion=\{toggleAmbientMotion\} \/>/);
-    assert.match(app, /: \["\$", "\u20ac"\];/, "the desk moves between the dollar and the euro sign");
+    assert.match(app, /: \["elysium", "\$"\];/, "the desk moves between the Elysian gate and the dollar sign");
     assert.match(app, /const heroShapes = claimTarget \|\| solanaClaimTarget \? \["lock", "\$"\]/);
     assert.match(app, /typedSymbol === "USDC" \|\| typedSymbol === "USDG" \? "\$"/);
     assert.match(app, /: stockSnapshot\.tokens\.some\(\(token\) => token\.symbol === typedSymbol\) \? typedSymbol/, "only allowlisted tickers become shapes");
@@ -777,7 +777,7 @@ describe("English payment desk", () => {
     assert.match(app, /className="side-tabs" role="tablist" aria-label="Desk panels"/);
     assert.match(app, /role="tab" id=\{`tab-\$\{tab\}`\} aria-selected=\{activeTab === tab\} aria-controls=\{`panel-\$\{tab\}`\} tabIndex=\{activeTab === tab \? 0 : -1\}/);
     for (const tab of ["stocks", "activity", "claims", "sp", "identities"]) assert.match(app, new RegExp(`role="tabpanel" id="panel-${tab}" aria-labelledby="tab-${tab}" hidden=\\{activeTab !== "${tab}"\\}`));
-    assert.match(app, /const sideTabs: SideTab\[\] = \["stocks", "activity", "claims", "sp", "identities"\];/, "SP has its own tab");
+    assert.match(app, /const sideTabs: SideTab\[\] = \["elysium", "stocks", "activity", "claims", "sp", "identities"\];/, "Elysium leads the panel, and SP has its own tab");
     assert.match(app, /event\.key === "ArrowRight"/, "arrow keys move between tabs");
     assert.doesNotMatch(app, /identity-rail|activity-rail|status-card/, "no third column and no duplicate status card");
     // State marks render only with their states.
@@ -791,7 +791,7 @@ describe("English payment desk", () => {
     assert.equal(app.match(/<article className="payment-slip[^"]*" data-state=/g)?.length, 5, "slips that move funds expose their transfer state to the route");
     assert.equal(app.match(/"verification-failed" : "pending"\}`\}/g)?.length, 5, "submitted transaction bars are marked pending until the receipt");
     assert.doesNotMatch(`${app}\n${conversation}`, /Sparkles/, "no sparkle icons");
-    assert.doesNotMatch(`${app}\n${conversation}`, /HaPaPay assistant|Payment assistant| \u2014 /, "plain labels, no chatbot persona or dashed asides");
+    assert.doesNotMatch(`${app}\n${conversation}`, /ElysaPay assistant|Payment assistant| \u2014 /, "plain labels, no chatbot persona or dashed asides");
     assert.match(board, /"--segment": views\.indexOf\(view\)/, "the view tabs slide to the chosen view");
     // Entrances and confirmations stop within five seconds; only pending and loading states repeat on their own. The hero
     // is drawn on a canvas, so its motion is governed by the pause control and reduced motion above.
@@ -816,21 +816,21 @@ describe("English payment desk", () => {
   });
 });
 
-describe("the HaPaPay fee on the slips", () => {
+describe("the ElysaPay fee on the slips", () => {
   it("shows the amount, what the recipient receives, the fee and the total before anything is signed", async () => {
     const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
     assert.match(app, /function FeeFacts\(/);
     assert.equal(app.match(/<FeeFacts /g)?.length, 4, "the Arc and Robinhood transfer and vault slips all show the fee");
-    assert.match(app, /\{fees\.sink === "forwarder" \? "Goes to HaPaPay" : "Half goes to the burn vault, half to HaPaPay"\}/, "Arc names where its fee goes; nothing is burned there");
+    assert.match(app, /\{fees\.sink === "forwarder" \? "Goes to ElysaPay" : "Half goes to the burn vault, half to ElysaPay"\}/, "Arc names where its fee goes; nothing is burned there");
     assert.match(app, /\{network\.fees && arcNetwork && <FeeFacts fees=\{network\.fees\} units=\{parseUnits\(draft\.intent\.amount, 6\)\.toString\(\)\}/);
-    assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} USDC for HaPaPay in your wallet/);
+    assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} USDC for ElysaPay in your wallet/);
     assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} USDC in your wallet: \$\{claimDraft\.intent\.amount\} for/);
     assert.match(app, /you sign twice in your wallet: the approval, then the payment\./);
     assert.match(app, /<div><dt>Fee<\/dt><dd>\{formatUnits\(fee, decimals\)\} \{symbol\} · \{platformFeePercent\(fees\.feeBps\)\}/);
     assert.match(app, /<div><dt>Total<\/dt><dd>\{formatUnits\(BigInt\(units\) \+ fee, decimals\)\} \{symbol\}<small>From your wallet · @\{recipient\} receives exactly \{amount\}<\/small>/);
     assert.match(app, /Paid only when @\$\{recipient\} claims it and returned with a refund/);
     // The wallet approves exactly the amount plus the fee, and the reply says so before it opens.
-    assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} \$\{symbol\} for HaPaPay in your wallet/);
+    assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} \$\{symbol\} for ElysaPay in your wallet/);
     assert.match(app, /Approve exactly \$\{prepared\.fee\.totalAmount\} \$\{symbol\} for the vault in your wallet/);
     assert.doesNotMatch(app, /\bfees? (are|is) (zero|free|waived)\b/i);
   });

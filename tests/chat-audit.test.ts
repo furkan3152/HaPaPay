@@ -177,7 +177,7 @@ describe("requests the desk once misread", () => {
     assert.deepEqual((await drafted("send 5 USDC to @bob on X, he'll send it back to me")).pays, ["bob@x=5"]);
     assert.deepEqual((await drafted("@bob'a x'te 5 usdc gönder, sonra bana geri gönderecek")).pays, ["bob@x=5"]);
     for (const message of ["send 5 USDC to me", "@bob send 5 USDC to me", "send 5 USDC to myself", "kendime 5 usdc gönder", "@bob'dan 5 usdc iste"]) {
-      await asked(message, /^HaPaPay sends from your own wallet; it cannot ask anyone for money\./);
+      await asked(message, /^ElysaPay sends from your own wallet; it cannot ask anyone for money\./);
     }
     assert.deepEqual((await drafted("send 20 USDC to @bob on X, don't send to alice")).pays, ["bob@x=20"]);
     assert.deepEqual((await drafted("send 5 USDC to @bob on X from @alice")).pays, ["bob@x=5"], "the sender's own name is not someone to pay");
@@ -186,8 +186,8 @@ describe("requests the desk once misread", () => {
     await asked("send 5 USDC to @bob on X tomorrow", /cannot schedule or repeat a payment/);
   });
 
-  it("says when a request names a network HaPaPay does not run", async () => {
-    await asked("send 5 USDC to @bob on X on Ethereum", "HaPaPay sends on Solana, Arc and Robinhood Chain; Ethereum is not one of them. Write the request without it, or with one of those.");
+  it("says when a request names a network ElysaPay does not run", async () => {
+    await asked("send 5 USDC to @bob on X on Ethereum", "ElysaPay sends on Solana, Arc and Robinhood Chain; Ethereum is not one of them. Write the request without it, or with one of those.");
     await asked("send 5 USDC to @bob on X on Base", /; Base is not one of them\./);
   });
 
@@ -211,8 +211,8 @@ describe("requests the desk once misread", () => {
 });
 
 describe("SOL is not sent", () => {
-  it("answers every way of asking to send SOL with what HaPaPay sends instead", async () => {
-    // HaPaPay sends stablecoins and stocks, never SOL.
+  it("answers every way of asking to send SOL with what ElysaPay sends instead", async () => {
+    // ElysaPay sends stablecoins and stocks, never SOL.
     for (const message of [
       "send 0.5 SOL to @bob on X", "Send 1 sol to @bob on X", "@bob'a x'te 1 sol gönder", "send 1 solana to @bob", "send half a SOL to @bob on X",
       "send $5 of SOL to @bob on X", "send SOL to @bob on X", "send 0.1 SOL to @bob on X on Solana", "send 0.1 SOL to @bob on X via Arc",
@@ -273,7 +273,7 @@ describe("amounts written the short way", () => {
     }
     for (const message of ["send $5 x 2 to @bob on X", "send 5 USDC x 2 to @bob on X", "send 2 x 5 USDG to @bob on X"]) await asked(message, /^Write the amount to send as one number/);
     assert.deepEqual((await drafted("send 100 USDC to @bob on X for 2 x 50 tickets")).pays, ["bob@x=100"], "a product of other things is not the amount");
-    await asked("send 5 USDC to @bob on X 2x", "HaPaPay sends each payment once. Send it, then write the request again for the next one.");
+    await asked("send 5 USDC to @bob on X 2x", "ElysaPay sends each payment once. Send it, then write the request again for the next one.");
     assert.deepEqual((await drafted("send 10 USDC split in half between @alice and @bob on X")).pays, ["alice@x=5", "bob@x=5"]);
     assert.equal((await drafted("send 5 USDC to @bob on X for half of the pizza")).note, "for half of the pizza");
   });
@@ -294,7 +294,7 @@ describe("amounts written the short way", () => {
 describe("who a request pays", () => {
   it("never reads a wallet address as a handle", async () => {
     // Regression: a Solana address was lowercased and asked for its platform; an EVM one was offered a vault link.
-    const answer = "HaPaPay pays people by their verified handle, not by wallet address. Write who receives it and where, for example: Send 5 USDC to @toly on X.";
+    const answer = "ElysaPay pays people by their verified handle, not by wallet address. Write who receives it and where, for example: Send 5 USDC to @toly on X.";
     await asked("send 1 USDC to 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM", answer);
     await asked("send 5 USDC to 0x1234567890123456789012345678901234567890 on X", answer);
     await asked("pay 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM 2 USDC on Solana", answer);
@@ -302,7 +302,7 @@ describe("who a request pays", () => {
   });
 
   it("says which assets it sends when a symbol is not listed", async () => {
-    await asked("send 5 DOGE to @bob on X", "DOGE isn't on the verified token list. HaPaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens.");
+    await asked("send 5 DOGE to @bob on X", "DOGE isn't on the verified token list. ElysaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens.");
   });
 
   it("lets an X link wait for the name while X refuses this server's lookups, and says so", async () => {
@@ -311,11 +311,11 @@ describe("who a request pays", () => {
     const reply = await read("send 1 USDC to @newcomer on X", { exists: async () => "unavailable" }) as Reply & { vaultLock?: string };
     assert.equal(reply.status, "solana_claim_review");
     assert.equal(reply.vaultLock, "name");
-    assert.equal(reply.message, "@newcomer is not on HaPaPay yet. You can keep the USDC in the Solana vault for the X name @newcomer: whoever connects X to HaPaPay with that name claims it within the window you pick, 72 hours to 30 days, or you take it back after that. X is not answering account lookups right now, so it waits for the name instead of the account. Check how the name is spelled.");
+    assert.equal(reply.message, "@newcomer is not on ElysaPay yet. You can keep the USDC in the Solana vault for the X name @newcomer: whoever connects X to ElysaPay with that name claims it within the window you pick, 72 hours to 30 days, or you take it back after that. X is not answering account lookups right now, so it waits for the name instead of the account. Check how the name is spelled.");
     // GitHub refusing this server's key still gets no link: a GitHub link always waits for the account.
     const github = await read("send 1 USDC to @newcomer on GitHub", { exists: async () => "unavailable" });
     assert.equal(github.status, "needs_clarification");
-    assert.equal(github.message, "GitHub is not answering account lookups for HaPaPay right now, so the money cannot wait in the vault for @newcomer. Try again later, or ask @newcomer to join HaPaPay and link GitHub so you can pay them directly.");
+    assert.equal(github.message, "GitHub is not answering account lookups for ElysaPay right now, so the money cannot wait in the vault for @newcomer. Try again later, or ask @newcomer to join ElysaPay and link GitHub so you can pay them directly.");
   });
 
   it("reads dc and tg as Discord and Telegram, and says how to pay someone there who has not joined", async () => {
@@ -360,7 +360,7 @@ describe("who a request pays", () => {
     assert.deepEqual(verified.suggestions, ["Send 5 USDC to @torvalds on GitHub"]);
     // A platform the chips leave out is still a typed answer away.
     const discord = await read("discord", { answering: "send 5 USDC to @ahmet" });
-    assert.match(discord.message, /^Reading that as “Send 5 USDC to @ahmet on Discord”\. @ahmet is not on HaPaPay yet\. You can keep the USDC in the Solana vault for the Discord name @ahmet:/);
+    assert.match(discord.message, /^Reading that as “Send 5 USDC to @ahmet on Discord”\. @ahmet is not on ElysaPay yet\. You can keep the USDC in the Solana vault for the Discord name @ahmet:/);
   });
 
   it("offers no vault link to a handle the platform cannot have", async () => {

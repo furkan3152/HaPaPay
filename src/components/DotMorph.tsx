@@ -21,6 +21,15 @@ import "./dot-morph.css";
 
 /** Shapes that are drawn rather than typed, in a 24-unit box. */
 const ICONS: Record<string, (g: CanvasRenderingContext2D) => void> = {
+  /** The Elysian gate: an arch over a four-pointed star, ElysaPay's sign for Elysium. */
+  elysium(g) {
+    g.lineWidth = 2.5;
+    g.lineCap = "round";
+    g.lineJoin = "round";
+    g.stroke(new Path2D("M4.2 22V10.6a7.8 7.8 0 0 1 15.6 0V22"));
+    g.stroke(new Path2D("M2.4 22h19.2"));
+    g.fill(new Path2D("M12 7.2c.5 3 1.6 4.1 4.6 4.6-3 .5-4.1 1.6-4.6 4.6-.5-3-1.6-4.1-4.6-4.6 3-.5 4.1-1.6 4.6-4.6Z"));
+  },
   lock(g) {
     g.lineWidth = 2.6;
     g.lineCap = "round";

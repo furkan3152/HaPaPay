@@ -32,7 +32,7 @@ function setup(options: { referralsInService?: boolean } = {}) {
 
 let sequence = 0;
 const usdc = (amount: string) => ({ symbol: "USDC", assetClass: "stable" as const, amount });
-/** The 1% fee HaPaPay verified for a USDC payment of this amount, as the records keep it. */
+/** The 1% fee ElysaPay verified for a USDC payment of this amount, as the records keep it. */
 const feeOf = (amount: string) => ({ units: parseUnits(amount, 6) / 100n, paymentUnits: parseUnits(amount, 6) });
 /** A USDC payment by Bob with its verified fee, unless the change says otherwise (`fee: undefined` for a plain transfer). */
 function payment(change: Partial<SpPaymentEvent> = {}): SpPaymentEvent {
@@ -100,7 +100,7 @@ describe("invites", () => {
     assert.equal(await activity.joinWithCode(CAROL, "ZZZZ9999"), "unknown");
     assert.equal(await activity.joinWithCode(CAROL, "not a code"), "unknown");
     await payments.save({ chainId: 5042, transactionHash: hash(1), sender: DAVE, recipient: CAROL, platform: "x", username: "carol", amount: "5", blockNumber: 1n, confirmedAt: "2026-10-04T08:00:00.000Z" });
-    assert.equal(await activity.joinWithCode(DAVE, aliceCode), "not_new", "Dave already paid someone through HaPaPay");
+    assert.equal(await activity.joinWithCode(DAVE, aliceCode), "not_new", "Dave already paid someone through ElysaPay");
     assert.equal((await referrals.referrerOf(BOB))?.referrer, ALICE);
     assert.equal(await referrals.referrerOf(DAVE), undefined);
     assert.equal(await referrals.invitedCount(ALICE), 1);
@@ -221,7 +221,7 @@ describe("invites", () => {
     await referrals.ensureCode(ALICE);
     await referrals.bind({ invitee: BOB, referrer: ALICE, code: "AAAA2222" });
     clock.now = LATER;
-    // A transfer that did not go through HaPaPay's fee: SP for Bob and Alice's SP share, but no USDC for Alice.
+    // A transfer that did not go through ElysaPay's fee: SP for Bob and Alice's SP share, but no USDC for Alice.
     await sp.awardPayment(payment({ amount: usdc("50"), fee: undefined, sourceKey: "solana:plain:0", counterparty: getAddress("0x5555555555555555555555555555555555555555") }));
     assert.equal((await referrals.feeTotals(ALICE)).earned, 0n, "no fee, no reward");
     assert.equal((await repository.entryBySource("solana:plain:0"))?.feeUsdUnits, null);

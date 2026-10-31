@@ -29,7 +29,7 @@ import type { StockClaimPlatform } from "./stock-claims.js";
 import type { VaultLock } from "./vault-lock.js";
 
 /**
- * HaPaPay's Solana vault program (programs/hapapay-vault, security revision 1): the Solana counterpart of the
+ * ElysaPay's Solana vault program (programs/hapapay-vault, security revision 1): the Solana counterpart of the
  * StockClaimEscrow contract. These are its accounts, instructions and the claim attestation, shared by the server,
  * which prepares unsigned transactions, and the browser, which rebuilds them from the review before the wallet opens.
  */

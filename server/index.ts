@@ -1,4 +1,5 @@
 import { createApp } from "./app.js";
+import { ElysiumService } from "./elysium-service.js";
 import { WalletAuthService } from "./wallet-auth.js";
 import { DiscordOAuthProvider, GitHubOAuthProvider, TelegramBotTokenCheck, XOAuthProvider } from "./social-providers.js";
 import { OAuthFlowStore } from "./oauth-flow-store.js";
@@ -580,6 +581,11 @@ export async function bootApplication(mode: "local" | "vercel") {
       cronSecret: process.env.CRON_SECRET?.trim() || undefined,
       database: identityStoreKind,
     },
+    elysium: new ElysiumService({
+      settings: adminSettingsRepository,
+      resolve: (platform, username) => identities.resolve(platform, username),
+      environment: { ELYSIUM_TESTNET_RPC_URL: process.env.ELYSIUM_TESTNET_RPC_URL, ELYSIUM_MAINNET_RPC_URL: process.env.ELYSIUM_MAINNET_RPC_URL },
+    }),
     privyAppId: privyAppId(process.env.PRIVY_APP_ID),
     vercelIngress: mode === "vercel",
     trustProxy: mode === "local" ? readTrustProxy({ TRUST_PROXY: process.env.TRUST_PROXY }) : undefined,
@@ -616,13 +622,13 @@ function safeAttestorAddress(value: string | undefined) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   bootApplication("local").then(({ app, close }) => {
-    const ready = () => console.log("HaPaPay API listening on http://localhost:8787");
+    const ready = () => console.log("ElysaPay API listening on http://localhost:8787");
     // A development server answers this machine only; production (the container) listens on every interface.
     const listener = process.env.NODE_ENV === "production" ? app.listen(8787, ready) : app.listen(8787, "127.0.0.1", ready);
     process.once("SIGTERM", () => listener.close(() => { void close(); }));
     process.once("SIGINT", () => listener.close(() => { void close(); }));
   }).catch((error) => {
-    console.error("HaPaPay failed to start", error);
+    console.error("ElysaPay failed to start", error);
     process.exitCode = 1;
   });
 }

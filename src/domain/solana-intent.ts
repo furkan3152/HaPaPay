@@ -48,7 +48,7 @@ export type SolanaAmountReading =
 
 /**
  * The Solana asset a written word names, or undefined: USDC, USDG, an xStock (TSLAx) or its ticker (TSLA), or SOL, which
- * is read only so that a request for it is told HaPaPay does not send it.
+ * is read only so that a request for it is told ElysaPay does not send it.
  */
 export function solanaAssetWord(word: string, cashtag = false) {
   return assetOf(word, cashtag);
@@ -114,7 +114,7 @@ export function readSolanaAmount(text: string): SolanaAmountReading {
     }
   }
   if (!found.size) return { status: "none" };
-  // HaPaPay does not send SOL; a request that writes an amount of it is told so.
+  // ElysaPay does not send SOL; a request that writes an amount of it is told so.
   if ([...found.values()].some(({ asset }) => asset.symbol === "SOL")) return { status: "invalid", message: NO_SOL_SENDING, final: true };
   const assets = new Set([...found.values()].map(({ asset }) => asset.symbol));
   if (assets.size > 1) {

@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 type Dot = readonly [number, number, number];
 
 /**
- * The HaPaPay swallow as a halftone in a 24-unit box: x, y and radius of each dot. The dots fill the swallow's outline on
+ * The ElysaPay swallow as a halftone in a 24-unit box: x, y and radius of each dot. The dots fill the swallow's outline on
  * a lattice turned to its spine (-42 degrees); they are fullest deep in the body near the shoulder and shrink toward the
  * edges and the tips of the wing and the forked tail, and the eye is a gap in the head's dots. The raised wing is its own
  * set so it can flap. The dots stay apart at the mark's small sizes.
@@ -72,7 +72,7 @@ const wing = WING.map((point, index) => dot(point, index));
 const body = BODY.map((point, index) => dot(point, WING.length + index));
 
 /**
- * The HaPaPay mark: the dotted bird on a tile. In the header its dots gather into the bird when the page opens, and
+ * The ElysaPay mark: the dotted bird on a tile. In the header its dots gather into the bird when the page opens, and
  * hovering the brand makes the wing flap: the wing folds across the line where it meets the body (at -42 degrees) at the
  * shoulder (14.6, 9.4 in the bird's box, 37.42, 26.58 on the tile), which is where `.mark-wing` turns in the style
  * sheet. The small birds that report a sent request, a pending draft and the vault route are this mark without its

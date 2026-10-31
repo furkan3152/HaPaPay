@@ -15,7 +15,7 @@ export function PaymentConversation({ conversation, status, onSuggestion, busy =
     <ol className="conversation-messages" aria-label="Payment conversation">
       {conversation.turns.map((turn) => <li className="conversation-turn" key={turn.id}>
         <div className="message message-user"><span className="message-author">You</span><p>{turn.request}</p></div>
-        {turn.reply && <div className="message message-assistant"><span className="message-author">HaPaPay</span><p>{turn.reply}</p>
+        {turn.reply && <div className="message message-assistant"><span className="message-author">ElysaPay</span><p>{turn.reply}</p>
           {onSuggestion && turn === lastTurn && turn.suggestions?.length ? <div className="message-suggestions" role="group" aria-label="Send one of these instead">
             {turn.suggestions.map((suggestion) => <button type="button" key={suggestion} disabled={busy} onClick={() => onSuggestion(suggestion)}>{suggestion}</button>)}
           </div> : null}
@@ -23,11 +23,11 @@ export function PaymentConversation({ conversation, status, onSuggestion, busy =
       </li>)}
     </ol>
     {conversation.pendingId !== undefined && <div className="message message-assistant message-pending" role="status">
-      <span className="message-author">HaPaPay</span>
+      <span className="message-author">ElysaPay</span>
       <p><span className="pending-bird" aria-hidden="true"><BrandMark /></span> Preparing your draft</p>
     </div>}
     {showStatus && <div className="message message-assistant message-status" role="status">
-      <span className="message-author">HaPaPay</span><p>{status}</p>
+      <span className="message-author">ElysaPay</span><p>{status}</p>
     </div>}
     <span className="conversation-announcement" role="status">{conversation.pendingId === undefined ? lastTurn?.reply : ""}</span>
   </div>;
@@ -53,7 +53,7 @@ export function SlipStatus({ conversation, status }: { conversation: Conversatio
   if (!shown) return null;
   return <div className="payment-conversation slip-status" ref={ref}>
     <div className="message message-assistant message-status" role="status" aria-live="polite">
-      <span className="message-author">HaPaPay</span><p>{status}</p>
+      <span className="message-author">ElysaPay</span><p>{status}</p>
     </div>
   </div>;
 }

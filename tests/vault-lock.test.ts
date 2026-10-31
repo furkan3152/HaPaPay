@@ -127,7 +127,7 @@ describe("vault recipients", () => {
     assert.equal(anyClaimsLink([solana, ali], "discord:name:ali", keyFor, madeAt), true);
     assert.equal(anyClaimsLink([solana], "solana:name:ali", keyFor, madeAt), false, "only vault platforms claim");
     assert.deepEqual(identityKeysOf(ali, keyFor), [`discord:${ali.providerUserId}`, "discord:name:ali"]);
-    assert.match(notTheNameHolder("discord", "ali"), /^This link waits for the Discord name @ali\. Connect Discord to HaPaPay with the account that has that name now \(connect it again if it is connected already\); an account made after the link cannot claim it\.$/);
-    assert.match(notTheNameHolder("telegram", "durov"), /^This link waits for the Telegram name @durov\. Connect Telegram to HaPaPay with the account that has that name now \(connect it again if it is connected already\)\.$/);
+    assert.match(notTheNameHolder("discord", "ali"), /^This link waits for the Discord name @ali\. Connect Discord to ElysaPay with the account that has that name now \(connect it again if it is connected already\); an account made after the link cannot claim it\.$/);
+    assert.match(notTheNameHolder("telegram", "durov"), /^This link waits for the Telegram name @durov\. Connect Telegram to ElysaPay with the account that has that name now \(connect it again if it is connected already\)\.$/);
   });
 });

@@ -195,7 +195,7 @@ describe("Arc social identity and claimable payment lifecycles on a real EVM", (
 
     // Neither Discord nor a refusing X is ever asked: the link waits for the name.
     const asked: string[] = [];
-    const directory = { lookup: async (platform: string, username: string): Promise<never> => { asked.push(`${platform}:${username}`); throw new RecipientLookupUnavailableError("X is not answering account lookups for HaPaPay right now."); } };
+    const directory = { lookup: async (platform: string, username: string): Promise<never> => { asked.push(`${platform}:${username}`); throw new RecipientLookupUnavailableError("X is not answering account lookups for ElysaPay right now."); } };
     const baseTimestamp = (await publicClient.getBlock()).timestamp;
     const madeAt = Number(baseTimestamp) * 1000;
     const funding = new ClaimablePaymentService({ usdc: token, escrow, fees, client: { readContract: (call: never) => publicClient.readContract(call) } as never, chainName: chain.name, directory, now: () => new Date(madeAt) });

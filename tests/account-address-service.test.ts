@@ -20,13 +20,13 @@ async function solanaWallet() {
   return { address, sign: async (message: string) => getBase58Decoder().decode(await signBytes(keys.privateKey, new TextEncoder().encode(message))) };
 }
 
-describe("a Solana address on a HaPaPay account", () => {
+describe("a Solana address on a ElysaPay account", () => {
   it("is added only with that Solana wallet's signature of a one-time message naming the account and the address", async () => {
     let now = new Date("2026-10-04T12:00:00Z");
     const service = new AccountAddressService({ domain: "hapapay.example", repository: new MemoryAccountAddressRepository(), now: () => now });
     const solana = await solanaWallet();
     const challenge = await service.createSolanaChallenge(walletA, solana.address);
-    assert.match(challenge.message, /^hapapay\.example wants to add a Solana address to your HaPaPay wallet\n\nWallet: 0x0{38}[aA]1\nSolana address: /);
+    assert.match(challenge.message, /^hapapay\.example wants to add a Solana address to your ElysaPay wallet\n\nWallet: 0x0{38}[aA]1\nSolana address: /);
     assert.match(challenge.message, /This request does not move funds\.$/);
     const other = await solanaWallet();
     await assert.rejects(async () => service.verifySolana(walletA, { challengeId: challenge.id, signature: await other.sign(challenge.message), freshSession: true }), /does not match/);

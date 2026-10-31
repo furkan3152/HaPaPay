@@ -171,7 +171,7 @@ describe("wallet disconnect and provider sign-ins that say why they did not link
     telegramTokenRefused = true;
     const refused = await verify(signed(login, otherToken));
     assert.equal(refused.status, 503);
-    assert.deepEqual(await refused.json(), { error: "Telegram refused HaPaPay's bot token, so nothing was linked.", reason: "setup" });
+    assert.deepEqual(await refused.json(), { error: "Telegram refused ElysaPay's bot token, so nothing was linked.", reason: "setup" });
     telegramTokenRefused = false;
     // A login without a hash is a signature that does not match, not a server error.
     const { hash: _hash, ...unsigned } = signed(login, otherToken);
@@ -186,7 +186,7 @@ describe("wallet disconnect and provider sign-ins that say why they did not link
   });
 });
 
-describe("identity links live on HaPaPay's servers", () => {
+describe("identity links live on ElysaPay's servers", () => {
   it("offers no onchain record: no registry routes, and Remove answers from the database alone", async () => {
     const identities = new VerifiedIdentityService();
     const app = createApp({

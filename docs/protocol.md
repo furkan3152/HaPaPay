@@ -1,6 +1,6 @@
 # Protocol
 
-The on-chain side of HaPaPay is small on purpose: a fee router, a vault escrow and two fee sinks on the EVM networks,
+The on-chain side of ElysaPay is small on purpose: a fee router, a vault escrow and two fee sinks on the EVM networks,
 and one native program on Solana. None of them knows about social platforms. They know payments, identity keys and
 signatures from a configured attestor; the meaning of a handle stays off chain, where the official sign-ins are.
 
@@ -53,7 +53,7 @@ treasury, checking the exact balance change of every leg, so fee-on-transfer and
 It refuses a zero amount, a token without code, and paying oneself. `paymentRef` ties the receipt to the reviewed
 draft; the server records a payment only from the matching `Paid` event and the exact `Transfer` logs.
 
-A note travels as bytes appended after `pay`'s arguments (`HaPaPay note: <text>`, at most 140 characters). The
+A note travels as bytes appended after `pay`'s arguments (`ElysaPay note: <text>`, at most 140 characters). The
 router ignores them; the browser accepts the call only if those bytes are exactly the reviewed note.
 
 ## StockClaimEscrow

@@ -1,4 +1,4 @@
-/* Home: what HaPaPay is and the way into the desk, as cards on the dotted desk. The headings use the dot-matrix face
+/* Home: what ElysaPay is and the way into the desk, as cards on the dotted desk. The headings use the dot-matrix face
    from the shared rule in styles.css. */
 .home { width: 100%; max-width: 1200px; margin: 0 auto; padding: 4px 20px 8px; display: grid; gap: 20px; }
 .home-hero { min-height: min(600px, calc(100dvh - 92px)); display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 20px; }
@@ -54,7 +54,7 @@
 .home-route > .dot-text:nth-of-type(2) { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 .home-route i { flex: 1; min-width: 18px; height: 4px; background: radial-gradient(circle, var(--accent-text) 1.4px, transparent 1.9px) 0 50% / 8px 4px repeat-x; animation: route-flow 1.2s linear 3; }
 
-.home-assets { margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; }
+.home-assets { margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; list-style: none; }
 .home-assets strong { color: var(--accent-text); font-size: 17px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
 
 .home-trust { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 1fr); column-gap: 32px; align-items: start; }
@@ -91,3 +91,33 @@
   .home-copy, .home-art, .home-section, .home-route i { animation: none; }
   .home-card, .home-card:hover, .home-card > .dot-arrow { transform: none; }
 }
+
+/* Built for Elysium: the chain's facts in dot-matrix figures, the HYPE mid, and the mainnet countdown in gold. */
+.home-elysium { position: relative; }
+.home-elysium-head { display: grid; gap: 12px; max-width: 760px; }
+.home-elysium-head > p { margin: 0; color: var(--slate); font-size: 16px; line-height: 1.6; }
+.home-hype { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; font: 500 14px var(--font-mono); }
+.home-hype b { color: var(--elysium-mint); font-size: 20px; }
+.home-hype i { font-style: normal; color: var(--elysium-mint); }
+.home-hype i[data-up='false'] { color: var(--red); }
+.home-hype small { color: var(--muted); font-size: 11.5px; }
+.home-facts { margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; list-style: none; }
+.home-facts li { position: relative; overflow: hidden; min-width: 0; padding: 20px; display: grid; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--card); transition: transform .3s var(--ease-out), border-color .3s; }
+.home-facts li::after { content: ''; position: absolute; inset: auto -30% -60% auto; width: 160px; height: 160px; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb, var(--elysium-mint) 55%, transparent) 1.2px, transparent 1.8px) 0 0 / 10px 10px; -webkit-mask-image: linear-gradient(135deg, transparent 20%, #000 75%); mask-image: linear-gradient(135deg, transparent 20%, #000 75%); opacity: .45; transition: opacity .3s, transform .6s var(--ease-out); }
+.home-facts li:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--elysium-mint) 45%, var(--line)); }
+.home-facts li:hover::after { opacity: .9; transform: scale(1.2) rotate(8deg); }
+.home-facts strong { white-space: nowrap; color: var(--elysium-mint); font: 900 34px var(--font-display); font-variation-settings: "ROND" 100; line-height: 1; }
+.home-facts b { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--slate); }
+.home-facts li > span { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.home-launch { margin-top: 16px; padding: 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; background:
+  radial-gradient(circle, color-mix(in srgb, var(--elysium-gold) 30%, transparent) 1px, transparent 1.6px) 0 0 / 12px 12px, var(--panel);
+  border: 1px solid color-mix(in srgb, var(--elysium-gold) 35%, var(--line)); border-radius: var(--card); }
+.home-launch h3 { margin: 0; color: var(--elysium-gold); font: 900 22px var(--font-display); font-variation-settings: "ROND" 100; letter-spacing: .06em; text-transform: uppercase; }
+.home-launch p { margin: 6px 0 0; max-width: 420px; color: var(--slate); line-height: 1.55; }
+.home-clock { display: flex; gap: 14px; }
+.home-clock > span { display: grid; justify-items: center; gap: 4px; min-width: 64px; }
+.home-clock .dot-text { color: var(--elysium-gold); font: 900 44px var(--font-display); font-variation-settings: "ROND" 100; font-variant-numeric: tabular-nums; line-height: 1; }
+.home-clock small { color: var(--muted); font: 600 11px var(--font-mono); text-transform: uppercase; letter-spacing: .12em; }
+.home-launch-done { margin: 0; color: var(--elysium-gold); font-weight: 600; }
+@media (max-width: 560px) { .home-clock .dot-text { font-size: 32px; } .home-clock > span { min-width: 48px; } }
+@media (prefers-reduced-motion: reduce) { .home-facts li, .home-facts li::after { transition: none; } .home-facts li:hover { transform: none; } }

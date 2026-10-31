@@ -109,7 +109,7 @@ describe("Solana transfers on a local validator with the mainnet mints", { timeo
     assert.equal(tsla.payments[0].units, "25000000");
   });
 
-  it("prepares no SOL payment: HaPaPay sends stablecoins and stocks", async (t) => {
+  it("prepares no SOL payment: ElysaPay sends stablecoins and stocks", async (t) => {
     if (!validator) return t.skip("solana-test-validator is not installed");
     // The route refuses SOL, and the service does too.
     await assert.rejects(

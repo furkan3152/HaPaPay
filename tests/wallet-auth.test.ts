@@ -44,7 +44,7 @@ describe("wallet authentication seam", () => {
       "hapapay.example wants you to sign in with your Ethereum account:",
       account.address,
       "",
-      "Sign in to HaPaPay to link verified social accounts to this wallet. This request does not move funds.",
+      "Sign in to ElysaPay to link verified social accounts to this wallet. This request does not move funds.",
       "",
       "URI: https://hapapay.example",
       "Version: 1",

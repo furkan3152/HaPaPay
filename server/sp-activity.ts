@@ -79,7 +79,7 @@ export type SpClaimReport = {
 const robinhoodAssetClass = (kind: StockTokenKind): SpAssetClass => kind === "cash" ? "stable" : kind === "stock" || kind === "etf" ? "stock" : "crypto";
 
 /**
- * Finds what an account did through HaPaPay and awards its SP: payments it sent on
+ * Finds what an account did through ElysaPay and awards its SP: payments it sent on
  * Solana, Arc and Robinhood Chain mainnet, vault links claimed (for the claimer and for the sender), its linked
  * accounts and its Solana address. Every award is keyed by what earned it, so this can run any number of times and
  * each payment, link and bonus earns once. The desk runs it whenever it shows the balance; admins run it for everyone.
@@ -262,7 +262,7 @@ export class SpActivity {
 
   /**
    * Joins this account to the person whose invite code it brings, once and for good. Only
-   * an account that has not yet paid anyone or funded a vault link through HaPaPay can join, never with its own
+   * an account that has not yet paid anyone or funded a vault link through ElysaPay can join, never with its own
    * code or with the code of someone it invited.
    */
   async joinWithCode(walletInput: string, codeInput: unknown): Promise<ReferralJoinStatus> {
@@ -281,7 +281,7 @@ export class SpActivity {
     return binding.referrer === referrer ? "joined" : "already";
   }
 
-  /** New to invites: no payment sent and no vault link funded through HaPaPay on any mainnet. */
+  /** New to invites: no payment sent and no vault link funded through ElysaPay on any mainnet. */
   private async isNew(wallet: Address) {
     if ((await this.payments(wallet)).length) return false;
     for (const vault of this.vaults) if ((await vault.fundedBy(wallet, 1)).length) return false;
@@ -369,7 +369,7 @@ export class SpActivity {
     const paymentId = input.paymentId.toLowerCase();
     const record = await vault.get(input.paymentId) ?? (paymentId !== input.paymentId ? await vault.get(paymentId) : undefined);
     const link = record === undefined ? undefined : vault.view(record);
-    if (!link) throw new SpRequestError("HaPaPay has no record of this vault link.");
+    if (!link) throw new SpRequestError("ElysaPay has no record of this vault link.");
     const claimTransaction = vault.evm && input.transaction && /^0x[0-9a-fA-F]{64}$/.test(input.transaction) ? input.transaction as Hex : undefined;
     if ((await this.options.sp.repository.sourceKeys([`claim:${link.link}`])).size) return { status: "already", awarded: 0 };
     const settlement = await vault.settle(link.record, { claimTransaction, candidates: [{ wallet, accounts: await this.verifiedAccounts(wallet) }, ...await this.holder(link)] });

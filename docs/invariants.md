@@ -50,7 +50,7 @@ needs to break one, update this file, [decisions.md](decisions.md) and [security
 - Stock amounts never pass through the six-decimal USDC paths, and USDC never reaches a stock path.
 - Chain parameters are code constants. Environment values can only point the server at an RPC, which must report the
   expected chain ID or genesis hash before anything is prepared.
-- HaPaPay sends stablecoins and stocks, not SOL; SOL is read only for network fees, rent and holdings.
+- ElysaPay sends stablecoins and stocks, not SOL; SOL is read only for network fees, rent and holdings.
 - The intent engine never guesses: anything ambiguous or missing gets one question.
 
 ## Vaults and contracts

@@ -389,7 +389,7 @@ export function readStockAsset(
     }
     if (unknown.size === 0 || usdcMentioned) return { status: "none" };
     const [symbol] = unknown;
-    return { status: "invalid", message: `${symbol} isn't on the verified token list. HaPaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens.${available}` };
+    return { status: "invalid", message: `${symbol} isn't on the verified token list. ElysaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens.${available}` };
   }
   if (usdcMentioned) return { status: "invalid", message: "Send one asset at a time: either USDC or a single listed token." };
   if (mentions.size > 1) return { status: "invalid", message: "Send one token at a time." };

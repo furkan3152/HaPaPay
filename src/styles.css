@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Doto:ROND,wght@0..100,100..900&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-/* HaPaPay: a payments desk drawn in dots. Two cards sit on a dotted desk: the payment column with the dot hero, and
+/* ElysaPay: a payments desk for Elysium, drawn in dots. The Elysian palette is deep night with mint (Elysium's
+   HYPE-native accent) and a pale gold for launches and rewards; the dot mechanics, type and shapes are unchanged.
+   ElysaPay was ElysaPay: a payments desk drawn in dots. Two cards sit on a dotted desk: the payment column with the dot hero, and
    one side panel with tabs. Display type is Doto, a dot-matrix face, so headings, amounts and labels are made of the
    same dots as the hero; text is Space Grotesk and technical strings IBM Plex Mono. Buttons are one family of pills:
    primary pills are the accent drawn as a panel of dots, secondary pills are dark with a hairline ring, and under the
@@ -16,24 +18,24 @@
   --font-display: "Doto", "Space Grotesk", ui-monospace, monospace;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-family: var(--font-text);
-  color: #EDEFF2;
-  background: #0B0C0E;
+  color: #EAF2F4;
+  background: #06090E;
   font-synthesis: none;
   font-variation-settings: "ROND" 100;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  --ink: #EDEFF2;
-  --slate: #C3C8CF;
-  --muted: #8E959F;
-  --canvas: #0B0C0E;
-  --panel: #121417;
-  --paper: #181B1F;
-  --rail: #1A1D22;
-  --raised: #262A31;
-  --line: #24282E;
-  --line-strong: #353A42;
-  --desk-dot: #1C2026;
+  --ink: #EAF2F4;
+  --slate: #B8C7CF;
+  --muted: #8496A3;
+  --canvas: #06090E;
+  --panel: #0C1118;
+  --paper: #111821;
+  --rail: #101721;
+  --raised: #1A2430;
+  --line: #1A2431;
+  --line-strong: #2A3747;
+  --desk-dot: #142030;
   --accent: #4F63F5;
   --accent-text: #8E9BFF;
   --accent-soft: #1B2042;
@@ -50,7 +52,7 @@
   --disabled: #1E2126;
   --disabled-text: #8A9099;
   --gold-text: #F0C063;
-  --mark-tile: #1A1D22;
+  --mark-tile: #101721;
   --shadow-1: 0 1px 2px rgba(0, 0, 0, .45);
   --shadow-2: 0 10px 30px rgba(0, 0, 0, .3);
   --shadow-3: 0 24px 64px rgba(0, 0, 0, .6);
@@ -60,6 +62,10 @@
   --r-field: 12px;
   --r-control: 10px;
   --r-badge: 6px;
+  /* Elysium: mint for the network and HYPE, gold for the launch and rewards, violet for the night sky. */
+  --elysium-mint: #5CF2C9;
+  --elysium-gold: #E8C477;
+  --elysium-violet: #8B7CFF;
   --ease-out: cubic-bezier(.2, .8, .2, 1);
   --ease-in-out: cubic-bezier(.65, 0, .35, 1);
 }
@@ -98,6 +104,24 @@
   --shadow-1: 0 1px 2px rgba(0, 0, 0, .06);
   --shadow-2: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px rgba(0, 0, 0, .06);
   --shadow-3: 0 20px 60px rgba(0, 0, 0, .18);
+  --elysium-mint: #00866A;
+  --elysium-gold: #8A5A00;
+  --elysium-violet: #5B4BE0;
+}
+/* Elysium is the main network: the desk wears Elysian mint. */
+.shell[data-network-theme='elysium'],
+.payment-slip[data-network-theme='elysium'] {
+  --accent: #5CF2C9;
+  --accent-text: #7DF7D6;
+  --accent-soft: #0B2A25;
+  --on-accent: #03130F;
+}
+:root[data-theme='light'] .shell[data-network-theme='elysium'],
+:root[data-theme='light'] .payment-slip[data-network-theme='elysium'] {
+  --accent: #34D9B0;
+  --accent-text: #00745B;
+  --accent-soft: #DDF8F0;
+  --on-accent: #03130F;
 }
 .shell[data-network-theme='robinhood'] {
   --accent: #CCFF00;
@@ -178,6 +202,20 @@ code, kbd { font-family: var(--font-mono); }
 
 /* The desk: a quiet grid of dots under the cards. */
 .shell { position: relative; isolation: isolate; overflow: clip; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); background: radial-gradient(circle, var(--desk-dot) 1.1px, transparent 1.7px) 0 0 / 18px 18px, var(--canvas); transition: --accent .45s var(--ease-out), --accent-text .45s var(--ease-out), --accent-soft .45s var(--ease-out); }
+/* Elysian sky: a slow aurora that is itself made of dots. The desk's own lattice lights up in mint inside a soft band
+   that drifts across the page, so nothing glows and nothing is drawn that is not a dot. It carries no state and stops
+   under reduced motion, with the pause control, in high contrast and in print. */
+.shell::before { content: ''; position: absolute; inset: 0 0 auto; z-index: -2; height: 140vh; pointer-events: none; opacity: .5;
+  background: radial-gradient(circle, color-mix(in srgb, var(--elysium-mint) 55%, transparent) 1.1px, transparent 1.7px) 0 0 / 18px 18px;
+  -webkit-mask-image: linear-gradient(118deg, transparent 18%, #000 38%, transparent 52%, #000 66%, transparent 82%), linear-gradient(180deg, #000, transparent 70%);
+  mask-image: linear-gradient(118deg, transparent 18%, #000 38%, transparent 52%, #000 66%, transparent 82%), linear-gradient(180deg, #000, transparent 70%);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  -webkit-mask-size: 260% 100%, 100% 100%; mask-size: 260% 100%, 100% 100%;
+  /* The band's place comes from --sky, which the desk moves slowly while ambient motion is on (App.tsx). */
+  -webkit-mask-position: var(--sky, 30%) 0, 0 0; mask-position: var(--sky, 30%) 0, 0 0; }
+:root[data-theme='light'] .shell::before { opacity: .35; }
+.sound-toggles { display: inline-flex; gap: 2px; }
+.sound-toggles .theme-toggle[aria-pressed='true'] { color: var(--accent-text); }
 /* Under a mouse or trackpad the desk's own dots light up in the accent around the pointer, behind the cards. */
 .desk-lens { position: absolute; left: 0; top: 0; z-index: -1; width: 280px; height: 280px; pointer-events: none; opacity: 0; background: radial-gradient(circle, color-mix(in srgb, var(--accent-text) 85%, transparent) 1.5px, transparent 2.1px) 0 0 / 18px 18px; -webkit-mask-image: radial-gradient(140px circle at var(--px, 50%) var(--py, 50%), #000, transparent 70%); mask-image: radial-gradient(140px circle at var(--px, 50%) var(--py, 50%), #000, transparent 70%); transition: opacity .3s; will-change: transform; }
 .desk-lens.on { opacity: .9; }
@@ -230,7 +268,7 @@ code, kbd { font-family: var(--font-mono); }
 :is(button:hover:not(:disabled), a:hover) .dot-arrow circle { animation: dot-run .5s var(--ease-out) both; animation-delay: calc(var(--o) * 55ms); }
 
 /* Header: the brand, Docs and the controls over the dotted desk. */
-.topbar { position: sticky; top: 0; z-index: 40; min-height: 64px; padding: 10px 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 8px; align-items: center; background: color-mix(in srgb, var(--canvas) 82%, transparent); -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px); animation: bar-in .4s var(--ease-out) both; }
+.topbar { position: sticky; top: 0; z-index: 40; min-height: 64px; padding: 10px 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto auto; gap: 8px; align-items: center; background: color-mix(in srgb, var(--canvas) 82%, transparent); -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px); animation: bar-in .4s var(--ease-out) both; }
 .brand { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
 .brand > .dot-text { font-size: 20px; font-weight: 900; line-height: 1; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 .brand-mark { width: 34px; height: 34px; flex: none; }
@@ -257,7 +295,7 @@ code, kbd { font-family: var(--font-mono); }
 .network-pill[aria-expanded='true'] svg { transform: rotate(180deg); }
 .theme-toggle { width: 44px; height: 44px; display: grid; place-items: center; color: var(--slate); }
 .theme-toggle svg { animation: toggle-in .4s var(--ease-out) both; }
-.topbar-home { grid-template-columns: minmax(0, 1fr) auto auto auto; }
+.topbar-home { grid-template-columns: minmax(0, 1fr) auto auto auto auto; }
 .topbar-open { min-height: 44px; padding: 0 18px; font-size: 14px; }
 .wallet-button { min-height: 44px; padding: 0 18px 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-size: 14px; line-height: 1; font-variant-numeric: tabular-nums; }
 .wallet-address { text-transform: none; letter-spacing: .02em; }
@@ -417,7 +455,7 @@ code, kbd { font-family: var(--font-mono); }
 .side-tabs { --tabs-pad: 14px; position: sticky; top: 0; z-index: 3; flex: none; display: grid; grid-template-columns: repeat(var(--tabs, 3), minmax(0, 1fr)); padding: 6px var(--tabs-pad) 0; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 100% / 6px 2px repeat-x, color-mix(in srgb, var(--panel) 94%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 /* The selected tab is underlined by a row of lit dots that slides between tabs. */
 .side-tabs::after { content: ''; position: absolute; left: var(--tabs-pad); bottom: -1px; width: calc((100% - 2 * var(--tabs-pad)) / var(--tabs, 3)); height: 4px; background: radial-gradient(circle, var(--accent-text) 1.4px, transparent 1.9px) 50% 50% / 6px 4px repeat-x; transform: translateX(calc(var(--tab, 0) * 100%)); transition: transform .32s var(--ease-out); }
-.side-tabs button { position: relative; min-width: 0; min-height: 52px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted); background: transparent; border: 0; font-size: 13.5px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; transition: color .2s; }
+.side-tabs button { position: relative; min-width: 0; min-height: 52px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted); background: transparent; border: 0; font-size: 12.5px; font-weight: 900; letter-spacing: .01em; text-transform: uppercase; white-space: nowrap; transition: color .2s; }
 .side-tabs button:hover { color: var(--slate); }
 .side-tabs button[aria-selected='true'] { color: var(--accent-text); }
 .side-tabs button:focus-visible { outline-offset: -4px; border-radius: 12px; }
@@ -610,7 +648,7 @@ code, kbd { font-family: var(--font-mono); }
 /* One column: the payment card, then the side panel card; the page scrolls as a whole. */
 @media (max-width: 1050px) {
   .topbar { grid-template-columns: minmax(0, 1fr) auto auto auto; }
-  .topbar-home { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .topbar-home { grid-template-columns: minmax(0, 1fr) auto auto auto; }
   .primary-nav { grid-column: 1/-1; grid-row: 2; justify-content: center; overflow-x: auto; scrollbar-width: none; }
   .primary-nav .nav-panel { display: inline-flex; }
   .workspace { height: auto; min-height: 0; padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 14px; }
@@ -628,22 +666,27 @@ code, kbd { font-family: var(--font-mono); }
 
 @media (max-width: 760px) {
   :root { --card: 18px; }
-  .topbar { position: relative; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; padding: 10px 12px; }
+  .topbar { position: relative; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; padding: 10px 12px; }
+  .sound-toggles { grid-column: 2; grid-row: 1; }
+  .sound-toggles .theme-toggle { width: 36px; }
+  .sound-toggles .theme-toggle + .theme-toggle { display: none; }
+  .sound-toggles .theme-toggle, .topbar > .theme-toggle { width: 36px; }
   .brand { gap: 9px; }
   .brand-mark { width: 30px; height: 30px; }
   .brand > .dot-text { font-size: 15px; letter-spacing: .05em; }
-  .primary-nav { grid-column: 1/-1; grid-row: 3; width: 100%; justify-content: space-between; }
+  .primary-nav { grid-column: 1/-1; grid-row: 3; width: 100%; justify-content: space-between; overflow-x: auto; scrollbar-width: none; }
+  .primary-nav > * { flex-shrink: 0; }
   .primary-nav > * { flex: 1; justify-content: center; padding-inline: 6px; }
   .primary-nav a[aria-current='page']::after { left: 25%; right: 25%; }
   .network-menu-wrap { grid-column: 1/-1; grid-row: 2; justify-self: stretch; }
   .network-pill { width: 100%; justify-content: center; }
-  .theme-toggle { grid-column: 2; grid-row: 1; }
+  .topbar > .theme-toggle { grid-column: 3; grid-row: 1; }
   /* Dot-matrix capitals run wide: the wallet button tightens so the brand keeps its room. */
-  .wallet-button { grid-column: 3; grid-row: 1; padding: 0 12px; gap: 7px; font-size: 12px; letter-spacing: .03em; }
+  .wallet-button { grid-column: 4; grid-row: 1; padding: 0 12px; gap: 7px; font-size: 12px; letter-spacing: .03em; }
   .wallet-button .dot-icon { width: 15px; height: 15px; }
   .topbar-home .primary-nav { grid-row: 2; justify-content: center; }
   .topbar-home .primary-nav > * { flex: 0 1 auto; padding-inline: 14px; }
-  .topbar-open { grid-column: 3; grid-row: 1; padding: 0 14px; font-size: 13.5px; }
+  .topbar-open { grid-column: 4; grid-row: 1; padding: 0 14px; font-size: 13.5px; }
   .network-popover { left: 0; right: auto; transform-origin: top left; }
   .workspace { padding: 2px 8px 8px; gap: 8px; }
   .chat-stage { padding: 18px 14px 20px; }
@@ -709,12 +752,14 @@ code, kbd { font-family: var(--font-mono); }
 }
 
 @media print {
+  .shell::before { display: none; }
   :is(.home-lead, .home-section > p, .home-section > div > p, .home-card > span:not(.dot-text), .docs-hero p, .docs-section > p, .docs-section li) { animation: none; }
 }
 
 @media (forced-colors: active) {
   .decode-live { display: none; }
   .decode-size { visibility: visible; }
+  .shell::before { display: none; }
   .dot-char { color: inherit; transform: none; }
   .dot-burst { display: none; }
 }

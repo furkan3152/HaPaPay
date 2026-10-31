@@ -47,6 +47,7 @@ import { SpMark } from "./components/SpMark";
 import { formatSp, type SpEntry, type SpRules } from "./domain/sp";
 import { SP_EVENT, reportSpClaim, retrySpClaimReports } from "./sp-desk";
 import { joinWithPendingInvite, readReferral, type ReferralSummary } from "./referral-desk";
+import { onSoundChange, setSound, setVoice, soundEnabled, voiceAvailable, voiceEnabled } from "./sound";
 import { DESK_FEATURES, isDeskFeature, type DeskControlsView, type DeskFeature, type DeskPause } from "./domain/desk-controls";
 
 // The operator console carries the escrow's creation code, so it loads only on its own page.
@@ -63,6 +64,8 @@ const SolanaOperator = lazy(() => import("./components/SolanaOperator"));
 // /api/providers, and mounts it once the server names a Privy app; the lazy component reuses that download.
 const loadPrivyBridge = () => import("./wallet/PrivyBridge");
 const PrivyBridge = lazy(loadPrivyBridge);
+// Elysium's panel (HYPE payments, the chain's pulse, Hyperliquid's tape) loads with the desk's side panel.
+const ElysiumPanel = lazy(() => import("./components/ElysiumPanel"));
 // The admin panel loads only on its own page.
 const AdminPage = lazy(() => import("./components/AdminPage"));
 const ADMIN_PATH = /^\/admin\/?$/;
@@ -209,8 +212,8 @@ function linkFailureMessage(provider: string, reason: string | null) {
     case "denied": return `${name} sign-in was cancelled. Nothing was linked.`;
     case "expired": return `That ${name} sign-in expired or was already used. Connect ${name} again.`;
     case "taken": return `This ${name} account is already linked to another wallet. Verify that wallet and remove ${name} there, then connect it here.`;
-    case "setup": return `${name} refused HaPaPay's sign-in settings, so nothing was linked. This is a site setting, not your account: the operator needs to check ${provider === "telegram" ? "the Telegram bot token" : `the ${name} app's client secret and callback URL`}.`;
-    case "access": return `${name} signed you in but would not tell HaPaPay which account it is, so nothing was linked. This is the site's ${name} developer access, not your account: the operator needs to restore it. Try again later.`;
+    case "setup": return `${name} refused ElysaPay's sign-in settings, so nothing was linked. This is a site setting, not your account: the operator needs to check ${provider === "telegram" ? "the Telegram bot token" : `the ${name} app's client secret and callback URL`}.`;
+    case "access": return `${name} signed you in but would not tell ElysaPay which account it is, so nothing was linked. This is the site's ${name} developer access, not your account: the operator needs to restore it. Try again later.`;
     default: return `${name} did not confirm the account, so nothing was linked. Try again in a moment.`;
   }
 }
@@ -294,7 +297,7 @@ const allowlisted: Record<StockNetworkId, Set<string>> = {
   "robinhood-testnet": new Set(ROBINHOOD_ASSET_ALLOWLISTS["robinhood-testnet"].tokens.map((token) => `${token.symbol}:${token.address}`)),
 };
 const initialStockSnapshot = (network: StockNetworkId) => stockTokenCatalog(network, ROBINHOOD_ASSET_ALLOWLISTS[network].tokens, ROBINHOOD_ASSET_ALLOWLISTS[network].verifiedOn);
-const SIDE_TAB_LABELS = { stocks: "Stocks", activity: "Activity", claims: "Claims", sp: "SP", identities: "Identities" } as const;
+const SIDE_TAB_LABELS = { elysium: "Elysium", stocks: "Stocks", activity: "Activity", claims: "Claims", sp: "SP", identities: "Identities" } as const;
 type SideTab = keyof typeof SIDE_TAB_LABELS;
 const THEME_KEY = "hapapay-theme";
 const MOTION_KEY = "hapapay-motion";
@@ -315,7 +318,7 @@ function assetNoun(asset: { kind: StockTokenKind; symbol: string }, testAssets: 
 function FeeFacts({ fees, units, decimals, symbol, recipient, amount, when }: { fees: FeeSchedule; units: string; decimals: number; symbol: string; recipient: string; amount: string; when: "now" | "claim" }) {
   const fee = platformFee(BigInt(units));
   return <>
-    <div><dt>Fee</dt><dd>{formatUnits(fee, decimals)} {symbol} · {platformFeePercent(fees.feeBps)}<small>{when === "claim" ? `Paid only when @${recipient} claims it and returned with a refund. ` : ""}{fees.sink === "forwarder" ? "Goes to HaPaPay" : "Half goes to the burn vault, half to HaPaPay"}</small></dd></div>
+    <div><dt>Fee</dt><dd>{formatUnits(fee, decimals)} {symbol} · {platformFeePercent(fees.feeBps)}<small>{when === "claim" ? `Paid only when @${recipient} claims it and returned with a refund. ` : ""}{fees.sink === "forwarder" ? "Goes to ElysaPay" : "Half goes to the burn vault, half to ElysaPay"}</small></dd></div>
     <div><dt>Total</dt><dd>{formatUnits(BigInt(units) + fee, decimals)} {symbol}<small>From your wallet · @{recipient} receives exactly {amount}</small></dd></div>
   </>;
 }
@@ -323,7 +326,7 @@ function FeeFacts({ fees, units, decimals, symbol, recipient, amount, when }: { 
 /** What a slip says about a link waiting for a name (`vault-lock.ts`): who claims it, and to check the spelling. */
 function NameLockNote({ platform, username, window }: { platform: string; username: string; window: string }) {
   const name = platformName(platform as Platform);
-  return <><b>Locked to the {name} name @{username}.</b> Whoever connects {name} to HaPaPay with that name claims it{platform === "telegram" ? "" : ", with an account older than this link"}. Check the spelling; if nobody claims it within {window}, you take it back.</>;
+  return <><b>Locked to the {name} name @{username}.</b> Whoever connects {name} to ElysaPay with that name claims it{platform === "telegram" ? "" : ", with an account older than this link"}. Check the spelling; if nobody claims it within {window}, you take it back.</>;
 }
 
 /**
@@ -332,7 +335,7 @@ function NameLockNote({ platform, username, window }: { platform: string; userna
  */
 function NameClaimNote({ platform, username, tail = "" }: { platform: string; username: string; tail?: string }) {
   const name = platformName(platform as Platform);
-  return <><b>Waiting for the {name} name @{username}.</b> Connect {name} to HaPaPay with the account that has that name now, again if it is already connected; the server signs a one-time claim only for it{platform === "telegram" ? "" : ", only when the account is older than the link"}{tail}.</>;
+  return <><b>Waiting for the {name} name @{username}.</b> Connect {name} to ElysaPay with the account that has that name now, again if it is already connected; the server signs a one-time claim only for it{platform === "telegram" ? "" : ", only when the account is older than the link"}{tail}.</>;
 }
 
 function windowLabel(hours: number) {
@@ -340,6 +343,18 @@ function windowLabel(hours: number) {
 }
 
 /** Ambient animation plays unless the viewer paused it in this browser. */
+/** Sound cues and the voice that reads reviews aloud: two small toggles in the top bar, each a per-viewer choice. */
+function SoundToggles() {
+  const [, rerender] = useReducer((value: number) => value + 1, 0);
+  useEffect(() => onSoundChange(rerender), []);
+  const sound = soundEnabled();
+  const voice = voiceEnabled();
+  return <span className="sound-toggles">
+    <button className="theme-toggle" type="button" aria-pressed={sound} onClick={() => setSound(!sound)} aria-label={sound ? "Turn sound off" : "Turn sound on"} title={sound ? "Sound on" : "Sound off"}><DotIcon name={sound ? "sound" : "mute"} size={17} /></button>
+    {voiceAvailable() && <button className="theme-toggle" type="button" aria-pressed={voice} onClick={() => setVoice(!voice)} aria-label={voice ? "Stop reading reviews aloud" : "Read reviews aloud"} title={voice ? "Voice on" : "Voice off"}><DotIcon name="voice" size={17} /></button>}
+  </span>;
+}
+
 function readAmbientMotion() {
   try {
     return window.localStorage.getItem(MOTION_KEY) !== "off";
@@ -433,7 +448,7 @@ export function App() {
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(readColorTheme);
   const [ambientMotion, setAmbientMotion] = useState(readAmbientMotion);
-  const [sideTab, setSideTab] = useState<SideTab>("stocks");
+  const [sideTab, setSideTab] = useState<SideTab>("elysium");
   const [statusNote, setStatusNote] = useState<"solana" | "stocks" | "tokens" | "arc">();
   const [message, setMessage] = useState("");
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -636,14 +651,15 @@ export function App() {
     : stockClaimTarget ? ["lock", !stockClaimDetails || stockClaimDetails.token.kind === "cash" ? "$" : stockClaimDetails.token.symbol]
     : operatorPage ? ["lock"]
     : payTarget ? ["@", "$"]
-    : ["$", "€"];
+    : ["elysium", "$"];
   // While a request is typed, the dots take the shape of its asset: a dollar sign for USDC and USDG, or the ticker.
   const typedSymbol = payTarget ? undefined : message.match(/^\s*send\s+[\d.,]*\s*([a-z]{2,6})\b/i)?.[1]?.toUpperCase();
   const heroFocus = !typedSymbol ? undefined
+    : typedSymbol === "HYPE" ? "elysium"
     : typedSymbol === "USDC" || typedSymbol === "USDG" ? "$"
     : stockSnapshot.tokens.some((token) => token.symbol === typedSymbol) ? typedSymbol
     : undefined;
-  const sideTabs: SideTab[] = ["stocks", "activity", "claims", "sp", "identities"];
+  const sideTabs: SideTab[] = ["elysium", "stocks", "activity", "claims", "sp", "identities"];
   const activeTab: SideTab = sideTabs.includes(sideTab) ? sideTab : "activity";
   const pendingCards = Number(Boolean(stockDraft && stockTransaction && stockTransaction.status !== "confirmed")) + Number(Boolean(stockClaimActivity)) + Number(Boolean(transactionHash && transactionStatus !== "confirmed"));
   const waitingClaims = pendingClaims?.incoming.length ?? 0;
@@ -985,6 +1001,26 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.dataset.motion = ambientMotion ? "on" : "off";
+  }, [ambientMotion]);
+
+  // The Elysian sky: the dotted aurora's band drifts across the desk, one way and back over about 70 seconds, at a
+  // few frames a second. It follows the pause control, stops under reduced motion and while the tab is hidden.
+  useEffect(() => {
+    const root = document.documentElement;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!ambientMotion || reduced.matches) return;
+    let frame = 0;
+    let last = 0;
+    const started = performance.now() - 9_000;
+    const step = (now: number) => {
+      frame = window.requestAnimationFrame(step);
+      if (document.hidden || now - last < 120) return;
+      last = now;
+      const phase = ((now - started) / 35_000) % 2;
+      root.style.setProperty("--sky", `${((phase < 1 ? phase : 2 - phase) * 100).toFixed(2)}%`);
+    };
+    frame = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(frame);
   }, [ambientMotion]);
 
   /** Pauses or plays the scenes' ambient loops (WCAG 2.2.2); state changes such as a pending transfer still move. */
@@ -1475,7 +1511,7 @@ export function App() {
         ? async (message) => await ethereum.request({ method: "personal_sign", params: [message, account] }) as string
         : undefined);
       await sessionController.refreshProfile(sessionContext);
-      if (sessionController.isCurrent(sessionContext)) setReply(`Your Solana address ${short(added)} is on your HaPaPay wallet. Payments on Solana now reach it.`);
+      if (sessionController.isCurrent(sessionContext)) setReply(`Your Solana address ${short(added)} is on your ElysaPay wallet. Payments on Solana now reach it.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "The Solana address was not added.";
       setReply(message);
@@ -1494,7 +1530,7 @@ export function App() {
       if (!response.ok) throw new Error((await response.json().catch(() => ({})) as { error?: string }).error ?? "The Solana address could not be removed.");
       await sessionController.refreshProfile(sessionContext);
       setUnlinkConfirm(undefined);
-      setReply("The Solana address was removed from your HaPaPay wallet. Payments on Solana stop reaching it.");
+      setReply("The Solana address was removed from your ElysaPay wallet. Payments on Solana stop reaching it.");
     } catch (error) {
       const message = error instanceof Error ? error.message : "The Solana address could not be removed.";
       setReply(message);
@@ -1959,7 +1995,7 @@ export function App() {
       let receipt: { status: string; blockNumber: string } | undefined;
       for (const call of calls) {
         if (reviewEpoch !== reviewEpochRef.current) throw new Error("A new request replaced this review. Signing was stopped.");
-        if (call.purpose === "approve") setReply(`Approve exactly ${prepared.fee.totalAmount} USDC for HaPaPay in your wallet: ${draft.intent.amount} for @${draft.intent.recipient.username} and the ${platformFeePercent(prepared.fee.feeBps)} fee.`);
+        if (call.purpose === "approve") setReply(`Approve exactly ${prepared.fee.totalAmount} USDC for ElysaPay in your wallet: ${draft.intent.amount} for @${draft.intent.recipient.username} and the ${platformFeePercent(prepared.fee.feeBps)} fee.`);
         hash = await ethereum.request({ method: "eth_sendTransaction", params: [walletRpcTransaction(call)] }) as string;
         if (call.purpose !== "approve") {
           setTransactionHash(hash);
@@ -2090,7 +2126,7 @@ export function App() {
       const reviewedRouter = stockSnapshots[review.network].fees?.router ?? null;
       if (!matchesStockReview(prepared, { network: review.network, token, sender: wallet, recipient: review.resolvedAddress, units: review.units, note: note.note, router: reviewedRouter })) {
         throw new Error(prepared.fee && !reviewedRouter
-          ? `HaPaPay's ${platformFeePercent(prepared.fee.feeBps)} fee applies to this transfer, but the review did not show it. Your wallet was not opened; wait a moment for the fee to appear, then sign again.`
+          ? `ElysaPay's ${platformFeePercent(prepared.fee.feeBps)} fee applies to this transfer, but the review did not show it. Your wallet was not opened; wait a moment for the fee to appear, then sign again.`
           : "The prepared transaction does not match your review, so your wallet was not opened.");
       }
       await switchStockChain(review.network);
@@ -2100,7 +2136,7 @@ export function App() {
       for (const call of calls) {
         if (reviewEpoch !== reviewEpochRef.current) throw new Error("A new request replaced this review. Signing was stopped.");
         if (call.purpose === "approve" && prepared.fee) {
-          setReply(`Approve exactly ${prepared.fee.totalAmount} ${symbol} for HaPaPay in your wallet: ${review.intent.amount} for @${review.intent.recipient.username} plus the ${platformFeePercent(prepared.fee.feeBps)} fee.`);
+          setReply(`Approve exactly ${prepared.fee.totalAmount} ${symbol} for ElysaPay in your wallet: ${review.intent.amount} for @${review.intent.recipient.username} plus the ${platformFeePercent(prepared.fee.feeBps)} fee.`);
         }
         const hash = await ethereum.request({ method: "eth_sendTransaction", params: [walletRpcTransaction(call)] }) as string;
         if (call.purpose !== "approve") {
@@ -2225,7 +2261,7 @@ export function App() {
         source = "arc";
       }
       if (prepared.approval) {
-        setReply(`Approve exactly ${prepared.totalAmount} ${symbol} for HaPaPay in your wallet: ${pending.length} ${pending.length === 1 ? "payment" : "payments"} and the ${platformFeePercent(prepared.feeBps)} fee on each. Then sign one payment for each person.`);
+        setReply(`Approve exactly ${prepared.totalAmount} ${symbol} for ElysaPay in your wallet: ${pending.length} ${pending.length === 1 ? "payment" : "payments"} and the ${platformFeePercent(prepared.feeBps)} fee on each. Then sign one payment for each person.`);
         const approval = await ethereum.request({ method: "eth_sendTransaction", params: [walletRpcTransaction(prepared.approval)] }) as string;
         await waitForTransactionReceipt(receiptSource(source, approval, ethereum), { attempts: RECEIPT_ATTEMPTS, revertedMessage: `The ${symbol} approval reverted; nothing moved.` });
       }
@@ -2529,15 +2565,15 @@ export function App() {
   </div>;
 
   return (
-    <main className="shell" data-network-theme={claimTarget ? "arc" : solanaClaimTarget ? "solana" : "robinhood"}>
+    <main className="shell" data-network-theme={claimTarget ? "arc" : solanaClaimTarget ? "solana" : "elysium"}>
       {privyAppId && solanaRpcUrl && !homePage && (!docsPage || privyWanted) && !notFoundPage && <ChunkBoundary fallback={null}><Suspense fallback={null}><PrivyBridge appId={privyAppId} theme={colorTheme} solanaRpcUrl={solanaRpcUrl} /></Suspense></ChunkBoundary>}
       <div className="desk-lens" ref={deskLensRef} aria-hidden="true" />
       <DotBurst />
       {spToast && <div className="sp-toast" role="status" key={spToast.key}><SpMark size={18} /> {[spToast.text, spToast.amount ? `+${formatSp(spToast.amount)} SP` : undefined].filter(Boolean).join(" · ")}</div>}
       <header className={`topbar ${homePage ? "topbar-home" : ""}`}>
-        <a className="brand" href="/" aria-label="HaPaPay home">
+        <a className="brand" href="/" aria-label="ElysaPay home">
           <BrandMark className="brand-mark" tile />
-          <DotText text="HaPaPay" />
+          <DotText text="ElysaPay" />
         </a>
         <nav className="primary-nav" aria-label="Primary">
           {homePage ? <>
@@ -2556,6 +2592,7 @@ export function App() {
             <a href="/docs">Docs</a>
           </> : <>
             <a className="nav-panel" href="#payment">Payment</a>
+            <a className="nav-panel" href="#panel-elysium" onClick={(event) => openPanel(event, "elysium")}>Elysium</a>
             <a className="nav-panel" href="#panel-stocks" onClick={(event) => openPanel(event, "stocks")}>Stocks</a>
             <a className="nav-panel" href="#panel-activity" onClick={(event) => openPanel(event, "activity")}>Activity</a>
             <a className="nav-panel" href="#panel-claims" onClick={(event) => openPanel(event, "claims")}>Claims</a>
@@ -2577,6 +2614,7 @@ export function App() {
           </div>}
         </div>}
         {!homePage && !notFoundPage && !docsPage && !adminPage && wallet && spSummary && <button className="sp-pill" type="button" onClick={() => showPanel("sp", true)} aria-label={`${formatSp(spSummary.balance)} SP. Open SP`}><SpMark size={18} /><b>{formatSp(spSummary.balance)}</b><small>SP</small></button>}
+        <SoundToggles />
         <button className="theme-toggle" type="button" onClick={toggleColorTheme} aria-label={colorTheme === "dark" ? "Use the light theme" : "Use the dark theme"} title={colorTheme === "dark" ? "Light theme" : "Dark theme"}>{colorTheme === "dark" ? <DotIcon name="sun" size={17} /> : <DotIcon name="moon" size={17} />}</button>
         {homePage || notFoundPage ? <a className="home-open topbar-open" href={DESK_PATH}><DecodeText text="Open the desk" /></a> : <button className="wallet-button" disabled={walletVerifying || privyOpening} onClick={wallet ? () => setManageOpen(true) : connectWallet} aria-label={wallet && !walletVerifying && !privyOpening ? `${walletButtonText}: manage connected identities` : walletButtonText}>
           <DotIcon name="wallet" size={17} /> <span className={wallet && !walletVerifying ? "wallet-address" : undefined}><DecodeText text={walletButtonText} /></span>
@@ -2609,7 +2647,7 @@ export function App() {
               <DotIcon name="shield" size={16} />
               <div>
                 {deskControls.notice && <p>{deskControls.notice.text}</p>}
-                {pausedFeatures.length > 0 && !claimTarget && !stockClaimTarget && !solanaClaimTarget && !operatorPage && <ul aria-label="Paused by HaPaPay">
+                {pausedFeatures.length > 0 && !claimTarget && !stockClaimTarget && !solanaClaimTarget && !operatorPage && <ul aria-label="Paused by ElysaPay">
                   {pausedFeatures.map(([feature, pause]) => <li key={feature}>{DESK_FEATURES[feature]}: {pause.message}</li>)}
                 </ul>}
               </div>
@@ -2618,9 +2656,9 @@ export function App() {
               <DotMorph shapes={heroShapes} focus={heroFocus} motion={ambientMotion} onToggleMotion={toggleAmbientMotion} />
               {payTarget && !claimTarget && !stockClaimTarget && !solanaClaimTarget && !operatorPage
                 ? <h1>Prepare a payment for <span className="pay-identity">@{payTarget.username}</span></h1>
-                : <DotText as="h1" text={settledPage ? settledPage.heading : claimTarget ? "Claim the USDC reserved for your account" : stockClaimTarget || solanaClaimTarget ? "Claim the tokens waiting for you in the vault" : operatorPage ? "Deploy the HaPaPay vault" : "What do you want to send?"} />}
+                : <DotText as="h1" text={settledPage ? settledPage.heading : claimTarget ? "Claim the USDC reserved for your account" : stockClaimTarget || solanaClaimTarget ? "Claim the tokens waiting for you in the vault" : operatorPage ? "Deploy the ElysaPay vault" : "What do you want to send?"} />}
               {/* The empty desk is the heading and the request box; the home page explains the rest. Link pages say what they do. */}
-              {(claimTarget || stockClaimTarget || solanaClaimTarget || operatorPage || payTarget) && <p>{settledPage ? settledPage.intro : claimTarget ? "Verify your wallet. If your connected official account matches the payment identity, the funds move directly to you." : stockClaimTarget || solanaClaimTarget ? "Verify your wallet. If your connected account is the one this link was made for, the tokens move straight to your wallet." : operatorPage ? "Connect the operator wallet. On Solana one approval funds a temporary key that deploys the vault program, hands its upgrade key to your wallet and returns what is left. On Robinhood Chain you sign three deployments: the burn vault, the fee router and the escrow. The server checks each on chain and turns on vault links and the fee by itself. Arc Mainnet, at the end of the page, takes four deployments and then the three variables it shows." : payeeState === "verified" ? `${platformName(payTarget!.platform)} identity verified. You choose the amount.` : payeeState === "unverified" ? "This account is not verified on HaPaPay, or is no longer connected, so this link cannot take a payment." : payeeState === "error" ? "The account could not be checked just now. Reload the page to try again." : "Verifying the social identity…"}</p>}
+              {(claimTarget || stockClaimTarget || solanaClaimTarget || operatorPage || payTarget) && <p>{settledPage ? settledPage.intro : claimTarget ? "Verify your wallet. If your connected official account matches the payment identity, the funds move directly to you." : stockClaimTarget || solanaClaimTarget ? "Verify your wallet. If your connected account is the one this link was made for, the tokens move straight to your wallet." : operatorPage ? "Connect the operator wallet. On Solana one approval funds a temporary key that deploys the vault program, hands its upgrade key to your wallet and returns what is left. On Robinhood Chain you sign three deployments: the burn vault, the fee router and the escrow. The server checks each on chain and turns on vault links and the fee by itself. Arc Mainnet, at the end of the page, takes four deployments and then the three variables it shows." : payeeState === "verified" ? `${platformName(payTarget!.platform)} identity verified. You choose the amount.` : payeeState === "unverified" ? "This account is not verified on ElysaPay, or is no longer connected, so this link cannot take a payment." : payeeState === "error" ? "The account could not be checked just now. Reload the page to try again." : "Verifying the social identity…"}</p>}
             </div>}
             <PaymentConversation conversation={conversation} status={reply} busy={busy} statusBelow={slipShown} onSuggestion={(request) => void sendRequest(request)} />
 
@@ -2706,7 +2744,7 @@ export function App() {
             {claimDraft && (
               <article className="payment-slip claim-slip" data-network-theme="arc">
                 <div className="slip-top"><div><small>{claimLink ? "Waiting in the vault" : "USDC vault link"}</small><strong><DotText text={claimDraft.intent.amount} /> <span className="slip-symbol">USDC</span></strong></div><div className="platform-avatar"><ProviderIcon provider={claimDraft.intent.recipient.platform} /></div></div>
-                <div className="recipient-line"><div><small>Not on HaPaPay yet</small><b>@{claimDraft.intent.recipient.username}</b></div><span>{platformName(claimDraft.intent.recipient.platform)}</span></div>
+                <div className="recipient-line"><div><small>Not on ElysaPay yet</small><b>@{claimDraft.intent.recipient.username}</b></div><span>{platformName(claimDraft.intent.recipient.platform)}</span></div>
                 <div className="claim-steps"><span><b>1</b> {network.fees ? "Approve amount + fee" : "Approve amount"}</span><i /><span><b>2</b> {windowLabel(claimDraft.expiryHours)} in the vault</span><i /><span><b>3</b> Official claim</span></div>
                 {!claimLink && !transactionHash && <div className="vault-window" role="group" aria-label="Vault window">
                   <span>Vault window</span>
@@ -2837,7 +2875,7 @@ export function App() {
                   {funding?.status === "confirmed" && <VerifiedMark />}
                   <StockTile token={quote ?? { symbol: asset.symbol, kind: asset.kind }} size="large" />
                 </div>
-                <div className="recipient-line"><div><small>Not on HaPaPay yet</small><b>@{recipient}</b></div><span>{platformName(stockClaimDraft.platform)}</span></div>
+                <div className="recipient-line"><div><small>Not on ElysaPay yet</small><b>@{recipient}</b></div><span>{platformName(stockClaimDraft.platform)}</span></div>
                 <div className="claim-steps"><span><b>1</b> Approve {asset.symbol}</span><i /><span><b>2</b> {windowText} in the vault</span><i /><span><b>3</b> Official claim</span></div>
                 {!funding && <div className="vault-window" role="group" aria-label="Vault window">
                   <span>Vault window</span>
@@ -2960,11 +2998,18 @@ export function App() {
           </div>
         </section>
 
-        <aside className="side-panel" id="side-panel" aria-label="Stocks, activity, claims, SP and identities">
+        <aside className="side-panel" id="side-panel" aria-label="Elysium, stocks, activity, claims, SP and identities">
           <div className="side-tabs" role="tablist" aria-label="Desk panels" style={{ "--tabs": sideTabs.length, "--tab": sideTabs.indexOf(activeTab) } as CSSProperties}>
             {sideTabs.map((tab) => <button key={tab} type="button" role="tab" id={`tab-${tab}`} aria-selected={activeTab === tab} aria-controls={`panel-${tab}`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => setSideTab(tab)} onKeyDown={moveTab}>
               <DecodeText text={SIDE_TAB_LABELS[tab]} replay={activeTab === tab} />{tab === "activity" && pendingCards > 0 && <span className="tab-pending"><span className="visually-hidden">, {pendingCards} pending</span></span>}{tab === "claims" && waitingClaims > 0 && <span className="tab-count">{waitingClaims}<span className="visually-hidden"> waiting for you</span></span>}
             </button>)}
+          </div>
+          <div className="side-section" role="tabpanel" id="panel-elysium" aria-labelledby="tab-elysium" hidden={activeTab !== "elysium"}>
+            <ChunkBoundary fallback={<p className="stock-empty" role="alert">The Elysium panel could not be loaded. <button type="button" onClick={() => window.location.reload()}>Reload</button></p>}>
+              <Suspense fallback={<p className="stock-empty" aria-busy="true">Loading Elysium…</p>}>
+                <ElysiumPanel wallet={wallet} visible={activeTab === "elysium"} onConnect={() => void connectWallet()} />
+              </Suspense>
+            </ChunkBoundary>
           </div>
           <div className="side-section" role="tabpanel" id="panel-stocks" aria-labelledby="tab-stocks" hidden={activeTab !== "stocks"}>
             <div className="board-networks" role="group" aria-label="Board network" style={{ "--segment": boardNetwork === "robinhood" ? 0 : 1 } as CSSProperties}>
@@ -3035,7 +3080,7 @@ export function App() {
       </section>}
 
       {(docsPage || homePage) && <footer className="site-footer">
-        <p className="footer-brand"><BrandMark tile /> <DotText text="HaPaPay" /> <small>Wallet-signed payments to verified handles</small></p>
+        <p className="footer-brand"><BrandMark tile /> <DotText text="ElysaPay" /> <small>Wallet-signed payments to verified handles</small></p>
         {footerLinks}
       </footer>}
 
@@ -3104,9 +3149,9 @@ export function App() {
                 );
               })}
             </div>
-            <p className="privacy-line"><DotIcon name="link" size={14} /> A verified account receives on Solana (once it has a Solana address), {arcLabel} and {stockChain.name} right away. HaPaPay keeps the link on its own servers; the link itself is never written on chain.</p>
+            <p className="privacy-line"><DotIcon name="link" size={14} /> A verified account receives on Solana (once it has a Solana address), {arcLabel} and {stockChain.name} right away. ElysaPay keeps the link on its own servers; the link itself is never written on chain.</p>
             <p className="privacy-line"><DotIcon name="shield" size={14} /> OAuth access tokens are not stored. Only the provider's immutable user ID and current username are recorded.</p>
-            {(exportableEvm || exportableSolana) && <p className="privacy-line"><DotIcon name="lock" size={14} /> Export key opens Privy's own window with the private key of a wallet Privy made for you. HaPaPay never sees it; anyone who has the key controls the wallet, so keep it to yourself.</p>}
+            {(exportableEvm || exportableSolana) && <p className="privacy-line"><DotIcon name="lock" size={14} /> Export key opens Privy's own window with the private key of a wallet Privy made for you. ElysaPay never sees it; anyone who has the key controls the wallet, so keep it to yourself.</p>}
           </section>
         </div>
       )}

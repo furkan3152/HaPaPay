@@ -1,4 +1,4 @@
-/* HaPaPay docs: a contents rail and one reading column, with the desk's hairlines and the dot field in the hero. */
+/* ElysaPay docs: a contents rail and one reading column, with the desk's hairlines and the dot field in the hero. */
 .docs-page { width: 100%; max-width: 1240px; margin: 20px auto 0; padding: 0 24px; display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: start; gap: 32px; }
 .docs-toc { position: sticky; top: 80px; padding: 4px 0; color: var(--ink); animation: panel-in .45s var(--ease-out) both; }
 .docs-toc-title { margin: 4px 12px 12px; color: var(--accent-text); font: 900 15px/1 var(--font-display); font-variation-settings: "ROND" 100; letter-spacing: .08em; text-transform: uppercase; }

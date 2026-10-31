@@ -1,5 +1,5 @@
 /**
- * SP, HaPaPay's social points, as a coin of dots: a ring of small dots around the letters S and P, each drawn on a dot grid
+ * SP, ElysaPay's social points, as a coin of dots: a ring of small dots around the letters S and P, each drawn on a dot grid
  * like the rest of the desk's type and icons. The ring takes
  * `--sp-ring` (Robin Neon by default) and the letters the text color, so the coin sits on light and dark surfaces.
  */

@@ -8,7 +8,7 @@ type SqlResult = { rows: Array<Record<string, unknown>>; rowCount?: number | nul
 type SqlPool = { query(text: string, values?: unknown[]): Promise<SqlResult> };
 
 /**
- * A HaPaPay account is still its wallet address (the session's EVM address), and it may add one Solana address,
+ * A ElysaPay account is still its wallet address (the session's EVM address), and it may add one Solana address,
  * proven by that Solana wallet's own signature. Linked
  * identities keep resolving to the account; payments on Solana go to the account's Solana address.
  */
@@ -44,7 +44,7 @@ export class MemoryAccountAddressRepository implements AccountAddressRepository 
 
   async set(wallet: Address, family: AddressFamily, address: string) {
     const owner = this.byAddress.get(`${family}:${address}`);
-    if (owner && owner !== wallet) throw new AddressTakenError("This Solana address is already added to another HaPaPay wallet.");
+    if (owner && owner !== wallet) throw new AddressTakenError("This Solana address is already added to another ElysaPay wallet.");
     const previous = this.byWallet.get(`${family}:${wallet}`);
     if (previous) this.byAddress.delete(`${family}:${previous}`);
     this.byWallet.set(`${family}:${wallet}`, address);
@@ -86,7 +86,7 @@ export class PostgresAccountAddressRepository implements AccountAddressRepositor
 
   async set(wallet: Address, family: AddressFamily, address: string, verifiedAt: Date) {
     const owner = await this.walletFor(family, address);
-    if (owner && owner !== getAddress(wallet)) throw new AddressTakenError("This Solana address is already added to another HaPaPay wallet.");
+    if (owner && owner !== getAddress(wallet)) throw new AddressTakenError("This Solana address is already added to another ElysaPay wallet.");
     try {
       await this.pool.query(
         `INSERT INTO account_addresses (wallet_address, family, address, verified_at) VALUES ($1, $2, $3, $4)
@@ -94,7 +94,7 @@ export class PostgresAccountAddressRepository implements AccountAddressRepositor
         [getAddress(wallet), family, address, verifiedAt.toISOString()],
       );
     } catch (error) {
-      if ((error as { code?: string }).code === "23505") throw new AddressTakenError("This Solana address is already added to another HaPaPay wallet.");
+      if ((error as { code?: string }).code === "23505") throw new AddressTakenError("This Solana address is already added to another ElysaPay wallet.");
       throw error;
     }
   }
@@ -141,7 +141,7 @@ export class AccountAddressService {
     const issuedAt = this.now();
     const expiresAt = issuedAt.getTime() + 5 * 60_000;
     const message = [
-      `${this.options.domain} wants to add a Solana address to your HaPaPay wallet`,
+      `${this.options.domain} wants to add a Solana address to your ElysaPay wallet`,
       "",
       `Wallet: ${getAddress(wallet)}`,
       `Solana address: ${address}`,

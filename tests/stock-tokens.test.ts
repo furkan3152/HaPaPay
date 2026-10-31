@@ -363,7 +363,7 @@ describe("stock drafts in the chat API seam", () => {
     const unknownRecipient = await createChatDraft("Send 2 NVDA to @octocat on GitHub", undefined, verified);
     assert.equal(unknownRecipient.status, "needs_clarification");
     assert.equal("intent" in unknownRecipient, false);
-    assert.match(unknownRecipient.message, /^@octocat has not linked GitHub to HaPaPay yet\./);
+    assert.match(unknownRecipient.message, /^@octocat has not linked GitHub to ElysaPay yet\./);
 
     let aiCalls = 0;
     const unknownAsset = await createChatDraft("Send 5 ETH to @selin on X", async () => { aiCalls++; return {}; }, verified);

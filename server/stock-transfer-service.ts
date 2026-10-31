@@ -94,7 +94,7 @@ export type StockTransferRecord = {
   /** The note the transfer's own transaction carries after `pay`, read from chain when it was confirmed. */
   note?: string;
   /**
-   * Base units of the fee HaPaPay's router took for this transfer, from the router's `Paid` event in the receipt.
+   * Base units of the fee ElysaPay's router took for this transfer, from the router's `Paid` event in the receipt.
    * Absent for a transfer that did not go through the router (it paid no fee) and for rows from before fees were kept.
    */
   feeUnits?: string;
@@ -571,7 +571,7 @@ export class StockTransferService {
     username: string;
     sourcePlatform?: Platform;
     sourceUsername?: string;
-    /** HaPaPay's fee router on this network, whose `Paid` event shows the fee the transfer paid. */
+    /** ElysaPay's fee router on this network, whose `Paid` event shows the fee the transfer paid. */
     router?: Address;
   }) {
     const chain = STOCK_CHAINS[input.network];

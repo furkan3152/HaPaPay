@@ -84,7 +84,7 @@ export default function SolanaStockBoard({ quotes, asOf, stocksLive, activeSymbo
     <div className="stock-notes">
       <p>{Object.keys(quotes).length ? <>Indicative prices from Jupiter{when && !Number.isNaN(when.getTime()) ? <>, {new Intl.DateTimeFormat("en", { hour: "2-digit", minute: "2-digit" }).format(when)}</> : null}; an xStock shows its share price.</> : "Prices are unavailable right now; the asset list is still verified."} Mints checked on chain on {SOLANA_XSTOCKS_VERIFIED_ON > SOLANA_ASSETS_VERIFIED_ON ? SOLANA_XSTOCKS_VERIFIED_ON : SOLANA_ASSETS_VERIFIED_ON}.</p>
       <p>xStocks are tokens that track shares and give economic exposure, not ownership of them. They are not for U.S. persons, and other regional restrictions apply.{stocksLive ? "" : " xStocks transfers are off on this server until the operator turns them on."}</p>
-      <p>USDC and USDG are dollar stablecoins shown at $1; their issuers can pause transfers and freeze balances. HaPaPay is not affiliated with Solana, the xStocks issuer, Circle or Paxos.</p>
+      <p>USDC and USDG are dollar stablecoins shown at $1; their issuers can pause transfers and freeze balances. ElysaPay is not affiliated with Solana, the xStocks issuer, Circle or Paxos.</p>
       <div className="stock-links">
         <a href="https://xstocks.fi" target="_blank" rel="noreferrer">About xStocks <DotIcon name="arrow-up-right" size={13} /></a>
       </div>

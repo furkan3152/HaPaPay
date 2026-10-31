@@ -302,7 +302,7 @@ describe("stock claim chat drafts", () => {
     assert.equal(draft.escrow, ESCROW);
     assert.equal(draft.units, "2500000000000000000");
     assert.equal(draft.expiryHours, 72);
-    assert.match(String(draft.message), /not on HaPaPay yet[\s\S]*TSLA in the Robinhood Chain Testnet vault[\s\S]*official GitHub account within the window you pick, 72 hours to 30 days/);
+    assert.match(String(draft.message), /not on ElysaPay yet[\s\S]*TSLA in the Robinhood Chain Testnet vault[\s\S]*official GitHub account within the window you pick, 72 hours to 30 days/);
     const farcaster = await createChatDraft("Send 1 TSLA to @dwr on Farcaster", undefined, () => undefined, "Arc Testnet", "robinhood-testnet", true, claims) as Record<string, unknown>;
     assert.equal(farcaster.status, "stock_claim_review");
     assert.match(String(farcaster.message), /official Farcaster account/);
@@ -312,7 +312,7 @@ describe("stock claim chat drafts", () => {
     const telegram = await createChatDraft("Send 2.5 TSLA to @deniz on Telegram", undefined, () => undefined, "Arc Testnet", "robinhood-testnet", true, { ...claims, platforms: ["github", "x", "farcaster", "discord", "telegram"] }) as Record<string, unknown>;
     assert.equal(telegram.status, "stock_claim_review");
     assert.equal(telegram.vaultLock, "name");
-    assert.match(String(telegram.message), /TSLA in the Robinhood Chain Testnet vault for the Telegram name @deniz: whoever connects Telegram to HaPaPay with that name claims it/);
+    assert.match(String(telegram.message), /TSLA in the Robinhood Chain Testnet vault for the Telegram name @deniz: whoever connects Telegram to ElysaPay with that name claims it/);
     const off = await createChatDraft("Send 2.5 TSLA to @octo-new on GitHub", undefined, () => undefined, "Arc Testnet", "robinhood-testnet", true, { enabled: false, reason: "No claim escrow is deployed on Robinhood Chain Testnet yet." });
     assert.equal(off.status, "needs_clarification");
     assert.match(String(off.message), /vault is not open: No claim escrow is deployed on Robinhood Chain Testnet yet\./);

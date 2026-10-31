@@ -43,8 +43,8 @@ export type SpLedgerRow = {
   network: SpNetwork | null;
   usdCents: number | null;
   /**
-   * For a payment: the dollar value, in millionths (USDC base units), of the 1% fee HaPaPay verified on chain when
-   * it recorded the payment; null when no fee was verified (a transfer that did not go through HaPaPay's fee).
+   * For a payment: the dollar value, in millionths (USDC base units), of the 1% fee ElysaPay verified on chain when
+   * it recorded the payment; null when no fee was verified (a transfer that did not go through ElysaPay's fee).
    * Invite rewards in USDC come only from this.
    */
   feeUsdUnits: number | null;
@@ -573,7 +573,7 @@ export type SpPrices = (network: SpNetwork, symbol: string) => Promise<number | 
 /** An amount of one asset as the records keep it: a decimal string ("25", "0.15"). */
 export type SpAmount = { symbol: string; assetClass: SpAssetClass; amount: string };
 
-/** A payment confirmed through HaPaPay: SP for its sender. */
+/** A payment confirmed through ElysaPay: SP for its sender. */
 export type SpPaymentEvent = {
   account: Address;
   network: SpNetwork;
@@ -582,7 +582,7 @@ export type SpPaymentEvent = {
   counterparty: Address | null;
   amount: SpAmount;
   /**
-   * The 1% fee HaPaPay verified on chain for this payment, in the same token's base units, with the payment's own
+   * The 1% fee ElysaPay verified on chain for this payment, in the same token's base units, with the payment's own
    * base units to scale it by. Absent when no fee was verified; such a payment earns its sender SP but its inviter no USDC.
    */
   fee?: SpVerifiedFee;
@@ -634,7 +634,7 @@ const ZERO_REASONS = {
   invites: "The monthly limit of invite bonuses was reached",
   tenth: "Less than a tenth of an SP",
   inviteCap: "The daily cap on SP from people you invited was reached",
-  fee: "It did not pay HaPaPay's fee, so it earns no SP",
+  fee: "It did not pay ElysaPay's fee, so it earns no SP",
 } as const;
 
 /** What an inviter's row says it came from. */
@@ -857,7 +857,7 @@ export class SpService {
       if (await transaction.frozen(account)) [amount, reason] = [0, ZERO_REASONS.frozen];
       else if (!rules.earning) [amount, reason] = [0, ZERO_REASONS.off];
       else if (counterparty === account) [amount, reason] = [0, ZERO_REASONS.self];
-      // On Arc and Robinhood Chain every direct payment HaPaPay prepares goes through the fee router, so one without
+      // On Arc and Robinhood Chain every direct payment ElysaPay prepares goes through the fee router, so one without
       // its verified fee was sent around the desk: it is recorded, and earns nothing. Otherwise plain transfers back
       // and forth would earn SP for gas alone, while the documented cost of SP is the fee. A vault link's
       // escrow takes its fee at the claim.
@@ -879,7 +879,7 @@ export class SpService {
       if (amount > 0 && rules.bonuses.firstPayment > 0 && !await transaction.hasEntry(account, "first_payment")) {
         const first = await transaction.insert({
           account, kind: "first_payment", amount: rules.bonuses.firstPayment, sourceKey: `first_payment:${account}`, network: event.network,
-          usdCents: null, counterparty: null, detail: "Your first payment on HaPaPay", rulesVersion: version, createdAt: event.at,
+          usdCents: null, counterparty: null, detail: "Your first payment on ElysaPay", rulesVersion: version, createdAt: event.at,
         });
         bonus = first?.amount ?? 0;
       }
@@ -1010,7 +1010,7 @@ export class SpService {
     const { version } = await this.rules();
     const row = await this.options.repository.withAccount(account, (transaction) => transaction.insert({
       account, kind: "adjustment", amount, sourceKey: `adjust:${randomUUID()}`, network: null, usdCents: null,
-      counterparty: null, detail: amount > 0 ? "Added by HaPaPay" : "Taken by HaPaPay", rulesVersion: version,
+      counterparty: null, detail: amount > 0 ? "Added by ElysaPay" : "Taken by ElysaPay", rulesVersion: version,
       actor: input.actor, reason,
     }));
     if (!row) throw new SpRequestError("The adjustment was not written. Try again.");

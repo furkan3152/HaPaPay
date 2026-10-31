@@ -102,7 +102,7 @@ export function StockTokenList({ snapshot, loading, activeSymbol, onSelect }: {
           : loading ? "Loading prices…" : "Prices are unavailable right now; the token list is still verified."} Contracts checked on chain on {snapshot.allowlistVerifiedOn}.</p>}
       {!testAssets && <p>Stock Tokens give economic exposure, not ownership of the underlying shares. They are not for U.S. persons, and other regional restrictions apply.</p>}
       {!testAssets && counts.tokens > 0 && <p>USDG (Global Dollar) is a dollar stablecoin issued by Paxos and shown at $1. Its issuer can pause transfers and freeze addresses.</p>}
-      <p>HaPaPay is not affiliated with, endorsed by, or officially connected with Robinhood Markets, Inc.</p>
+      <p>ElysaPay is not affiliated with, endorsed by, or officially connected with Robinhood Markets, Inc.</p>
       <div className="stock-links">
         {testAssets && <a href={ROBINHOOD_TESTNET_FAUCET_URL} target="_blank" rel="noreferrer">Get test tokens <DotIcon name="arrow-up-right" size={13} /></a>}
         <a href="https://docs.robinhood.com/chain/stock-tokens/" target="_blank" rel="noreferrer">About Stock Tokens <DotIcon name="arrow-up-right" size={13} /></a>

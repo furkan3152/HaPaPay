@@ -1,5 +1,5 @@
 /**
- * SP, HaPaPay's points: earned by payments and vault links confirmed through HaPaPay on
+ * SP, ElysaPay's points: earned by payments and vault links confirmed through ElysaPay on
  * any network, with one balance per account (the EVM wallet a session signs with). SP have no cash value and cannot be
  * bought, sold or sent; the operator sets these rules from the admin panel, and each change is a new version. Shared by
  * the server, which awards SP, and the pages, which explain how to earn them.
@@ -46,13 +46,13 @@ export type SpRules = {
   boost: { multiplier: number; startsAt: string; endsAt: string } | null;
   /**
    * Invites: an account that joined with someone's invite link earns that person a share of its SP,
-   * and a share of the fee HaPaPay verified on each payment it sends, paid in USDC.
+   * and a share of the fee ElysaPay verified on each payment it sends, paid in USDC.
    */
   referral: {
     /** The share of the SP an invited account earns that its inviter earns too (0.15 is 15%). */
     pointsShare: number;
     /**
-     * The inviter's share, in USDC, of the 1% fee HaPaPay verified on each payment an invited account sends: basis
+     * The inviter's share, in USDC, of the 1% fee ElysaPay verified on each payment an invited account sends: basis
      * points of the payment out of the fee's 100, so also the percent of the fee (50 is half the fee, 0.5% of the payment).
      */
     feeShareBps: number;
@@ -84,7 +84,7 @@ export const DEFAULT_SP_RULES: SpRules = {
   referral: { pointsShare: 0.15, feeShareBps: 50, dailyCap: 500 },
 };
 
-/** The fee share can never pass HaPaPay's own 1% fee, so an invite can never pay more than its payments cost. */
+/** The fee share can never pass ElysaPay's own 1% fee, so an invite can never pay more than its payments cost. */
 export const REFERRAL_MAX_FEE_SHARE_BPS = 100;
 
 /** The most an admin can add or take in one adjustment. */
@@ -269,8 +269,8 @@ export const SP_ENTRY_LABELS: Record<SpEntryKind, string> = {
   first_claim: "First claim",
   linked_account: "Account linked",
   solana_address: "Solana address added",
-  adjustment: "Adjusted by HaPaPay",
-  reversal: "Reversed by HaPaPay",
+  adjustment: "Adjusted by ElysaPay",
+  reversal: "Reversed by ElysaPay",
   referral: "From someone you invited",
 };
 

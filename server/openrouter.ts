@@ -31,7 +31,7 @@ async function requestIntent(message: string, apiKey: string, signal: AbortSigna
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
       "HTTP-Referer": process.env.APP_URL ?? "http://localhost:5173",
-      "X-OpenRouter-Title": "HaPaPay",
+      "X-OpenRouter-Title": "ElysaPay",
     },
     body: JSON.stringify({
       model: process.env.OPENROUTER_MODEL ?? "google/gemini-2.5-flash",
@@ -40,7 +40,7 @@ async function requestIntent(message: string, apiKey: string, signal: AbortSigna
         {
           role: "system",
           content: [
-            "Read one payment request for HaPaPay into JSON. Never claim to send, sign, or execute funds.",
+            "Read one payment request for ElysaPay into JSON. Never claim to send, sign, or execute funds.",
             'Use kind "none" unless the message asks to send a stated amount of one asset to one or more social accounts now.',
             'Use kind "none" when it asks to receive or request money, says not to send, or asks to repeat or schedule a payment.',
             'asset: "USDC" for USDC or dollars, otherwise the token ticker exactly as written (NVDA, TSLA, USDG); "" when none is named.',

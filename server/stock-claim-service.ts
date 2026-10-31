@@ -332,7 +332,7 @@ type EscrowCheck = "code" | "claim" | "funding";
 
 /**
  * Vault (claim) links for allowlisted Robinhood Chain tokens (Stock Tokens and USDG) sent to a GitHub, X
- * or Farcaster account that has not joined HaPaPay. The payer's wallet approves and funds the escrow; the
+ * or Farcaster account that has not joined ElysaPay. The payer's wallet approves and funds the escrow; the
  * recipient's wallet claims after the official provider proves the immutable account the payment is locked to, and
  * the server's attestor signs that one claim. The server never signs or broadcasts a transfer and never holds
  * tokens. Chain and token verification come from the transfer service, so both features trust the same RPC checks.

@@ -3,11 +3,13 @@ import { concatHex, hexToBytes, stringToHex, type Hex } from "viem";
 /**
  * A payment note: a short text the sender attaches to a payment. It rides in the same
  * transaction, after the fee router's `pay` arguments, where anyone can read it and nobody can change or remove it;
- * HaPaPay also keeps it with the verified payment in its own database. The router ignores bytes after its
+ * ElysaPay also keeps it with the verified payment in its own database. The router ignores bytes after its
  * arguments, so a note moves no value and needs no contract change.
  */
 export const PAYMENT_NOTE_MAX_CHARACTERS = 140;
-/** What the note's bytes start with, so an explorer's UTF-8 view and HaPaPay can tell the note from the call. */
+/** What the note's bytes start with, so an explorer's UTF-8 view and ElysaPay can tell the note from the call. */
+// Kept from the project's earlier name on purpose: it is part of the on-chain note format, and notes already
+// written with it must keep reading as notes.
 export const PAYMENT_NOTE_PREFIX = "HaPaPay note: ";
 /** `pay(address,address,uint256,bytes32)`: a selector and four 32-byte words. A note starts right after them. */
 export const ROUTER_PAY_CALL_BYTES = 4 + 4 * 32;
@@ -44,7 +46,7 @@ export function appendPaymentNote(data: Hex, note?: string): Hex {
 }
 
 /**
- * The note a transaction's input carries after a call of `callBytes` bytes, when it is one HaPaPay would write:
+ * The note a transaction's input carries after a call of `callBytes` bytes, when it is one ElysaPay would write:
  * valid UTF-8 after the prefix, already in its checked form. Anything else after the call is not a note.
  */
 export function readPaymentNote(input: Hex, callBytes = ROUTER_PAY_CALL_BYTES): string | undefined {

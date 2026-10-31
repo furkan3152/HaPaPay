@@ -16,7 +16,7 @@ export type VaultRecipient = { platform: StockClaimPlatform; username: string; p
 export class VaultNameLockOffer extends Error {
   readonly lock = "name" as const;
   constructor(username: string) {
-    super(`X is not answering account lookups for HaPaPay right now, so this link cannot be locked to @${username}'s X account. You can lock it to the X name @${username} instead: whoever connects X to HaPaPay with that name claims it, with an account older than the link.`);
+    super(`X is not answering account lookups for ElysaPay right now, so this link cannot be locked to @${username}'s X account. You can lock it to the X name @${username} instead: whoever connects X to ElysaPay with that name claims it, with an account older than the link.`);
     this.name = "VaultNameLockOffer";
   }
 }
@@ -82,5 +82,5 @@ export function lockOfLink(recipient: { platform: StockClaimPlatform; username: 
 export function notTheNameHolder(platform: StockClaimPlatform, username: string) {
   const name = platformName(platform);
   const age = tellsAccountAge(platform) ? "; an account made after the link cannot claim it" : "";
-  return `This link waits for the ${name} name @${username}. Connect ${name} to HaPaPay with the account that has that name now (connect it again if it is connected already)${age}.`;
+  return `This link waits for the ${name} name @${username}. Connect ${name} to ElysaPay with the account that has that name now (connect it again if it is connected already)${age}.`;
 }

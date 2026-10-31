@@ -204,7 +204,7 @@ describe("Robinhood stock claim links on a real EVM", () => {
       const health = await (await fetch(`${origin}/api/health`)).json() as { stockClaims: Record<string, string> };
       assert.deepEqual(health.stockClaims, { "robinhood-testnet": "escrow_verified", "robinhood-mainnet": "disabled" });
 
-      // 3. The payer asks for a transfer to a GitHub user who is not on HaPaPay yet.
+      // 3. The payer asks for a transfer to a GitHub user who is not on ElysaPay yet.
       const draft = await (await post(origin, payerSession, "/api/chat", { message: "Send 2.5 TSLA to @octo-new on GitHub", networkPreference: "robinhood-testnet" })).json() as {
         status: string; escrow: Address; units: string; expiryHours: number;
         stockIntent: { asset: { symbol: string; address: Address }; amount: string; recipient: { platform: "github"; username: string } };

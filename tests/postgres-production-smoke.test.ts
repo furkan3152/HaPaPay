@@ -339,8 +339,8 @@ describe("real PostgreSQL persistence smoke", { skip: !databaseUrl }, () => {
     await migrateDatabase(pool);
     const account = "0x7777777777777777777777777777777777777777";
     await pool.query(`INSERT INTO sp_ledger (account, kind, amount, source_key, detail, rules_version, created_at) VALUES
-      ($1, 'adjustment', 5, 'adjust:page-a', 'Added by HaPaPay', 1, '2026-10-05T12:00:00.123400Z'),
-      ($1, 'adjustment', 7, 'adjust:page-b', 'Added by HaPaPay', 1, '2026-10-05T12:00:00.123456Z')`, [account]);
+      ($1, 'adjustment', 5, 'adjust:page-a', 'Added by ElysaPay', 1, '2026-10-05T12:00:00.123400Z'),
+      ($1, 'adjustment', 7, 'adjust:page-b', 'Added by ElysaPay', 1, '2026-10-05T12:00:00.123456Z')`, [account]);
     const ledger = new PostgresSpRepository(pool);
     const first = await ledger.ledger({ account: account as never, limit: 1, includeZero: true });
     assert.equal(first[0].sourceKey, "adjust:page-b");
@@ -370,7 +370,7 @@ async function firstSpSql(pool: Pool) {
   };
   await pool.query(`CREATE OR REPLACE FUNCTION hapapay_append_only() RETURNS trigger LANGUAGE plpgsql AS $$
     BEGIN
-      RAISE EXCEPTION 'HaPaPay keeps every row of %: rows can be added, never changed or removed', TG_TABLE_NAME;
+      RAISE EXCEPTION 'ElysaPay keeps every row of %: rows can be added, never changed or removed', TG_TABLE_NAME;
     END
     $$`);
   await pool.query("CREATE TABLE sp_rules (version INTEGER PRIMARY KEY CHECK (version > 0), rules JSONB NOT NULL, created_by TEXT NOT NULL, note TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())");

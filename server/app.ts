@@ -67,6 +67,8 @@ import { preparedFee } from "./stock-transfer-service.js";
 import { registerSolanaRoutes, type SolanaDesk } from "./solana-routes.js";
 import { registerSpRoutes, type SpDesk } from "./sp-routes.js";
 import { registerAdminRoutes, type AdminDesk } from "./admin-routes.js";
+import { registerElysiumRoutes } from "./elysium-routes.js";
+import type { ElysiumService } from "./elysium-service.js";
 import type { DeskFeature } from "../src/domain/desk-controls.js";
 import { SOLANA_MAINNET, SOLANA_SIGNATURE_PATTERN } from "../src/domain/solana-chains.js";
 import { z } from "zod";
@@ -312,6 +314,8 @@ export function createApp(dependencies: {
   sp?: SpDesk;
   /** The admin panel: admin wallets, the audit log, the desk's pauses and notice. */
   admin?: AdminDesk;
+  /** Elysium: HYPE payments to verified handles, live chain stats, Hyperliquid markets and the admin's contracts. */
+  elysium?: ElysiumService;
   vercelIngress?: boolean;
   /** Outside Vercel, the proxies to trust for the client's address (see readTrustProxy); rate limits count by it. */
   trustProxy?: number | string;
@@ -1601,7 +1605,7 @@ export function createApp(dependencies: {
     } catch (error) {
       // Every signature fails when Telegram no longer accepts the site's bot token: that is a site setting, not the person.
       if (error instanceof TelegramSignatureError && await dependencies.telegramTokenCheck?.refused()) {
-        return void response.status(503).json({ error: "Telegram refused HaPaPay's bot token, so nothing was linked.", reason: "setup" });
+        return void response.status(503).json({ error: "Telegram refused ElysaPay's bot token, so nothing was linked.", reason: "setup" });
       }
       if (error instanceof TelegramSignatureError || error instanceof TelegramLoginError) return void response.status(401).json({ error: error.message });
       if (error instanceof IdentityConflictError) return void response.status(409).json({ error: error.message, reason: "taken" });
@@ -1740,6 +1744,18 @@ export function createApp(dependencies: {
       return { arc: arc ?? [], robinhood: robinhood ?? [], solana: solana ?? [] };
     },
     pendingLinks: async (wallet) => pendingLinks(wallet, await verifiedAccounts(wallet)),
+    elysium: dependencies.elysium,
+  });
+  registerElysiumRoutes(app, {
+    elysium: dependencies.elysium,
+    admin: dependencies.admin,
+    session,
+    protectedIngress,
+    limit: routeLimit,
+    paused: async () => {
+      const message = await dependencies.admin?.controls.paused("elysium.payments");
+      return message ? { message } : undefined;
+    },
   });
 
   app.get("/api/health", async (_request, response) => {

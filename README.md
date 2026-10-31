@@ -1,17 +1,18 @@
 <p align="center">
-  <img src="docs/assets/banner.png" alt="HaPaPay: pay a handle, not an address" width="100%" />
+  <img src="docs/assets/banner.png" alt="ElysaPay: pay a handle, not an address" width="100%" />
 </p>
 
-<h1 align="center">HaPaPay</h1>
+<h1 align="center">ElysaPay</h1>
 
 <p align="center">
-  <b>Pay a handle, not an address.</b><br />
-  Non-custodial social payments: send stablecoins, Robinhood Stock Tokens and xStocks to anyone's GitHub, X, Telegram,
-  Discord or Farcaster handle, across Robinhood Chain, Solana and Arc. Your wallet signs every transfer.
+  <b>Pay a handle, not an address. Now on Elysium.</b><br />
+  Non-custodial social payments for Elysium, the DeFi layer 2 for Hyperliquid: pay anyone's GitHub, X, Telegram,
+  Discord or Farcaster handle in HYPE, and send stablecoins, Robinhood Stock Tokens and xStocks across Robinhood Chain,
+  Solana and Arc. Your wallet signs every transfer.
 </p>
 
 <p align="center">
-  <a href="https://github.com/furkan3152/HaPaPay/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/furkan3152/HaPaPay/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="https://github.com/furkan3152/ElysaPay/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/furkan3152/ElysaPay/actions/workflows/ci.yml/badge.svg" /></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111" /></a>
 </p>
 
@@ -30,13 +31,36 @@
 
 ---
 
+## ElysaPay on Elysium
+
+ElysaPay (formerly HaPaPay) is rebuilt around [Elysium](https://elysium.kinetiq.xyz), Kinetiq's layer 2 for the
+Hyperliquid ecosystem: an Arbitrum Orbit chain that settles to HyperEVM, takes HYPE as gas and makes a block about
+every 100 ms. Elysium's public mainnet is planned for **November 9, 2026**; its testnet (chain 99801) has been live since
+September 22.
+
+| | What ElysaPay adds for Elysium |
+|---|---|
+| **HYPE to a handle** | The desk's *Elysium* tab pays a verified handle in HYPE through `ElysaPayRouter`: 1% fee on top, recipient gets exactly the amount, one transaction, recorded only from its `Paid` event. |
+| **Dollars in, HYPE out** | Write the amount in dollars; it is converted at Hyperliquid's live HYPE mid and the review shows the exact HYPE. |
+| **The chain's pulse** | Live block height, measured block time and what a payment costs in gas right now, read from Elysium. |
+| **Trading tape** | Hyperliquid perps (HYPE, BTC, ETH, SOL, ...) with 24h change, funding, open interest and volume. Kinetiq plans HyperCore precompiles on Elysium after mainnet; the tape reads Hyperliquid's public API until then. |
+| **Admin console** | `/admin` → *Elysium*: deploy the router, the **ELYSA** token and the **Elysian Pass** from your own wallet on testnet or mainnet, mint one by one or as airdrops, pause or close minting, freeze metadata, move ownership in two steps, register contracts with a signed change, switch networks on and off, and follow a mainnet launch checklist with a countdown. Every transaction is read back and written to the audit log. |
+| **Mainnet gate** | Mainnet stays off until an admin enters Kinetiq's official RPC and the server confirms it answers chain 99901. |
+| **Sound and voice** | Soft synthesized cues (Web Audio, no files) and an optional voice that reads each review aloud; both per-viewer toggles. |
+| **Elysian design** | Deep night and mint with a pale gold for launches, a dotted aurora that drifts behind the desk, and the dot-morph hero now gathering into the Elysian gate. The dot mechanics are unchanged. |
+
+The contracts are in [`contracts/elysium`](contracts/elysium) with Forge tests in
+[`foundry-test/Elysium.t.sol`](foundry-test/Elysium.t.sol); the server is
+[`server/elysium-service.ts`](server/elysium-service.ts). The step-by-step admin and launch guide (in Turkish) is
+[docs/elysium-yonetici-rehberi.md](docs/elysium-yonetici-rehberi.md).
+
 ## The vision
 
 Money should move like a message. Everyone already has a name online: a GitHub handle, an X account, a Telegram
 username. What they rarely have is a wallet address you can type from memory. Crypto still asks people to copy and
 paste 42 characters, check the first four and the last four, and hope nobody swapped the middle.
 
-HaPaPay turns a verified social handle into a payment address that works on more than one chain. You write what you
+ElysaPay turns a verified social handle into a payment address that works on more than one chain. You write what you
 want in plain words, *"send 25 USDG to @toly on X"*, review exactly what will happen, and your own wallet signs it.
 
 A few rules hold everywhere:
@@ -50,7 +74,7 @@ A few rules hold everywhere:
 4. Verify, don't trust. Every prepared transaction is checked in the browser against what you reviewed, and nothing
    is recorded until its receipt is read back from the chain.
 
-HaPaPay is not tied to one network. Each request runs where its asset lives, and where you hold it.
+ElysaPay is not tied to one network. Each request runs where its asset lives, and where you hold it.
 
 ## What it does
 
@@ -107,7 +131,7 @@ HaPaPay is not tied to one network. Each request runs where its asset lives, and
 </table>
 
 <p align="center">
-  <img src="docs/assets/screens/home.png" alt="The HaPaPay home page" width="49%" />
+  <img src="docs/assets/screens/home.png" alt="The ElysaPay home page" width="49%" />
   <img src="docs/assets/screens/desk.png" alt="The payment desk with the Stock Token board" width="49%" />
   <br />
   <sub>A local install configured for mainnet; with the <code>.env.example</code> defaults, USDC runs on Arc Testnet
@@ -125,7 +149,7 @@ sequenceDiagram
     autonumber
     actor S as Sender
     participant D as Desk (browser)
-    participant A as HaPaPay API
+    participant A as ElysaPay API
     participant I as Identity store
     participant C as Chain
     S->>D: "send 25 USDG to @toly on X"
@@ -159,7 +183,7 @@ sequenceDiagram
     autonumber
     actor P as Payer
     participant V as Vault (escrow or program)
-    participant A as HaPaPay API
+    participant A as ElysaPay API
     actor R as Recipient
     P->>V: Fund the link: amount + 1% fee, open for 3 to 30 days
     A->>A: Record it from the exact PaymentCreated event
@@ -198,6 +222,7 @@ one; check it before signing.
 
 | Network | Assets | How a payment settles | Vault |
 |---|---|---|---|
+| **Elysium** (Testnet 99801, Mainnet 99901 at launch) | HYPE | `ElysaPayRouter.payNative`: amount to the recipient, 1% fee to the treasury, one transaction | Not yet |
 | **Robinhood Chain** (4663) | 195 Robinhood Stock Tokens (178 stocks, 17 ETFs), USDG | `approve` + `HaPaPayRouter.pay`: amount to the recipient, fee split in the same transaction | `StockClaimEscrow` |
 | **Solana** (mainnet) | USDC, USDG, 951 xStocks | SPL Token and Token-2022 transfers plus the fee to the treasury in one transaction; batches split to fit | `hapapay-vault` program |
 | **Arc** (Mainnet 5042, Testnet 5042002) | USDC | `approve` + `HaPaPayRouter.pay`, fee through `HaPaPayFeeForwarder` | `StockClaimEscrow` |
@@ -221,7 +246,7 @@ flowchart LR
         Desk["Desk SPA<br/>React · Vite"]
         Wallets["Privy · injected EVM wallets<br/>Wallet Standard (Solana)"]
     end
-    subgraph Server["HaPaPay API · Express"]
+    subgraph Server["ElysaPay API · Express"]
         Chat["Intent engine"]
         Identity["Identity and OAuth"]
         Pay["Payment preparation<br/>and receipt checks"]
@@ -308,8 +333,8 @@ Read the full model in [docs/security.md](docs/security.md). To report a vulnera
 ### Run it locally
 
 ```bash
-git clone https://github.com/furkan3152/HaPaPay.git
-cd HaPaPay
+git clone https://github.com/furkan3152/ElysaPay.git
+cd ElysaPay
 npm ci
 cp .env.example .env    # every value is optional in development
 npm run dev             # desk on http://localhost:5173, API on http://localhost:8787
@@ -331,6 +356,7 @@ reason the server reports.
 | `npm run migrate:database` | Apply the PostgreSQL migrations (explicit, never at request time) |
 | `npm run sync:stock-tokens` | Rebuild the Stock Token allowlist from the registry and chain |
 | `npm run sync:solana-stocks` | Rebuild the xStocks allowlist from the xStocks API and Solana |
+| `npm run generate:elysium` | Regenerate the Elysium contract artifacts from `contracts/elysium` |
 | `npm run generate:stock-escrow` | Regenerate the contract artifacts from `contracts/` |
 | `npm run build:solana-vault` | Build the Solana program and pin its size and hash |
 | `npm run readiness` | Check the settings and Arc's contracts on chain (see below) |
@@ -347,7 +373,7 @@ REAL_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres HAPAPAY_ISOLATED_P
 
 ### Deploying
 
-HaPaPay runs as a Vercel project (static desk on the CDN, the API as a function) or as a container (`Dockerfile`).
+ElysaPay runs as a Vercel project (static desk on the CDN, the API as a function) or as a container (`Dockerfile`).
 Production needs PostgreSQL, an HTTPS origin, a session secret of your own, an Optimism RPC for Sign in with
 Farcaster, the OAuth apps you want, and the operator steps that deploy the contracts and the Solana program from
 `/operator/stock-escrow`. The full checklist is in
@@ -370,22 +396,22 @@ The desk also serves its own user and operator guide at `/docs`.
 
 ## Live deployment
 
-A live HaPaPay instance runs on Arc Mainnet at [siglos-pay.vercel.app](https://siglos-pay.vercel.app). Its hostname
-and page title still carry the project's earlier name, **Siglos Pay**; the code and the product are HaPaPay.
+The earlier HaPaPay build runs on Arc Mainnet at [siglos-pay.vercel.app](https://siglos-pay.vercel.app) (its hostname
+still carries the project's first name, **Siglos Pay**). ElysaPay, with Elysium, is deployed from this repository.
 
 ## Disclaimer
 
-HaPaPay is an independent project. It is not affiliated with, endorsed by, or officially connected with Robinhood
-Markets, Inc., the Solana Foundation, the xStocks issuer, Paxos, Circle, Arc, Privy or any social platform it supports.
+ElysaPay is an independent project. It is not affiliated with, endorsed by, or officially connected with Kinetiq,
+Elysium, Hyperliquid, Robinhood Markets, Inc., the Solana Foundation, the xStocks issuer, Paxos, Circle, Arc, Privy or any social platform it supports.
 
 Robinhood Stock Tokens and xStocks give economic exposure, not ownership of the underlying shares. They are not for
-U.S. persons, and other regional restrictions apply; the eligibility statements HaPaPay asks for are self-attestations,
+U.S. persons, and other regional restrictions apply; the eligibility statements ElysaPay asks for are self-attestations,
 not a legal review. Nothing here is financial advice. The software is provided as is, without warranty, and its
 contracts are unaudited.
 
 ## License
 
-HaPaPay is released under the [MIT License](LICENSE).
+ElysaPay is released under the [MIT License](LICENSE).
 
 ---
 

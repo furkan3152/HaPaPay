@@ -30,7 +30,7 @@ export type AdminCounts = {
 
 /**
  * What the admin panel reads across every account: recent payments and vault links on the
- * three mainnets, counts, and every wallet that ever used HaPaPay (for awarding SP to everyone). Reads only.
+ * three mainnets, counts, and every wallet that ever used ElysaPay (for awarding SP to everyone). Reads only.
  */
 export interface AdminRecords {
   activity(input: { kind: "payment" | "vault_link"; limit: number; before?: string; wallet?: Address }): Promise<AdminActivityRow[]>;

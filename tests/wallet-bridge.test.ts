@@ -79,7 +79,7 @@ describe("the Privy bridge", () => {
     // The desk offers it only for those wallets, and says what export means.
     assert.match(app, /const exportableSolana = Boolean\(session\.solanaAddress && privyMade\.solana === session\.solanaAddress\);/);
     assert.match(app, /\{exportableSolana && <button type="button" className="export-action"/);
-    assert.match(app, /Export key opens Privy's own window with the private key of a wallet Privy made for you\. HaPaPay never sees it;/);
+    assert.match(app, /Export key opens Privy's own window with the private key of a wallet Privy made for you\. ElysaPay never sees it;/);
     assert.doesNotMatch(app, /privateKey|exportedKey|seedPhrase/, "the desk never handles a key itself");
   });
 });

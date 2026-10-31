@@ -145,7 +145,7 @@ export function matchesRoutedBatch(
  * these units, so a note always belongs to the payment it is recorded with. Anything else carries none.
  */
 /**
- * The fee HaPaPay's router took for one payment, read from its receipt: the router's own `Paid` event for this
+ * The fee ElysaPay's router took for one payment, read from its receipt: the router's own `Paid` event for this
  * payer, recipient, token and amount, never above the 1% schedule. Undefined when the payment did not go through the
  * router, so no fee was paid (a plain token transfer to the same person carries the same transfer log, but no `Paid`).
  */

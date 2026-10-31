@@ -1,6 +1,6 @@
 # Self-hosting
 
-This guide takes a HaPaPay deployment from an empty machine to a production setup. Everything is configured through
+This guide takes a ElysaPay deployment from an empty machine to a production setup. Everything is configured through
 environment variables; [`.env.example`](../.env.example) lists them all with comments. Values are never needed in
 code, and none should ever be committed.
 

@@ -179,7 +179,7 @@ describe("Solana vault links through the server", { timeout: 600_000 }, () => {
     assert.deepEqual((await vault.pending({ wallet, solanaAddress: recipient.address, accounts: [newer] })).incoming, [], "an account made after the link does not see it");
     assert.deepEqual((await vault.pending({ wallet, solanaAddress: recipient.address, accounts: [other] })).incoming, []);
     assert.deepEqual((await vault.pending({ wallet, solanaAddress: recipient.address, accounts: [stale] })).incoming, [], "a name Discord confirmed before the link does not see it");
-    await assert.rejects(() => vault.prepareClaim({ paymentId: prepared.paymentId, wallet: recipient.address, accounts: [stale] }), /waits for the Discord name @new\.friend\. Connect Discord to HaPaPay with the account that has that name now \(connect it again if it is connected already\)/);
+    await assert.rejects(() => vault.prepareClaim({ paymentId: prepared.paymentId, wallet: recipient.address, accounts: [stale] }), /waits for the Discord name @new\.friend\. Connect Discord to ElysaPay with the account that has that name now \(connect it again if it is connected already\)/);
     await assert.rejects(() => vault.prepareClaim({ paymentId: prepared.paymentId, wallet: recipient.address, accounts: [newer] }), /waits for the Discord name @new\.friend.*an account made after the link cannot claim it/);
     await assert.rejects(() => vault.prepareClaim({ paymentId: prepared.paymentId, wallet: recipient.address, accounts: [other] }), /waits for the Discord name @new\.friend/);
     await assert.rejects(() => vault.prepareClaim({ paymentId: prepared.paymentId, wallet: recipient.address, accounts: [{ ...holder, platform: "x" as never }] }), /waits for the Discord name/, "the same name on another platform is not it");
@@ -200,9 +200,9 @@ describe("Solana vault links through the server", { timeout: 600_000 }, () => {
     assert.deepEqual([named.lock, named.recipient.username], ["name", "jack"]);
   });
 
-  it("prepares no SOL link: HaPaPay sends stablecoins and stocks", async (t) => {
+  it("prepares no SOL link: ElysaPay sends stablecoins and stocks", async (t) => {
     if (!validator) return t.skip("solana-test-validator is not installed");
-    // HaPaPay sends no SOL. The program still holds any SPL token, so its own tests keep wrapped SOL.
+    // ElysaPay sends no SOL. The program still holds any SPL token, so its own tests keep wrapped SOL.
     await assert.rejects(
       () => vault.prepare({ payer: payer.address, asset: SOLANA_SOL, amount: "0.25", platform: "github", username: "alice", expiryHours: 48 }),
       (error) => error instanceof SolanaTransferError && error.message === NO_SOL_SENDING,

@@ -101,7 +101,7 @@ ${rows}
 
 /** How many xStocks the list holds, in a module small enough for the home page to import. */
 export function renderSolanaStockCount(count: number) {
-  return `/** How many xStocks HaPaPay lists on Solana, written by scripts/sync-solana-stocks.ts with the list itself. */\nexport const SOLANA_XSTOCK_COUNT = ${count};\n`;
+  return `/** How many xStocks ElysaPay lists on Solana, written by scripts/sync-solana-stocks.ts with the list itself. */\nexport const SOLANA_XSTOCK_COUNT = ${count};\n`;
 }
 
 /** Reads mints through a JSON-RPC endpoint with `getMultipleAccounts` (jsonParsed), retrying a busy endpoint. */

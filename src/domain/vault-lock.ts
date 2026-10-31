@@ -4,7 +4,7 @@ import type { Platform } from "./payment-intent.js";
  * Who a vault link waits for. GitHub, X and Farcaster accounts are looked up before they join, so a link to them is locked
  * to the account's immutable ID ("account"). Discord and Telegram cannot be looked up by name, and X answers lookups
  * only while its API serves this site, so a link to them is locked to the name the person has there ("name"): whoever
- * connects that platform to HaPaPay with that name after the link was made, through its official sign-in, claims
+ * connects that platform to ElysaPay with that name after the link was made, through its official sign-in, claims
  * it, as long as their account is older than the link where the platform says when an account was made (X and
  * Discord).
  */

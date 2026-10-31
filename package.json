@@ -1,5 +1,5 @@
 {
-  "name": "hapapay",
+  "name": "elysapay",
   "private": true,
   "version": "0.1.0",
   "license": "MIT",
@@ -27,6 +27,7 @@
     "sync:stock-tokens": "tsx scripts/sync-stock-tokens.ts",
     "sync:solana-stocks": "tsx scripts/sync-solana-stocks.ts",
     "build:solana-vault": "tsx scripts/build-solana-vault.ts",
+    "generate:elysium": "tsx scripts/generate-elysium-artifacts.ts",
     "generate:stock-escrow": "tsx scripts/generate-stock-claim-escrow-artifact.ts",
     "init:testnet-env": "tsx scripts/init-testnet-environment.ts",
     "init:arc-mainnet": "tsx scripts/init-mainnet-authorities.ts",

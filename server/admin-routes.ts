@@ -13,6 +13,8 @@ import type { IdentityStore } from "./identity-store.js";
 import type { SpActivity } from "./sp-activity.js";
 import { SP_ADJUST_ERROR, SP_KINDS, SpRequestError, ledgerCursor, type SpService } from "./sp-service.js";
 import { ReferralPayoutError, type ReferralPayouts } from "./referral-payouts.js";
+import { isElysiumNetworkId, type ElysiumContractKind, type ElysiumNetworkId } from "../src/domain/elysium.js";
+import { ElysiumRequestError, type ElysiumService } from "./elysium-service.js";
 
 /** The admin panel on this server: who may use it, where changes are recorded, and the desk's switches. */
 export type AdminDesk = {
@@ -44,6 +46,8 @@ type RouteContext = {
   accountPayments?(wallet: Address): Promise<Record<string, unknown[]>>;
   /** Vault links the account can claim or refund now, read back from each chain. */
   pendingLinks?(wallet: Address): Promise<PendingVaultLinks>;
+  /** Elysium: the contracts an admin registers and the networks they switch on. */
+  elysium?: ElysiumService;
 };
 
 
@@ -77,6 +81,18 @@ const PAYLOADS = {
     message: z.string().trim().max(PAUSE_MESSAGE_MAX_LENGTH).default(""),
   }),
   "notice.set": z.object({ text: z.string().trim().max(DESK_NOTICE_MAX_LENGTH).default(""), tone: z.enum(["info", "warning"]).default("info") }),
+  "elysium.contract": z.object({
+    network: z.string().refine(isElysiumNetworkId, "Choose an Elysium network."),
+    kind: z.enum(["router", "token", "pass"]),
+    // An empty address removes the registration.
+    address: z.union([addressSchema, z.literal("")]).default(""),
+  }),
+  "elysium.network": z.object({
+    network: z.string().refine(isElysiumNetworkId, "Choose an Elysium network."),
+    enabled: z.boolean(),
+    rpcUrl: z.string().trim().max(300).optional(),
+    explorerUrl: z.string().trim().max(300).optional(),
+  }),
 } satisfies Record<AdminAction, z.ZodType>;
 
 function checkedPayload(action: AdminAction, input: unknown): Record<string, unknown> {
@@ -131,7 +147,7 @@ export function registerAdminRoutes(app: express.Express, context: RouteContext)
     const session = context.session(request);
     if (!context.admin?.auth.configured) return void response.status(503).json({ error: "No admin wallet is set on this server (ADMIN_WALLET_ADDRESSES)." });
     if (!session) return void response.status(401).json({ error: "Connect and sign with your wallet first." });
-    if (!context.admin.auth.isAdmin(session.address)) return void response.status(403).json({ error: "This wallet is not an admin of HaPaPay." });
+    if (!context.admin.auth.isAdmin(session.address)) return void response.status(403).json({ error: "This wallet is not an admin of ElysaPay." });
     if (!context.sp) return void response.status(503).json({ error: "SP is not available on this server right now." });
     return { wallet: session.address, desk: context.admin, sp: context.sp };
   };
@@ -180,7 +196,7 @@ export function registerAdminRoutes(app: express.Express, context: RouteContext)
     if (!allowed) return;
     try {
       const wallet = await findAccount(String(request.params.query ?? "").trim());
-      if (!wallet) return void response.status(404).json({ error: "No HaPaPay account matches that." });
+      if (!wallet) return void response.status(404).json({ error: "No ElysaPay account matches that." });
       const profile = await context.identities.profile(wallet);
       const referrals = allowed.sp.service.referrals;
       const [accounts, solanaAddress, summary, flags, ledger, payments, links, invitedBy, invitees, invites] = await Promise.all([
@@ -413,7 +429,7 @@ export function registerAdminRoutes(app: express.Express, context: RouteContext)
       if (error instanceof SpRequestError || error instanceof AdminRefusedError) return void response.status(error instanceof AdminRefusedError ? 403 : 400).json({ error: error.message });
       return void response.status(503).json({ error: "The approval could not be checked right now. Nothing changed." });
     }
-    const target = typeof payload.account === "string" ? payload.account : typeof payload.entryId === "string" ? payload.entryId : typeof payload.key === "string" ? payload.key : undefined;
+    const target = typeof payload.account === "string" ? payload.account : typeof payload.entryId === "string" ? payload.entryId : typeof payload.key === "string" ? payload.key : typeof payload.network === "string" ? `${payload.network}${typeof payload.kind === "string" ? `:${payload.kind}` : ""}` : undefined;
     let recorded;
     try {
       // The record comes first: a change that cannot be recorded does not run.
@@ -451,6 +467,33 @@ export function registerAdminRoutes(app: express.Express, context: RouteContext)
         return desk.controls.setPause({ feature: payload.key as DeskFeature, paused: payload.paused === true, message: String(payload.message ?? ""), actor });
       case "notice.set":
         return desk.controls.setNotice({ text: String(payload.text ?? ""), tone: payload.tone === "warning" ? "warning" : "info", actor });
+      case "elysium.contract": {
+        if (!context.elysium) throw new SpRequestError("Elysium is not available on this server.");
+        const network = payload.network as ElysiumNetworkId;
+        const kind = payload.kind as ElysiumContractKind;
+        try {
+          if (!payload.address) return await context.elysium.setContract(network, kind, undefined, actor);
+          // The contract is read again now: the code must be ElysaPay's and an admin must control it.
+          const checked = await context.elysium.inspectContract(network, kind, String(payload.address), (address) => desk.auth.isAdmin(address));
+          return { contracts: await context.elysium.setContract(network, kind, checked.address, actor), checked };
+        } catch (error) {
+          if (error instanceof ElysiumRequestError) throw new SpRequestError(error.message);
+          throw error;
+        }
+      }
+      case "elysium.network": {
+        if (!context.elysium) throw new SpRequestError("Elysium is not available on this server.");
+        try {
+          return await context.elysium.setNetwork(payload.network as ElysiumNetworkId, {
+            enabled: payload.enabled === true,
+            rpcUrl: payload.rpcUrl as string | undefined,
+            explorerUrl: payload.explorerUrl as string | undefined,
+          }, actor);
+        } catch (error) {
+          if (error instanceof ElysiumRequestError) throw new SpRequestError(error.message);
+          throw error;
+        }
+      }
     }
   }
 }

@@ -186,14 +186,14 @@ export default function SolanaVaultSlip({ review, programId, wallet, solanaAddre
 
   return <article className="payment-slip claim-slip solana-slip" data-network-theme="solana" data-state={funding?.status}>
     <div className="slip-top"><div><small>{funding?.link ? "Waiting in the vault" : `${asset.symbol} vault link`}</small><strong><DotText text={review.amount} /> <span className="slip-symbol">{asset.symbol}</span></strong></div><div className="platform-avatar"><ProviderIcon provider={recipient.platform} /></div></div>
-    <div className="recipient-line"><div><small>Not on HaPaPay yet</small><b>@{recipient.username}</b></div><span>{platformName(recipient.platform)}</span></div>
+    <div className="recipient-line"><div><small>Not on ElysaPay yet</small><b>@{recipient.username}</b></div><span>{platformName(recipient.platform)}</span></div>
     <div className="claim-steps"><span><b>1</b> Amount + fee in</span><i /><span><b>2</b> {windowLabel(review.expiryHours)} in the vault</span><i /><span><b>3</b> Official claim</span></div>
     {!funding && <div className="vault-window" role="group" aria-label="Vault window">
       <span>Vault window</span>
       {STOCK_CLAIM_WINDOW_CHOICES.map((hours) => <button type="button" key={hours} aria-pressed={review.expiryHours === hours} disabled={busy} onClick={() => onWindow(hours)}>{windowLabel(hours)}</button>)}
     </div>}
     <dl className="stock-facts">
-      <div><dt>Network</dt><dd>{SOLANA_MAINNET.name} mainnet<small>Held by the HaPaPay vault program, checked against its reviewed code before every transaction</small></dd></div>
+      <div><dt>Network</dt><dd>{SOLANA_MAINNET.name} mainnet<small>Held by the ElysaPay vault program, checked against its reviewed code before every transaction</small></dd></div>
       <div><dt>Fee</dt><dd>{asset.scaled ? "≈ " : ""}{formatUnits(fee, asset.decimals)} {asset.symbol} · 1%<small>Paid only when @{recipient.username} claims it, and returned with a refund</small></dd></div>
       <div><dt>Total</dt><dd>{asset.scaled ? "≈ " : ""}{formatUnits(parseUnits(review.amount, asset.decimals) + fee, asset.decimals)} {asset.symbol}<small>From your Solana wallet · @{recipient.username} receives exactly {review.amount}</small></dd></div>
       <div><dt>Rent</dt><dd>About 0.003 SOL<small>The vault's token account comes back to you when the link is claimed or taken back; about 0.0015 SOL stays with the link's record for good</small></dd></div>
@@ -205,7 +205,7 @@ export default function SolanaVaultSlip({ review, programId, wallet, solanaAddre
     <div className={`mainnet-lock ${ready ? "mainnet-ready" : ""}`}><DotIcon name={ready ? "shield" : "lock"} size={16} /><span>{!ready
       ? <><b>Vault links are off.</b> {reason ?? "The Solana vault is not open on this server yet."}</>
       : review.lock === "name"
-        ? <><b>Locked to the {platformName(recipient.platform)} name @{recipient.username}.</b> Whoever connects {platformName(recipient.platform)} to HaPaPay with that name claims it{recipient.platform === "telegram" ? "" : ", with an account older than this link"}. Check the spelling; if nobody claims it within {windowLabel(review.expiryHours)}, you take it back.</>
+        ? <><b>Locked to the {platformName(recipient.platform)} name @{recipient.username}.</b> Whoever connects {platformName(recipient.platform)} to ElysaPay with that name claims it{recipient.platform === "telegram" ? "" : ", with an account older than this link"}. Check the spelling; if nobody claims it within {windowLabel(review.expiryHours)}, you take it back.</>
         : <><b>The claim is locked to an immutable provider ID, not a username.</b> A renamed account cannot redirect the tokens.</>}</span></div>
     {funding && <a className={`transaction-link ${funding.status === "confirmed" ? "confirmed" : funding.status === "verification_failed" ? "verification-failed" : "pending"}`} href={solanaTransactionUrl(funding.signature)} target="_blank" rel="noreferrer">{funding.status === "confirmed" ? "In the vault" : funding.status === "verification_failed" ? "Check in explorer" : "Transaction submitted"} · {funding.signature.slice(0, 10)}…</a>}
     {funding?.link ? <div className="claim-link"><span>Claim link</span><CopyButton text={funding.link} /><code>{funding.link}</code></div>

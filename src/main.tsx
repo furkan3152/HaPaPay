@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { App } from "./App";
 import { rememberInviteFromUrl } from "./referral-desk";
 import "./styles.css";
+import { installSoundCues } from "./sound";
 
 /**
  * Whatever goes wrong while the page draws, it says so and offers a reload instead of going blank.
@@ -26,6 +27,8 @@ class PageBoundary extends Component<{ children: ReactNode }, { failed: boolean 
 
 // An invite link (`?ref=CODE`) leaves its code for the desk to send once the wallet is verified.
 rememberInviteFromUrl();
+// Soft sound cues for presses (a per-viewer choice in the top bar).
+installSoundCues();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode><PageBoundary><App /></PageBoundary></React.StrictMode>,

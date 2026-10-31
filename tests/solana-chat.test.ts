@@ -71,7 +71,7 @@ describe("network words", () => {
   });
 
   it("reads one amount of one listed Solana asset, and SOL only to say it is not sent", () => {
-    // HaPaPay sends stablecoins and stocks, not SOL.
+    // ElysaPay sends stablecoins and stocks, not SOL.
     assert.deepEqual(readSolanaAmount("Send 0.5 SOL to @bob"), { status: "invalid", message: NO_SOL_SENDING, final: true });
     assert.deepEqual(readSolanaAmount("send 0.5 sol to bob"), { status: "invalid", message: NO_SOL_SENDING, final: true });
     assert.deepEqual(readSolanaAmount("Send five SOL to @bob"), { status: "invalid", message: NO_SOL_SENDING, final: true });
@@ -259,7 +259,7 @@ describe("Solana as the main network in the chat", () => {
     const link = await read("Send 5 USDC to @newbie on GitHub on Solana");
     assert.equal(link.status, "solana_claim_review");
     assert.deepEqual([link.solana!.recipient!.username, link.solana!.amount], ["newbie", "5"]);
-    // HaPaPay sends no SOL, so no vault link holds it.
+    // ElysaPay sends no SOL, so no vault link holds it.
     const sol = await read("Send 0.001 SOL to @newbie on GitHub");
     assert.equal(sol.status, "needs_clarification");
     assert.equal(sol.message, NO_SOL_SENDING);
@@ -269,7 +269,7 @@ describe("Solana as the main network in the chat", () => {
     // Discord cannot be looked up before the person joins, so the link waits for the Discord name.
     const discord = await read("discord üzerinde @newcomer 1 usdc gönder");
     assert.equal(discord.status, "solana_claim_review", discord.message);
-    assert.match(discord.message, /for the Discord name @newcomer: whoever connects Discord to HaPaPay with that name claims it/);
+    assert.match(discord.message, /for the Discord name @newcomer: whoever connects Discord to ElysaPay with that name claims it/);
     assert.equal((discord as { vaultLock?: string }).vaultLock, "name");
 
   });

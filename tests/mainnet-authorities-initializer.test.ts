@@ -17,7 +17,7 @@ describe("Arc Mainnet authority initializer", () => {
   it("creates the two Arc Mainnet attestor keys under their own names, privately, without a deployer key", async () => {
     const parentDirectory = await mkdtemp(join(tmpdir(), "hapapay-mainnet-"));
     temporaryDirectories.push(parentDirectory);
-    const outputDirectory = join(parentDirectory, "HaPaPay Mainnet Credentials");
+    const outputDirectory = join(parentDirectory, "ElysaPay Mainnet Credentials");
 
     const output = await initializeMainnetAuthorities({
       outputDirectory,
@@ -41,7 +41,7 @@ describe("Arc Mainnet authority initializer", () => {
   it("refuses to replace an existing credential package", async () => {
     const parentDirectory = await mkdtemp(join(tmpdir(), "hapapay-mainnet-"));
     temporaryDirectories.push(parentDirectory);
-    const outputDirectory = join(parentDirectory, "HaPaPay Mainnet Credentials");
+    const outputDirectory = join(parentDirectory, "ElysaPay Mainnet Credentials");
     await writeFile(outputDirectory, "preserve-me", { mode: 0o600 });
 
     await assert.rejects(

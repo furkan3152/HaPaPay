@@ -21,7 +21,7 @@ export type PaymentRecord = {
   /** The note the payment's own transaction carries after `pay`, read from chain when it was confirmed. */
   note?: string;
   /**
-   * USDC base units of the fee HaPaPay's router took for this payment, from the router's `Paid` event in the
+   * USDC base units of the fee ElysaPay's router took for this payment, from the router's `Paid` event in the
    * receipt. Absent for a payment that did not go through the router (it paid no fee) and for rows from before fees
    * were kept.
    */
@@ -153,7 +153,7 @@ export class PaymentHistoryService {
     usdc: Address;
     repository: PaymentRepository;
     client: ReceiptClient;
-    /** HaPaPay's fee router on this chain, whose `Paid` event shows the fee a payment paid. */
+    /** ElysaPay's fee router on this chain, whose `Paid` event shows the fee a payment paid. */
     router?: Address;
     /** The network's name in messages ("Arc Mainnet"). */
     chainName?: string;

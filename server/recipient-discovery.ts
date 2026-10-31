@@ -165,7 +165,7 @@ export class OfficialRecipientDirectory {
     const headers: Record<string, string> = {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2026-03-10",
-      "User-Agent": "HaPaPay",
+      "User-Agent": "ElysaPay",
     };
     if (this.options.githubToken) headers.Authorization = `Bearer ${this.options.githubToken}`;
     if (await this.refused("github")) throw new RecipientLookupUnavailableError(refusedMessage("github"));
@@ -184,7 +184,7 @@ export class OfficialRecipientDirectory {
   }
 
   private async lookupX(username: string): Promise<DiscoveredRecipient> {
-    if (!this.options.xBearerToken) throw new RecipientLookupUnavailableError("This server cannot look up X accounts, so the money cannot wait in the vault for an X account. Ask them to join HaPaPay and link X so you can pay them directly.");
+    if (!this.options.xBearerToken) throw new RecipientLookupUnavailableError("This server cannot look up X accounts, so the money cannot wait in the vault for an X account. Ask them to join ElysaPay and link X so you can pay them directly.");
     if (!/^[a-z0-9_]{1,15}$/i.test(username)) throw new Error("Invalid X username.");
     if (await this.refused("x")) throw new RecipientLookupUnavailableError(refusedMessage("x"));
     const response = await this.ask("x", `https://api.x.com/2/users/by/username/${encodeURIComponent(username)}`, {
@@ -231,5 +231,5 @@ export class OfficialRecipientDirectory {
 /** What the sender reads while a platform refuses this server's lookups. */
 function refusedMessage(platform: Platform) {
   const name = PLATFORM_LABELS[platform] ?? platform;
-  return `${name} is not answering account lookups for HaPaPay right now, so the money cannot be locked to ${name === "X" ? "an" : "a"} ${name} account in the vault. Try again later, or ask them to join HaPaPay and link ${name} so you can pay them directly.`;
+  return `${name} is not answering account lookups for ElysaPay right now, so the money cannot be locked to ${name === "X" ? "an" : "a"} ${name} account in the vault. Try again later, or ask them to join ElysaPay and link ${name} so you can pay them directly.`;
 }

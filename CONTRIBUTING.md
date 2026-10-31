@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for taking the time to improve HaPaPay. This guide covers the workflow and the conventions the codebase relies
+Thanks for taking the time to improve ElysaPay. This guide covers the workflow and the conventions the codebase relies
 on.
 
 ## Setup

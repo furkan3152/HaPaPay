@@ -105,8 +105,8 @@ describe("request understanding", () => {
       assert.equal("intent" in result, false, message);
       assert.equal(result.message, "Write an amount, an asset and who receives it, for example: Send 2 NVDA to @toly on X.");
     }
-    // "how does HaPaPay work" names neither an asset nor a payee: the product's name is never read as @work.
-    for (const message of ["what can you do?", "I want to learn more", "how do I use this on GitHub?", "bir şey sorabilir miyim?", "how does HaPaPay work", "what is HaPaPay?", "HaPaPay nedir", "hapapay nasıl kullanılır", "Ha Pa Pay", "HaPaPay"]) {
+    // "how does ElysaPay work" names neither an asset nor a payee: the product's name is never read as @work.
+    for (const message of ["what can you do?", "I want to learn more", "how do I use this on GitHub?", "bir şey sorabilir miyim?", "how does ElysaPay work", "what is ElysaPay?", "ElysaPay nedir", "hapapay nasıl kullanılır", "Ha Pa Pay", "ElysaPay"]) {
       const result = await createChatDraft(message, parse, nora, "Arc Testnet");
       assert.equal(result.status, "needs_clarification", message);
       assert.equal("intent" in result, false, message);
@@ -115,7 +115,7 @@ describe("request understanding", () => {
     }
     assert.deepEqual(calls, [], "a message with no amount never reaches the model");
     // The product's name inside a real request changes nothing, and a handle that looks like it is still a person.
-    const named = await createChatDraft("send 4 USDC to @nora on X with HaPaPay", parse, nora, "Arc Testnet");
+    const named = await createChatDraft("send 4 USDC to @nora on X with ElysaPay", parse, nora, "Arc Testnet");
     assert.equal(named.status, "ready_for_review", named.message);
     const handle = await createChatDraft("send 3 USDC to @hapapay on X", parse, nora, "Arc Testnet");
     assert.notEqual(handle.message, HELP_REPLY, "a handle named hapapay is a person, not the product");
@@ -179,9 +179,9 @@ describe("request understanding", () => {
       ["send 5 dollars worth of NVDA to bob on x", "Write the amount in NVDA, not dollars, for example: Send 2 NVDA to @bob on X."],
       ["send 5 usdc and usdg to bob on x", "Send one asset at a time: either USDC or a single listed token."],
       // The list names what Solana carries too.
-      ["send 5 eth to octocat on github", "HaPaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: Send 5 USDC to @octocat on GitHub."],
+      ["send 5 eth to octocat on github", "ElysaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: Send 5 USDC to @octocat on GitHub."],
       ["send 2 shares of nvidia to bob on x", "Stock Tokens move in token units, not shares. Write it as “Send 2 NVDA to @bob on X” and the review shows the share equivalent."],
-      ["send 5 eur to bob on x", "HaPaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: Send 5 USDC to @bob on X."],
+      ["send 5 eur to bob on x", "ElysaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: Send 5 USDC to @bob on X."],
     ];
     for (const [message, expected] of cases) {
       const result = await createChatDraft(message, parse, nora, "Arc Testnet");
@@ -288,20 +288,20 @@ describe("requests read the way people write them", () => {
   it("offers the Arc vault to a GitHub, X or Farcaster account that has not joined", async () => {
     const vault = await createChatDraft("send 5 usdc to newcomer on github", undefined, verified, "Arc Mainnet", "robinhood-mainnet", transfers, { enabled: false }, { enabled: true, platforms: ["github", "x", "farcaster"] });
     assert.equal(vault.status, "claim_review");
-    assert.equal(vault.message, "@newcomer is not on HaPaPay yet. You can keep the USDC in the Arc Mainnet vault; they claim it with their official GitHub account within the window you pick, 72 hours to 30 days, or you take it back after that.");
+    assert.equal(vault.message, "@newcomer is not on ElysaPay yet. You can keep the USDC in the Arc Mainnet vault; they claim it with their official GitHub account within the window you pick, 72 hours to 30 days, or you take it back after that.");
     assert.deepEqual(vault.intent?.recipient, { platform: "github", username: "newcomer" });
     // A Telegram link waits for the Telegram name.
     const telegram = await createChatDraft("send 5 usdc to newcomer on telegram", undefined, verified, "Arc Mainnet", "robinhood-mainnet", transfers, { enabled: false }, { enabled: true, platforms: ["github", "x", "farcaster", "discord", "telegram"] }) as { status: string; message: string; vaultLock?: string };
     assert.equal(telegram.status, "claim_review");
     assert.equal(telegram.vaultLock, "name");
-    assert.equal(telegram.message, "@newcomer is not on HaPaPay yet. You can keep the USDC in the Arc Mainnet vault for the Telegram name @newcomer: whoever connects Telegram to HaPaPay with that name claims it within the window you pick, 72 hours to 30 days, or you take it back after that. Check how the name is spelled.");
+    assert.equal(telegram.message, "@newcomer is not on ElysaPay yet. You can keep the USDC in the Arc Mainnet vault for the Telegram name @newcomer: whoever connects Telegram to ElysaPay with that name claims it within the window you pick, 72 hours to 30 days, or you take it back after that. Check how the name is spelled.");
     const impossible = await createChatDraft("send 5 usdc to bob on telegram", undefined, () => undefined, "Arc Mainnet", "robinhood-mainnet", transfers, { enabled: false }, { enabled: true, platforms: ["github", "x", "farcaster", "discord", "telegram"] });
     assert.equal(impossible.message, "No Telegram account can be named @bob. Check how the handle is spelled.", "Telegram names have at least four characters");
     const closed = await createChatDraft("send 5 usdc to newcomer on x", undefined, verified, "Arc Mainnet");
     assert.equal(closed.status, "needs_clarification");
-    assert.equal(closed.message, "@newcomer has not linked X to HaPaPay yet. The Arc Mainnet vault is not open. Send @newcomer your invite link from the SP tab; once they sign in and link X, send it again and it goes straight to them.");
+    assert.equal(closed.message, "@newcomer has not linked X to ElysaPay yet. The Arc Mainnet vault is not open. Send @newcomer your invite link from the SP tab; once they sign in and link X, send it again and it goes straight to them.");
     const noLookups = await createChatDraft("send 5 usdc to newcomer on x", undefined, verified, "Arc Mainnet", "robinhood-mainnet", transfers, { enabled: false }, { enabled: true, platforms: ["github", "farcaster"] });
-    assert.match(noLookups.message, /^@newcomer has not linked X to HaPaPay yet\. This server cannot look X accounts up, so the money cannot wait in the vault for @newcomer yet\./);
+    assert.match(noLookups.message, /^@newcomer has not linked X to ElysaPay yet\. This server cannot look X accounts up, so the money cannot wait in the vault for @newcomer yet\./);
   });
 
   it("offers no vault link to a handle the platform's directory does not know, on any network", async () => {
@@ -338,7 +338,7 @@ describe("requests the desk reads but never drafts", () => {
       calls.push(message);
       return { kind: "send", amount: "5", token: "USDC", recipient: { platform: "x", username: "bob" }, status: "draft" };
     };
-    const asks = "HaPaPay sends from your own wallet; it cannot ask anyone for money. To get paid, verify an account under Identities and share its payment link.";
+    const asks = "ElysaPay sends from your own wallet; it cannot ask anyone for money. To get paid, verify an account under Identities and share its payment link.";
     const cases: Array<[string, string]> = [
       ["request 5 usdc from @bob on x", asks],
       ["get 5 usdc from bob on x", asks],
@@ -353,7 +353,7 @@ describe("requests the desk reads but never drafts", () => {
       ["cancel my 5 usdc payment to @bob on x", "A sent payment is final on chain and cannot be cancelled. Nothing is sent before you sign it in your wallet, and a vault link that nobody claims comes back to you when its window closes."],
       ["send 5 usdc to everyone on x", "Name everyone who receives it, for example: Send 5 USDC each to @toly and @carol on X."],
       ["split 10 usdc with @bob on x", "Name everyone who shares it, for example: Split 10 USDC between @bob and @carol on X."],
-      ["send 5 usdc to @bob on x twice", "HaPaPay sends each payment once. Send it, then write the request again for the next one."],
+      ["send 5 usdc to @bob on x twice", "ElysaPay sends each payment once. Send it, then write the request again for the next one."],
       ["send 5 usdc to bob on x and 3 usdc to alice on telegram", "Write one amount per request. Several people share one request when each gets the same amount, for example: Send 5 USDC each to @toly and @carol on X."],
     ];
     for (const [message, expected] of cases) {
@@ -364,7 +364,7 @@ describe("requests the desk reads but never drafts", () => {
     }
     assert.deepEqual(calls, [], "none of these reach the model");
     const later = await createChatDraft("send 5 usdc to @bob on x every week", model, verified, "Arc Mainnet");
-    assert.equal(later.message, "HaPaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.");
+    assert.equal(later.message, "ElysaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.");
     assert.deepEqual(suggestionsOf(later), ["Send 5 USDC to @bob on X"], "the payment itself can still be sent now");
     for (const message of ["I want to send 5 usdc to bob on x", "send 5 usdc to bob on x per his request", "send 5 usdc to bob on x and tell him thanks", "5 usdc gönder @fatma x"]) {
       assert.notEqual((await createChatDraft(message, undefined, verified, "Arc Mainnet")).status, "needs_clarification", message);
@@ -444,7 +444,7 @@ describe("several people, notes, and questions asked only when something is miss
   it("refuses a listed request that mixes assets, names none, or writes an amount that cannot be paid", async () => {
     for (const [message, reply] of [
       ["send 10 USDC to @a and 2 NVDA to @b on X", "Send one asset at a time."],
-      ["send 10 USDC to @a and 2 SOL to @b on X", "HaPaPay does not send SOL. It sends stablecoins (USDC and USDG) and stocks (xStocks on Solana, Stock Tokens on Robinhood Chain). Keep a little SOL in your wallet for Solana's network fees."],
+      ["send 10 USDC to @a and 2 SOL to @b on X", "ElysaPay does not send SOL. It sends stablecoins (USDC and USDG) and stocks (xStocks on Solana, Stock Tokens on Robinhood Chain). Keep a little SOL in your wallet for Solana's network fees."],
       ["send 1 ETH to @a and 2 ETH to @b on X", "ETH isn't sent here. Send one listed asset to everyone, for example USDC."],
       ["send 10 to @a and 5 to @b on X", "Name the asset after each amount, for example: Send 10 USDC to @a and 5 USDC to @b on X."],
       ["send 10 USDC to @a and 0 USDC to @b on X", "Enter an amount greater than zero for @b."],
@@ -464,7 +464,7 @@ describe("several people, notes, and questions asked only when something is miss
     const read = batchOf(await ask("Send 10 USDC to @a and 5 USDC to @b on X"));
     assert.deepEqual(paid(read), ["x:a=10", "x:b=5"], "the offered request reads back the same way");
     const unpaid = await ask("send 10 USDC to @a, 5 USDC to @b and 3 USDC to @newcomer on X");
-    assert.match(unpaid.message, /@newcomer has no verified X account on HaPaPay\./);
+    assert.match(unpaid.message, /@newcomer has no verified X account on ElysaPay\./);
     assert.deepEqual(suggestionsOf(unpaid), ["Send 10 USDC to @a and 5 USDC to @b on X", "Send 3 USDC to @newcomer on X"]);
   });
 
@@ -509,7 +509,7 @@ describe("several people, notes, and questions asked only when something is miss
 
   it("names who cannot be paid directly and offers the rest, with vault links where they work", async () => {
     const asked = await ask("Send 3 USDC each to @a, @d and @e on X");
-    assert.equal(asked.message, "@d and @e have no verified X accounts on HaPaPay. Pay @a now? @d and @e can each get their part in the vault until they join, with a request of their own.");
+    assert.equal(asked.message, "@d and @e have no verified X accounts on ElysaPay. Pay @a now? @d and @e can each get their part in the vault until they join, with a request of their own.");
     assert.deepEqual(suggestionsOf(asked), ["Send 3 USDC to @a on X", "Send 3 USDC to @d on X", "Send 3 USDC to @e on X"]);
     const yes = await ask("evet", { answering: { request: questionOf(asked)!.request } });
     assert.equal(yes.status, "ready_for_review");
@@ -543,14 +543,14 @@ describe("several people, notes, and questions asked only when something is miss
     for (const plain of ["Send 5 USDC to @bob on X", "send 5 usdc to bob on x per his request", "Send 5 USDC to @bob on X for me"]) {
       assert.equal((await ask(plain) as { note?: string }).note, undefined, plain);
     }
-    assert.equal((await ask("Send 5 USDC to @bob on X for tomorrow")).message, "HaPaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.", "a closing phrase never hides a later payment");
+    assert.equal((await ask("Send 5 USDC to @bob on X for tomorrow")).message, "ElysaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.", "a closing phrase never hides a later payment");
     const batch = batchOf(await ask("send 10 usdc each to @a @b on x note: thanks for the dinner!"));
     assert.equal(batch.note, "thanks for the dinner!");
     const asked = await ask("Send 1 NVDA to @a @b on X note: gift");
     assert.deepEqual(suggestionsOf(asked), ["Send 1 NVDA each to @a and @b on X, note: gift", "Split 1 NVDA between @a and @b on X, note: gift"]);
     assert.equal(batchOf(await ask("each", { answering: { request: questionOf(asked)!.request } })).note, "gift");
     assert.deepEqual(suggestionsOf(await ask("send 5 usdc to bob note: hi")), ["Send 5 USDC to @bob on X, note: hi"]);
-    assert.equal((await ask("Send 5 USDC to @newcomer on X note: welcome")).message, "@newcomer is not on HaPaPay yet. You can keep the USDC in the Arc Mainnet vault; they claim it with their official X account within the window you pick, 72 hours to 30 days, or you take it back after that. A note rides only on a direct payment, so this vault link carries none.");
+    assert.equal((await ask("Send 5 USDC to @newcomer on X note: welcome")).message, "@newcomer is not on ElysaPay yet. You can keep the USDC in the Arc Mainnet vault; they claim it with their official X account within the window you pick, 72 hours to 30 days, or you take it back after that. A note rides only on a direct payment, so this vault link carries none.");
     assert.equal((await ask(`Send 5 USDC to @bob on X note: ${"x".repeat(141)}`)).message, "A note can be at most 140 characters.");
     assert.equal((await ask("Send 5 USDC to @bob on X note: rent\u202Edue")).message, "A note cannot contain hidden or control characters.");
   });

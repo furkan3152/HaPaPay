@@ -162,7 +162,7 @@ describe("official non-user recipient discovery", () => {
     const directory = new OfficialRecipientDirectory({ xBearerToken: "x-app-token", fetch, stateStore: store, now: () => now });
     const other = new OfficialRecipientDirectory({ xBearerToken: "x-app-token", fetch, stateStore: store, now: () => now });
 
-    await assert.rejects(directory.lookup("x", "jack"), (error) => error instanceof RecipientLookupUnavailableError && /^X is not answering account lookups for HaPaPay right now/.test(error.message));
+    await assert.rejects(directory.lookup("x", "jack"), (error) => error instanceof RecipientLookupUnavailableError && /^X is not answering account lookups for ElysaPay right now/.test(error.message));
     assert.equal(await directory.exists("x", "jack"), "unavailable", "X reports unavailable, so X links wait for the name");
     assert.equal(await other.exists("x", "someone"), "unavailable", "another server instance knows from the shared store");
     const before = asked.length;
@@ -178,7 +178,7 @@ describe("official non-user recipient discovery", () => {
     await assert.rejects(directory.lookup("github", "limited"), /GitHub is limiting account lookups right now/);
     await assert.rejects(directory.lookup("github", "offline"), /GitHub could not be reached just now\. Try again in a moment\.$/);
     await assert.rejects(directory.lookup("github", "elsewhere"), /GitHub could not look the account up just now/);
-    await assert.rejects(directory.lookup("github", "badtoken"), /GitHub is not answering account lookups for HaPaPay right now/, "a configured token GitHub refuses pauses GitHub");
+    await assert.rejects(directory.lookup("github", "badtoken"), /GitHub is not answering account lookups for ElysaPay right now/, "a configured token GitHub refuses pauses GitHub");
     assert.equal(await directory.exists("github", "octocat"), "unavailable");
   });
 

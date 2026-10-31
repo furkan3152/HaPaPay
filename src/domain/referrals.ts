@@ -1,6 +1,6 @@
 /**
  * Invites: every account has an invite code; an account that joins with it earns its
- * inviter a share of its SP and a share of each payment it sends, which HaPaPay pays in USDC on Solana from its
+ * inviter a share of its SP and a share of each payment it sends, which ElysaPay pays in USDC on Solana from its
  * fee. Shared by the server, which keeps the records, and the pages, which show the link. A payout's Solana
  * transaction is built and checked in `referral-payout.ts`, so the desk's first chunk carries no Solana library.
  */
@@ -37,4 +37,4 @@ export const REFERRAL_PAYOUT_MINIMUM_UNITS = 1_000_000n;
 export const REFERRAL_PAYOUT_MAX_ITEMS = 8;
 /** A payout batch's ID: 16 hex digits, in its memo so the chain ties the transaction to the batch. */
 export const REFERRAL_BATCH_PATTERN = /^[0-9a-f]{16}$/;
-export const referralPayoutMemo = (batch: string) => `HaPaPay invite rewards ${batch}`;
+export const referralPayoutMemo = (batch: string) => `ElysaPay invite rewards ${batch}`;

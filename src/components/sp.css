@@ -1,4 +1,4 @@
-/* SP, HaPaPay's social points: the coin of dots, the panel, the balance pill and the toast. */
+/* SP, ElysaPay's social points: the coin of dots, the panel, the balance pill and the toast. */
 .sp-mark { flex: none; }
 .sp-mark-ring circle { fill: var(--sp-ring, #CCFF00); }
 .sp-mark-letters circle { fill: currentColor; }

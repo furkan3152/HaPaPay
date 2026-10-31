@@ -69,3 +69,26 @@ ol.admin-list { counter-reset: rank; }
   .admin-page { width: calc(100% - 32px); margin-top: 12px; }
   .admin-switches li, .admin-switches li[data-paused='true'] > div { grid-template-columns: 1fr; grid-column: auto; }
 }
+
+/* Elysium: both networks side by side, the launch gate, and the contracts the admin runs from their own wallet. */
+.elysium-network-switch, .elysium-kinds { display: flex; flex-wrap: wrap; gap: 8px; }
+.elysium-network-switch button { min-height: 56px; padding: 10px 16px; display: grid; justify-items: start; gap: 2px; text-align: left; }
+.elysium-network-switch button small { color: var(--muted); font: 500 11.5px var(--font-mono); }
+.elysium-network-switch button[aria-checked='true'], .elysium-kinds button[aria-checked='true'] { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+.elysium-network-switch button[aria-checked='true'] small { color: inherit; opacity: .8; }
+.elysium-kinds button { min-height: 40px; padding: 8px 12px; font-size: 13px; }
+.elysium-card[data-env='mainnet'] { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.elysium-reason { color: var(--locked-text); }
+.elysium-deploy-form { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.elysium-deploy-form > p, .elysium-deploy-form > .admin-actions, .elysium-deploy-form > .admin-check { grid-column: 1 / -1; }
+.elysium-countdown { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font: 500 15px var(--font-mono); }
+.elysium-countdown b { font: 800 30px var(--font-display); font-variation-settings: "ROND" 100; color: var(--accent-text); }
+.elysium-countdown small { flex-basis: 100%; color: var(--muted); font-size: 12px; }
+.elysium-steps { margin: 0; padding: 0; display: grid; gap: 6px; list-style: none; counter-reset: step; }
+.elysium-steps li { position: relative; padding: 8px 10px 8px 36px; background: var(--paper); border-radius: 10px; font-size: 13px; counter-increment: step; }
+.elysium-steps li::before { content: counter(step); position: absolute; left: 10px; top: 8px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); font: 600 10.5px var(--font-mono); }
+.elysium-steps li[data-done='true'] { color: var(--green-text); }
+.elysium-steps li[data-done='true']::before { content: '✓'; color: var(--on-green); background: var(--green); border-color: var(--green); }
+.elysium-ownership summary { cursor: pointer; color: var(--slate); font-size: 13px; }
+.elysium-ownership { display: grid; gap: 8px; }
+.elysium-admin .button-link { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: var(--r-control); color: var(--ink); text-decoration: none; font-size: 13px; }

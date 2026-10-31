@@ -28,7 +28,7 @@ const claimReportSchema = z.object({
 const HISTORY_PAGE = 20;
 
 /**
- * SP, HaPaPay's points. The rules are public; an account reads its own balance and
+ * SP, ElysaPay's points. The rules are public; an account reads its own balance and
  * history, and reading them first awards anything it did that has not earned yet, so the balance is never behind.
  */
 export function registerSpRoutes(app: express.Express, context: RouteContext) {

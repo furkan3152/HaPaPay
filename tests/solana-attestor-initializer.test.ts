@@ -17,7 +17,7 @@ describe("Solana attestor initializer", () => {
   it("creates one new attestor key the server reads, privately, with only its address beside it", async () => {
     const parentDirectory = await mkdtemp(join(tmpdir(), "hapapay-solana-"));
     temporaryDirectories.push(parentDirectory);
-    const outputDirectory = join(parentDirectory, "HaPaPay Solana Attestor");
+    const outputDirectory = join(parentDirectory, "ElysaPay Solana Attestor");
 
     const output = await initializeSolanaAttestor({ outputDirectory, now: () => new Date("2026-10-04T12:00:00.000Z") });
     const environment = parse(await readFile(output.environmentPath));
@@ -42,7 +42,7 @@ describe("Solana attestor initializer", () => {
   it("refuses to replace an existing package", async () => {
     const parentDirectory = await mkdtemp(join(tmpdir(), "hapapay-solana-"));
     temporaryDirectories.push(parentDirectory);
-    const outputDirectory = join(parentDirectory, "HaPaPay Solana Attestor");
+    const outputDirectory = join(parentDirectory, "ElysaPay Solana Attestor");
     await writeFile(outputDirectory, "preserve-me", { mode: 0o600 });
     await assert.rejects(initializeSolanaAttestor({ outputDirectory }), /already exists/iu);
     assert.equal(await readFile(outputDirectory, "utf8"), "preserve-me");

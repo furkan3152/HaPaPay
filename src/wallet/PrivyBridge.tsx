@@ -151,7 +151,7 @@ function PrivyBridge({ appId, theme, solanaRpcUrl }: { appId: string; theme: "da
       theme,
       accentColor: "#CCFF00",
       walletChainType: "ethereum-and-solana",
-      landingHeader: "Sign in to HaPaPay",
+      landingHeader: "Sign in to ElysaPay",
       loginMessage: "One sign-in for Robinhood Chain, Solana and Arc.",
     },
     embeddedWallets: { ethereum: { createOnLogin: "all-users" }, solana: { createOnLogin: "all-users" } },

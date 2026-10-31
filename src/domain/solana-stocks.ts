@@ -15,7 +15,7 @@ export const SOLANA_XSTOCKS: readonly SolanaAssetListing[] = SOLANA_XSTOCK_ROWS.
   scaled: true,
 }));
 
-/** Every asset HaPaPay moves on Solana: USDC and USDG first, then the xStocks. SOL is not one of them. */
+/** Every asset ElysaPay moves on Solana: USDC and USDG first, then the xStocks. SOL is not one of them. */
 export const SOLANA_ASSETS: readonly SolanaAssetListing[] = [...SOLANA_BASE_ASSETS, ...SOLANA_XSTOCKS];
 
 const bySymbol = new Map(SOLANA_ASSETS.map((asset) => [asset.symbol.toUpperCase(), asset]));

@@ -32,7 +32,7 @@ describe("production web delivery seam", () => {
   it("serves the SPA shell with browser security headers", async () => {
     const response = await fetch(`${origin}/pay/x/nora`);
     assert.equal(response.status, 200);
-    assert.match(await response.text(), /HaPaPay production shell/);
+    assert.match(await response.text(), /ElysaPay production shell/);
     assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
   });
 

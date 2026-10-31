@@ -1,6 +1,6 @@
 # Design decisions
 
-Short records of the decisions that shape HaPaPay: the context, what was decided, and what it costs. Newer decisions
+Short records of the decisions that shape ElysaPay: the context, what was decided, and what it costs. Newer decisions
 can supersede older ones; superseded records say so.
 
 ---
@@ -141,7 +141,7 @@ code before every vault action and refuses any difference from the pinned build.
 **Context.** Native SOL needs wrapping for the vault, complicates fee accounting, and was rarely the point of a
 social payment.
 
-**Decision.** HaPaPay sends USDC, USDG, Stock Tokens and xStocks. SOL is read for network fees, rent and holdings only;
+**Decision.** ElysaPay sends USDC, USDG, Stock Tokens and xStocks. SOL is read for network fees, rent and holdings only;
 a request to send SOL gets an explanation and alternatives.
 
 **Consequences.** Users still need a little SOL for Solana network fees.
@@ -174,7 +174,7 @@ Sensitive changes (such as the account's Solana address) need a fresh wallet sig
 payment, a first claim, each linked account and a Solana address, and, up to a monthly limit, when a vault link the
 account sent is claimed), under versioned rules with daily caps and per-person limits. The only other entries are invite
 shares and signed, logged admin adjustments. SP cannot be bought, sold or sent. Invite rewards are a share of fees
-HaPaPay verified on chain, paid in USDC by an admin.
+ElysaPay verified on chain, paid in USDC by an admin.
 
 **Consequences.** The 1% fee is the cost of farming payment SP; the bonuses are limited to once per account, address
 or claimed link, and daily caps bound the rest.

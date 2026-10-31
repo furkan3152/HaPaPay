@@ -37,7 +37,7 @@ type Part = { signature: string; indexes: number[]; units: string[]; lastValidBl
 
 /**
  * A Solana payment to one or several people, in one transaction where it fits: the review shows the amounts, the 1%
- * fee that goes to HaPaPay and the note; the server prepares the transaction; the browser rebuilds it from this
+ * fee that goes to ElysaPay and the note; the server prepares the transaction; the browser rebuilds it from this
  * review (reading a scaled xStock's multiplier from Solana itself) and opens the wallet only when every byte matches;
  * the server records it after reading the confirmed transaction back.
  */
@@ -212,7 +212,7 @@ export default function SolanaPaymentSlip({ review, wallet, solanaAddress, treas
     <dl className="stock-facts">
       <div><dt>Network</dt><dd>{SOLANA_MAINNET.name} mainnet<small>{several ? "Everyone is paid in one transaction where it fits" : "One transaction, signed by your Solana wallet"}</small></dd></div>
       <div><dt>Asset</dt><dd>{asset.name}{asset.mint ? <> · <a href={`${SOLANA_MAINNET.explorerUrl}/token/${asset.mint}`} target="_blank" rel="noreferrer">{short(asset.mint)} <DotIcon name="arrow-up-right" size={12} /></a></> : " · native"}{asset.scaled && <small>Amounts as your wallet shows them; the issuer's multiplier is read from Solana before you sign</small>}</dd></div>
-      <div><dt>Fee</dt><dd>{asset.scaled ? "≈ " : ""}{formatUnits(fee, asset.decimals)} {asset.symbol} · 1%<small>Goes to HaPaPay; {several ? "everyone receives exactly their amount" : `@${payments[0].recipient.username} receives exactly ${review.totalAmount}`}</small></dd></div>
+      <div><dt>Fee</dt><dd>{asset.scaled ? "≈ " : ""}{formatUnits(fee, asset.decimals)} {asset.symbol} · 1%<small>Goes to ElysaPay; {several ? "everyone receives exactly their amount" : `@${payments[0].recipient.username} receives exactly ${review.totalAmount}`}</small></dd></div>
       <div><dt>Total</dt><dd>{asset.scaled ? "≈ " : ""}{formatUnits(units + fee, asset.decimals)} {asset.symbol}<small>From your Solana wallet</small></dd></div>
       <div><dt>Value</dt><dd>{value !== undefined ? `≈ ${formatUsd(value.toFixed(2))} (${asset.kind === "cash" ? "dollar stablecoin" : "indicative"})` : "Price unavailable"}</dd></div>
       <div><dt>Network fee</dt><dd>SOL, paid by your wallet<small>A recipient without an account for {asset.symbol} gets one opened for about 0.0015 SOL, once</small></dd></div>

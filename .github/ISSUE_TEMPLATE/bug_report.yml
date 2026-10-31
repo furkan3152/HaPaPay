@@ -1,12 +1,12 @@
 name: Bug report
-description: Something in HaPaPay does not work as documented.
+description: Something in ElysaPay does not work as documented.
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to report this. For a security problem, do not open an issue: follow the
-        [security policy](https://github.com/furkan3152/HaPaPay/security/policy) instead.
+        [security policy](https://github.com/furkan3152/ElysaPay/security/policy) instead.
   - type: textarea
     id: what-happened
     attributes:

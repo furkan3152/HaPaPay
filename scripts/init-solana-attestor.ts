@@ -76,7 +76,7 @@ const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).hr
 if (invokedPath === import.meta.url) {
   const outputDirectory = process.argv[2]
     ? resolve(process.argv[2])
-    : join(homedir(), "Desktop", "HaPaPay Solana Attestor");
+    : join(homedir(), "Desktop", "ElysaPay Solana Attestor");
   const output = await initializeSolanaAttestor({ outputDirectory });
   console.log(`Created the Solana vault's claim attestor at ${output.outputDirectory}.`);
   console.log("No private key was printed. Add it to the Production environment as a sensitive variable.");

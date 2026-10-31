@@ -8,6 +8,7 @@ import { sendSolanaTransaction, solanaTransactionUrl, solanaWalletToAdd } from "
 import type { SolanaWalletHandle } from "../wallet/solana-wallet";
 import { evmProvider } from "../wallet/wallet-bridge";
 import { DotIcon } from "./DotIcon";
+import { ElysiumAdmin } from "./ElysiumAdmin";
 import { SpMark } from "./SpMark";
 import "./admin-page.css";
 
@@ -72,9 +73,9 @@ type InvitesView = {
 type Note = { tone: "ok" | "error"; text: string };
 type Change = (action: string, payload: Record<string, unknown>, done: string) => Promise<unknown>;
 
-const TABS = { overview: "Overview", accounts: "Accounts", ledger: "SP ledger", rules: "SP rules", invites: "Invites", activity: "Activity", controls: "Pauses and notice", audit: "Audit log", data: "Data" } as const;
+const TABS = { overview: "Overview", elysium: "Elysium", accounts: "Accounts", ledger: "SP ledger", rules: "SP rules", invites: "Invites", activity: "Activity", controls: "Pauses and notice", audit: "Audit log", data: "Data" } as const;
 type Tab = keyof typeof TABS;
-const NETWORK_NAMES: Record<string, string> = { solana: "Solana", arc: "Arc", robinhood: "Robinhood Chain" };
+const NETWORK_NAMES: Record<string, string> = { solana: "Solana", arc: "Arc", robinhood: "Robinhood Chain", elysium: "Elysium" };
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, { cache: "no-store", ...init });
@@ -147,7 +148,7 @@ export default function AdminPage({ wallet, walletVerifying, message, onConnect 
   if (!me.configured || !me.admin) {
     return <section className="admin-page"><div className="admin-gate">
       <h1>Admin</h1>
-      <p>{!me.configured ? "No admin wallet is set on this server. Add the wallet addresses to ADMIN_WALLET_ADDRESSES (separated by commas) and redeploy." : `${short(wallet)} is not an admin of HaPaPay. Connect an admin wallet.`}</p>
+      <p>{!me.configured ? "No admin wallet is set on this server. Add the wallet addresses to ADMIN_WALLET_ADDRESSES (separated by commas) and redeploy." : `${short(wallet)} is not an admin of ElysaPay. Connect an admin wallet.`}</p>
     </div></section>;
   }
 
@@ -161,6 +162,7 @@ export default function AdminPage({ wallet, walletVerifying, message, onConnect 
     </nav>
     {note && <p className={`admin-note admin-note-${note.tone}`} role={note.tone === "error" ? "alert" : "status"}>{note.text}</p>}
     {tab === "overview" && <OverviewTab refresh={refresh} onAccount={openAccount} />}
+    {tab === "elysium" && <ElysiumAdmin wallet={wallet} busy={busy} change={change} setNote={setNote} refresh={refresh} />}
     {tab === "accounts" && <AccountsTab key={account} initial={account} refresh={refresh} busy={busy} change={change} />}
     {tab === "ledger" && <LedgerTab refresh={refresh} busy={busy} change={change} onAccount={openAccount} />}
     {tab === "rules" && <RulesTab refresh={refresh} busy={busy} change={change} />}
@@ -505,7 +507,7 @@ function InvitesTab({ refresh, onAccount }: { refresh: number; onAccount: (walle
         <div><dt>Paid</dt><dd>{formatUsdc(value.totals.paid)}</dd></div>
         <div><dt>Owed</dt><dd>{formatUsdc(value.totals.owed)}</dd></div>
       </dl>
-      <p>Inviters earn {Math.round(value.rules.pointsShare * 1000) / 10}% of the SP the people they invited earn, and {value.rules.feeShareBps}% of the fee HaPaPay verified on each payment those people send, in USDC. A transfer that paid no fee earns nothing. Change the shares under SP rules.</p>
+      <p>Inviters earn {Math.round(value.rules.pointsShare * 1000) / 10}% of the SP the people they invited earn, and {value.rules.feeShareBps}% of the fee ElysaPay verified on each payment those people send, in USDC. A transfer that paid no fee earns nothing. Change the shares under SP rules.</p>
     </Card>
     <Card title="Pay what is owed">
       <p>Everyone owed $1.00 or more with a Solana address is paid in USDC on Solana from the wallet connected here, up to eight people per transaction. The server only prepares it; the payout counts once Solana shows each amount.</p>

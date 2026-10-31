@@ -6,7 +6,7 @@
 export const APPEND_ONLY_FUNCTION = `
   CREATE OR REPLACE FUNCTION hapapay_append_only() RETURNS trigger LANGUAGE plpgsql AS $$
   BEGIN
-    RAISE EXCEPTION 'HaPaPay keeps every row of %: rows can be added, never changed or removed', TG_TABLE_NAME;
+    RAISE EXCEPTION 'ElysaPay keeps every row of %: rows can be added, never changed or removed', TG_TABLE_NAME;
   END
   $$
 `;

@@ -1,11 +1,11 @@
 # Security policy
 
-HaPaPay handles real assets, so security reports are taken seriously and handled privately.
+ElysaPay handles real assets, so security reports are taken seriously and handled privately.
 
 ## Reporting a vulnerability
 
 Please **do not open a public issue** for a security problem. Use GitHub's private reporting instead:
-[report a vulnerability](https://github.com/furkan3152/HaPaPay/security/advisories/new). If that form is not
+[report a vulnerability](https://github.com/furkan3152/ElysaPay/security/advisories/new). If that form is not
 available, open an issue that asks for a private contact, without any details of the problem.
 
 Include what you can:
@@ -32,4 +32,4 @@ denial-of-service through volume, and findings that require a compromised operat
 ## Before you deploy
 
 The contracts and the Solana program have not had an independent audit. Read [docs/security.md](docs/security.md)
-for the trust model and the known limitations before running HaPaPay with real funds.
+for the trust model and the known limitations before running ElysaPay with real funds.

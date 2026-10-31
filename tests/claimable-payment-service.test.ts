@@ -139,7 +139,7 @@ describe("claimable payment preparation", () => {
       usdc: USDC, escrow: ESCROW, fees: FEES, client: router(100n) as never, chainName: "Arc Mainnet", directory: { lookup },
     });
     const prepare = (lookup: () => Promise<never>, platform: "x" | "github" = "x") => service(lookup).prepare({ platform, username: "newcomer", amount: "1", expiryHours: 72, payer: PAYER });
-    const refused = "GitHub is not answering account lookups for HaPaPay right now, so the money cannot be locked to a GitHub account in the vault.";
+    const refused = "GitHub is not answering account lookups for ElysaPay right now, so the money cannot be locked to a GitHub account in the vault.";
     await assert.rejects(prepare(async () => { throw new RecipientLookupUnavailableError(refused); }, "github"), (error) => error instanceof StockTransferUnavailableError && error.message === refused);
     // X not answering offers the X name instead: the slip asks the sender before anything is signed.
     await assert.rejects(prepare(async () => { throw new RecipientLookupUnavailableError("X is not answering."); }), (error) => error instanceof VaultNameLockOffer && error.lock === "name" && /lock it to the X name @newcomer instead/.test(error.message));

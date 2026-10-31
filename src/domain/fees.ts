@@ -1,7 +1,7 @@
 import { parseAbi } from "viem";
 
 /**
- * The HaPaPay fee: 1% of every Robinhood Chain payment and vault link, paid by the
+ * The ElysaPay fee: 1% of every Robinhood Chain payment and vault link, paid by the
  * sender on top of the amount, so the recipient always receives exactly what was asked. Half of each fee goes to the
  * burn vault, which can only turn what it holds into the burn token the operator names and burn it; the other half
  * goes to the operator's treasury wallet. The fee router enforces this on chain; these constants let the browser bound what

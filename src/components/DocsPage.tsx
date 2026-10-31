@@ -13,6 +13,7 @@ import { DotText } from "./DotText";
 import { SpMark } from "./SpMark";
 import "./docs-page.css";
 import { DotIcon } from "./DotIcon";
+import { ELYSIUM_MAINNET, ELYSIUM_TESTNET, MULTICALL3 } from "../domain/elysium";
 
 type Health = {
   network?: string;
@@ -34,8 +35,9 @@ const rpcOf = (chain: { rpcUrl: string }) => chain.rpcUrl.replace(/\/$/, "");
 const APP_ORIGIN = typeof window === "undefined" ? "https://your-domain.example" : window.location.origin;
 
 const sections = [
-  { id: "overview", title: "What HaPaPay is" },
+  { id: "overview", title: "What ElysaPay is" },
   { id: "quick-start", title: "Quick start" },
+  { id: "elysium", title: "Elysium and HYPE" },
   { id: "accounts", title: "Connect your accounts" },
   { id: "sending", title: "Send money and tokens" },
   { id: "vault", title: "The vault: send to anyone" },
@@ -144,7 +146,7 @@ function LiveStatus() {
 }
 
 /**
- * HaPaPay documentation at /docs, with one deep link per section (/docs/vault, /docs/sending, …). The page reads
+ * ElysaPay documentation at /docs, with one deep link per section (/docs/vault, /docs/sending, …). The page reads
  * the same public status endpoints as the desk and never asks for or shows a secret.
  */
 export default function DocsPage() {
@@ -174,7 +176,7 @@ export default function DocsPage() {
 
   return <section className="docs-page" aria-labelledby="docs-title">
     <nav className="docs-toc" aria-label="Documentation sections">
-      <DotText as="p" className="docs-toc-title" text="HaPaPay docs" />
+      <DotText as="p" className="docs-toc-title" text="ElysaPay docs" />
       <ol>
         {sections.map((section) => <li key={section.id}>
           <a href={`/docs/${section.id}`} aria-current={active === section.id ? "true" : undefined} onClick={(event) => go(event, section.id)}>{section.title}</a>
@@ -187,21 +189,21 @@ export default function DocsPage() {
       <header className="docs-hero">
         <div>
           <p className="docs-kicker">Documentation</p>
-          <DotText as="h1" id="docs-title" text="How HaPaPay works" />
-          <p>HaPaPay turns a social handle into a payment address. You name a GitHub, X, Telegram, Discord or Farcaster account, review the transfer, and your own wallet signs it. Robinhood Chain is the main network; Solana and Arc run beside it. If the person has not joined yet, the payment waits for them in the vault.</p>
+          <DotText as="h1" id="docs-title" text="How ElysaPay works" />
+          <p>ElysaPay turns a social handle into a payment address. You name a GitHub, X, Telegram, Discord or Farcaster account, review the transfer, and your own wallet signs it. Robinhood Chain is the main network; Solana and Arc run beside it. If the person has not joined yet, the payment waits for them in the vault.</p>
         </div>
       </header>
 
       <section id="overview" className="docs-section">
-        <h2>What HaPaPay is</h2>
-        <p>HaPaPay is a payment desk for sending tokens to people by their social accounts instead of by wallet addresses. People link their accounts through each platform's official login, and every linked account points to one HaPaPay account: an EVM wallet with a Solana address beside it.</p>
+        <h2>What ElysaPay is</h2>
+        <p>ElysaPay is a payment desk for sending tokens to people by their social accounts instead of by wallet addresses. People link their accounts through each platform's official login, and every linked account points to one ElysaPay account: an EVM wallet with a Solana address beside it.</p>
         <ul>
           <li><b>Robinhood Chain, the main network:</b> send Robinhood Stock Tokens ({stockCount} companies and funds) and USDG dollars.</li>
-          <li><b>Solana:</b> send USDC, USDG and xStocks ({SOLANA_XSTOCK_COUNT} companies and funds), to one person or to several in one transaction. HaPaPay does not send SOL; your wallet keeps a little for the network fee.</li>
+          <li><b>Solana:</b> send USDC, USDG and xStocks ({SOLANA_XSTOCK_COUNT} companies and funds), to one person or to several in one transaction. ElysaPay does not send SOL; your wallet keeps a little for the network fee.</li>
           <li><b>Arc Mainnet:</b> send USDC. Gas on Arc is paid in USDC too.</li>
           <li><b>The vault:</b> send to someone on GitHub, X, Farcaster, Discord or Telegram who has not joined yet. The tokens wait in a contract on Robinhood Chain and Arc, or a program on Solana, until they connect that account and claim them, and you take them back if nobody claims them.</li>
         </ul>
-        <p><b>Non-custodial by design.</b> HaPaPay never holds your keys, never signs a transfer for you, and never holds your tokens. The server prepares exact transactions, checks them on chain, and verifies receipts. The only thing it signs for the chain is a one-time claim authorization for the vault.</p>
+        <p><b>Non-custodial by design.</b> ElysaPay never holds your keys, never signs a transfer for you, and never holds your tokens. The server prepares exact transactions, checks them on chain, and verifies receipts. The only thing it signs for the chain is a one-time claim authorization for the vault.</p>
       </section>
 
       <section id="quick-start" className="docs-section">
@@ -228,11 +230,11 @@ export default function DocsPage() {
           </tbody>
         </table>
         <ul>
-          <li>HaPaPay stores only the provider's immutable user ID and current username. OAuth access tokens are not stored.</li>
+          <li>ElysaPay stores only the provider's immutable user ID and current username. OAuth access tokens are not stored.</li>
           <li>One account can belong to one wallet at a time, and all your accounts resolve to the same wallet.</li>
-          <li>Your HaPaPay account also holds one Solana address, so the same handles receive on Solana. The one-step sign-in adds it for you; with your own Solana wallet, press <em>Add your Solana address</em> in <em>Identities</em> and sign the message it shows. It moves nothing, and you can replace or remove the address there.</li>
-          <li><em>Identities</em> shows what your Solana address holds. A sign-in keeps an address that holds something, so nothing paid to it is left behind; replacing it by hand asks first. When the sign-in made the wallet for you, <em>Export key</em> opens the sign-in provider's own window with its private key, so you can use the wallet in Phantom or MetaMask too. HaPaPay never sees the key, and anyone who has it controls the wallet.</li>
-          <li>A verified account receives on Arc and on Robinhood Chain right away, and on Solana once it has a Solana address. HaPaPay keeps the link on its own servers; nothing about it is written on chain, so linking or removing an account asks your wallet for nothing.</li>
+          <li>Your ElysaPay account also holds one Solana address, so the same handles receive on Solana. The one-step sign-in adds it for you; with your own Solana wallet, press <em>Add your Solana address</em> in <em>Identities</em> and sign the message it shows. It moves nothing, and you can replace or remove the address there.</li>
+          <li><em>Identities</em> shows what your Solana address holds. A sign-in keeps an address that holds something, so nothing paid to it is left behind; replacing it by hand asks first. When the sign-in made the wallet for you, <em>Export key</em> opens the sign-in provider's own window with its private key, so you can use the wallet in Phantom or MetaMask too. ElysaPay never sees the key, and anyone who has it controls the wallet.</li>
+          <li>A verified account receives on Arc and on Robinhood Chain right away, and on Solana once it has a Solana address. ElysaPay keeps the link on its own servers; nothing about it is written on chain, so linking or removing an account asks your wallet for nothing.</li>
           <li>Share <code>{APP_ORIGIN}/pay/github/your-name</code> (or <code>/pay/x/…</code>, <code>/pay/farcaster/…</code>) as your payment link. The copy button next to a linked account builds it for you.</li>
         </ul>
       </section>
@@ -242,8 +244,8 @@ export default function DocsPage() {
         <p>Every transfer follows the same four steps:</p>
         <ol className="docs-steps">
           <li><b>Draft.</b> Your request is read by a deterministic parser; an AI model may help with wording the rules miss, but it can only produce a draft, and the server keeps a part of it only when your own words state it: each handle, its platform, the amount, the asset and the note. Tickers are checked against a verified allowlist, never guessed. If something is missing or could mean two things, the desk asks one question at a time, and you can tap the complete request it offers or just type the answer.</li>
-          <li><b>Review.</b> The slip shows the network, the token, the exact amount, the recipient's verified address, the 1% HaPaPay fee where it applies and the total your wallet pays, and what the network fee is paid in.</li>
-          <li><b>Sign.</b> The server re-resolves the recipient, prepares the exact transaction and checks your balance (and, where the payment goes through HaPaPay's fee contracts, your allowance); on Robinhood Chain and Solana it also simulates the transaction, so a short balance, an issuer pause or a compliance block is explained before your wallet opens. Your browser rebuilds the transaction from your review and opens the wallet only when every byte matches.</li>
+          <li><b>Review.</b> The slip shows the network, the token, the exact amount, the recipient's verified address, the 1% ElysaPay fee where it applies and the total your wallet pays, and what the network fee is paid in.</li>
+          <li><b>Sign.</b> The server re-resolves the recipient, prepares the exact transaction and checks your balance (and, where the payment goes through ElysaPay's fee contracts, your allowance); on Robinhood Chain and Solana it also simulates the transaction, so a short balance, an issuer pause or a compliance block is explained before your wallet opens. Your browser rebuilds the transaction from your review and opens the wallet only when every byte matches.</li>
           <li><b>Verify.</b> The desk follows your transaction through the server's own connection to the chain, so a wallet app that never reports back cannot leave it hanging. After it is mined, the server records it only if the receipt contains the exact token transfer you reviewed. Your activity list shows only verified receipts.</li>
         </ol>
         <h3>What you can send</h3>
@@ -256,7 +258,7 @@ export default function DocsPage() {
             <tr><td>Robinhood Stock Tokens</td><td>Robinhood Chain ({mainnet.id})</td><td>18</td><td>Token units, not shares; the slip shows the share equivalent. Each transfer needs an eligibility statement (see Legal notes).</td></tr>
           </tbody>
         </table>
-        <p>HaPaPay sends stablecoins and stocks only; it does not send SOL. Your wallet pays the network fee: SOL on Solana (with a little rent the first time someone receives a token), ETH on Robinhood Chain, USDC on Arc. Send one asset per request. Examples: <code>Send 2 TSLA to @toly on X</code>, <code>Send 10 USDG to @carol on Telegram</code>, <code>Send 25 USDC to @octocat on GitHub</code>, <code>Send 1.5 TSLAx to @toly on X</code>.</p>
+        <p>ElysaPay sends stablecoins and stocks only; it does not send SOL. Your wallet pays the network fee: SOL on Solana (with a little rent the first time someone receives a token), ETH on Robinhood Chain, USDC on Arc. Send one asset per request. Examples: <code>Send 2 TSLA to @toly on X</code>, <code>Send 10 USDG to @carol on Telegram</code>, <code>Send 25 USDC to @octocat on GitHub</code>, <code>Send 1.5 TSLAx to @toly on X</code>.</p>
         <h3>Which network</h3>
         <ul>
           <li><b>xStocks</b> live on Solana, so they always go there.</li>
@@ -269,27 +271,27 @@ export default function DocsPage() {
         <p>Name everyone with the same amount: <code>Send 1 NVDA each to @alice, @toly and @carol on X</code> gives each of them 1 NVDA, and <code>Split 10 USDC between @alice and @toly on X</code> divides 10 USDC between them (to the smallest unit; the first people get any remainder). Turkish works too: <code>@alice ve @toly'ye x'te 5'er usdc gönder</code>. If the request does not say which, the desk asks whether everyone gets that amount or shares it. To give each person their own amount, write it next to them: <code>Send 10 USDC to @alice and 5 USDC to @toly on X</code>, or <code>@alice 10, @toly 5 USDC on X</code>. One request pays up to {PAYMENT_BATCH_MAX_RECIPIENTS} people with one asset; a second asset is its own request.</p>
         <p>The review lists every person, their address and what they receive, the 1% fee on each payment and the total. On Solana everyone is paid in one transaction when they fit, and in as few as possible when they do not. On Robinhood Chain and Arc your wallet asks for one approval of the total and one payment for each person. If you stop halfway, what went through stays sent, and the button sends only the rest; nobody is paid twice. Someone without a verified account is named before anything is signed, and can get their part in the vault with a request of their own.</p>
         <h3>Notes</h3>
-        <p>A payment can carry a short note of up to {PAYMENT_NOTE_MAX_CHARACTERS} characters: <code>Send 5 USDC to @toly on X note: thanks for dinner</code>, a note in quotes, or a closing phrase such as <code>for dinner</code> or <code>yemek için</code>. The review shows it and you can change or clear it before signing. The note is written on chain with the payment (on Solana as a memo, elsewhere after the fee router's own arguments), so <b>anyone can read it and it cannot be removed</b>; HaPaPay also keeps it with the verified payment, and your activity shows it. In a payment to several people every payment carries the same note. Vault links carry no note.</p>
+        <p>A payment can carry a short note of up to {PAYMENT_NOTE_MAX_CHARACTERS} characters: <code>Send 5 USDC to @toly on X note: thanks for dinner</code>, a note in quotes, or a closing phrase such as <code>for dinner</code> or <code>yemek için</code>. The review shows it and you can change or clear it before signing. The note is written on chain with the payment (on Solana as a memo, elsewhere after the fee router's own arguments), so <b>anyone can read it and it cannot be removed</b>; ElysaPay also keeps it with the verified payment, and your activity shows it. In a payment to several people every payment carries the same note. Vault links carry no note.</p>
         <h3>When the desk asks back</h3>
         <ul>
           <li><b>An amount that reads two ways.</b> <code>1,000</code> is a thousand in English and one in Turkish, so the desk asks which you meant instead of guessing. Write <code>1000</code> or <code>1.5</code>.</li>
           <li><b>A company name or shares.</b> Stocks go by their ticker, in the amounts wallets show: <code>3 apple</code> and <code>3 apple shares</code> are offered back as <code>Send 3 AAPL …</code> on Robinhood Chain, or as the xStock on Solana for a stock Robinhood Chain does not list.</li>
-          <li><b>A handle without a platform.</b> The desk offers the platforms where that handle has a verified HaPaPay account; for several people, the ones where all of them do.</li>
+          <li><b>A handle without a platform.</b> The desk offers the platforms where that handle has a verified ElysaPay account; for several people, the ones where all of them do.</li>
           <li><b>Several people and one amount.</b> Each or split, when the request says neither (<code>each</code>, <code>her birine</code>, <code>1'er</code> or <code>split</code>, <code>between</code>, <code>toplam</code> answer it in advance). An amount written next to each person needs no answer.</li>
           <li><b>Someone who cannot be paid directly.</b> No verified account on that platform, or your own wallet: the desk names them and offers the rest.</li>
           <li><b>Two amounts or two assets.</b> <code>10 USDC to @alice and @toly, 5 each</code>, <code>$100 of TSLA</code> (write it in TSLA) or <code>5 USDC and NVDA</code>: the desk asks for one. A value in brackets after an amount, as in <code>2 TSLAx ($500)</code>, is only what it is worth.</li>
           <li><b>A part of an amount.</b> <code>half of 10 USDC</code>, <code>50% of</code> or <code>5x2</code>: write the amount to send as one number. The 1% fee is added on top, so the person always gets what you write; <code>minus fees</code> is asked too.</li>
-          <li><b>Things it never drafts.</b> Asking someone for money, a request that says not to send, the same payment repeated, payments for later or on a schedule, a network HaPaPay does not run, and a wallet address instead of a handle. HaPaPay sends now, from your own wallet, to verified accounts. Someone a request says not to pay (<code>not @alice</code>) is left out.</li>
+          <li><b>Things it never drafts.</b> Asking someone for money, a request that says not to send, the same payment repeated, payments for later or on a schedule, a network ElysaPay does not run, and a wallet address instead of a handle. ElysaPay sends now, from your own wallet, to verified accounts. Someone a request says not to pay (<code>not @alice</code>) is left out.</li>
         </ul>
       </section>
 
       <section id="vault" className="docs-section">
         <h2>The vault: send to anyone</h2>
-        <p>If the person you name has not joined HaPaPay, you can still send to them. The tokens go into the vault on the same network, locked to their account's immutable ID, or on Discord and Telegram to their name: the HaPaPay vault program on Solana, a claim escrow contract on Robinhood Chain and Arc. They claim once they connect that account; if they do not, you take the tokens back.</p>
+        <p>If the person you name has not joined ElysaPay, you can still send to them. The tokens go into the vault on the same network, locked to their account's immutable ID, or on Discord and Telegram to their name: the ElysaPay vault program on Solana, a claim escrow contract on Robinhood Chain and Arc. They claim once they connect that account; if they do not, you take the tokens back.</p>
         <ol className="docs-steps">
           <li><b>Lookup.</b> The server resolves the handle through the official source: GitHub's user API, X's user lookup, or Farcaster's fname registry. The payment is locked to the numeric account ID, so a renamed or look-alike account cannot claim it. A GitHub or Farcaster handle that does not exist is caught before the desk offers a link. Discord and Telegram cannot be looked up by name, so a link to them waits for the name instead (see <em>Links that wait for a name</em> below); so does an X link while X is not answering lookups, if you agree to it on the slip.</li>
           <li><b>Fund.</b> On Solana your wallet signs one transaction that moves the amount plus the 1% fee into the link's own account in the vault. On Robinhood Chain and Arc it signs two: an approval of exactly the amount plus the fee, then the deposit. Nothing is unlimited and nothing is pulled later. The fee is paid only when the link is claimed; a refund returns it.</li>
-          <li><b>Share the claim link.</b> After the deposit is verified on chain, the slip shows a link like <code>{APP_ORIGIN}/claim/solana/0x…</code> (or <code>/claim/stock/robinhood-mainnet/0x…</code>). Send it to the person. They do not even need it: the moment they connect that account on HaPaPay, the payment waits for them under <em>Claims</em>.</li>
+          <li><b>Share the claim link.</b> After the deposit is verified on chain, the slip shows a link like <code>{APP_ORIGIN}/claim/solana/0x…</code> (or <code>/claim/stock/robinhood-mainnet/0x…</code>). Send it to the person. They do not even need it: the moment they connect that account on ElysaPay, the payment waits for them under <em>Claims</em>.</li>
           <li><b>Claim or take back.</b> They claim within the window. After the window closes, only your wallet can take the tokens back, from <em>Claims</em> or from the link. Once a link has been claimed or taken back, its page says so, offers nothing more and no longer names who it was for.</li>
         </ol>
         <ul>
@@ -297,9 +299,9 @@ export default function DocsPage() {
           <li><b>Across platforms.</b> Someone whose wallet already has a GitHub account linked can be paid on their X or Farcaster account too. The payment waits for that account, and it shows up under their <em>Claims</em> as soon as they link it to the same wallet.</li>
           <li><b>Assets.</b> USDC, USDG and xStocks on Solana (not SOL); Robinhood Stock Tokens and USDG on Robinhood Chain; USDC on Arc.</li>
           <li><b>Platforms.</b> GitHub, X, Farcaster, Discord and Telegram. GitHub and Farcaster links wait for the account; Discord and Telegram links wait for the name; X links wait for the account, or for the name while X is not answering lookups.</li>
-          <li><b>Links that wait for a name.</b> Whoever connects Discord, Telegram or X to HaPaPay with that name after the link was made claims it, through that platform's own sign-in. On Discord and X the account must also be older than the link (its ID says when it was made), so nobody can open a new account with the name and take it. Check the spelling before you send: a link waits for exactly that name, and if its holder gives the name up inside the window, whoever has it next can claim it. Nobody claims it in time? You take it back.</li>
+          <li><b>Links that wait for a name.</b> Whoever connects Discord, Telegram or X to ElysaPay with that name after the link was made claims it, through that platform's own sign-in. On Discord and X the account must also be older than the link (its ID says when it was made), so nobody can open a new account with the name and take it. Check the spelling before you send: a link waits for exactly that name, and if its holder gives the name up inside the window, whoever has it next can claim it. Nobody claims it in time? You take it back.</li>
           <li><b>Exact amounts.</b> The vault checks the exact balance change on every deposit, claim and refund. A token that delivers less than it should makes the transaction fail instead of leaving a shortfall.</li>
-          <li><b>No admin power over funds.</b> On Robinhood Chain and Arc the vault owner can rotate the claim verifier but cannot move anyone's tokens or change the fee. On Solana the operator's wallet keeps the program's upgrade key so the program can be closed and its rent returned once it holds no link; HaPaPay checks the program's code against the reviewed build before it prepares any vault transaction, and stops vault links if it ever changes.</li>
+          <li><b>No admin power over funds.</b> On Robinhood Chain and Arc the vault owner can rotate the claim verifier but cannot move anyone's tokens or change the fee. On Solana the operator's wallet keeps the program's upgrade key so the program can be closed and its rent returned once it holds no link; ElysaPay checks the program's code against the reviewed build before it prepares any vault transaction, and stops vault links if it ever changes.</li>
           <li><b>Rent on Solana.</b> A link's accounts cost about 0.003 SOL of rent. The token account's rent comes back to you when the link is claimed or taken back; about 0.0015 SOL stays with the link's record for good, so the same link can never be funded twice.</li>
         </ul>
       </section>
@@ -319,25 +321,55 @@ export default function DocsPage() {
 
       <section id="sp" className="docs-section">
         <h2><SpMark size={26} /> SP points</h2>
-        <p>SP, social points, are HaPaPay's points. You earn them by paying people through HaPaPay, by claiming vault links and when a vault link you sent is claimed, on Solana, Arc and Robinhood Chain alike: one balance counts every network. Your balance, its history and how SP are earned are under <em>SP</em> on the desk; the coin at the top of the desk shows your balance once your wallet is verified.</p>
+        <p>SP, social points, are ElysaPay's points. You earn them by paying people through ElysaPay, by claiming vault links and when a vault link you sent is claimed, on Solana, Arc and Robinhood Chain alike: one balance counts every network. Your balance, its history and how SP are earned are under <em>SP</em> on the desk; the coin at the top of the desk shows your balance once your wallet is verified.</p>
         <SpRulesLive />
         <h3>How SP are counted</h3>
         <ul>
-          <li>Payments and claims earn SP only once HaPaPay has verified them on chain, each one once; the bonuses above, invite shares and signed, logged admin adjustments are the only other entries. Testnets earn nothing.</li>
+          <li>Payments and claims earn SP only once ElysaPay has verified them on chain, each one once; the bonuses above, invite shares and signed, logged admin adjustments are the only other entries. Testnets earn nothing.</li>
           <li>A payment's dollar value is its amount for USDC and USDG, and the desk's own price for stock tokens at the time SP are awarded. An asset with no price earns nothing.</li>
           <li>SP count to one decimal and are rounded down: at 1 SP a dollar, a 12.75 USDC payment earns 12.7 SP.</li>
           <li>A vault link earns when it is claimed: the claimer earns for claiming, and the sender earns the payment's SP and a bonus. A link taken back after its window earns nothing.</li>
-          <li>Payments to yourself earn nothing, and there are daily limits per account and per person paid. A payment that earns nothing is still recorded in HaPaPay's ledger, with the reason.</li>
-          <li>HaPaPay may change the rules from its admin panel. Each change is a new version, kept for good, and applies only to activity from then on; past SP stay as they were awarded. HaPaPay can also correct a balance (for example after a mistake or abuse), always with a recorded reason.</li>
+          <li>Payments to yourself earn nothing, and there are daily limits per account and per person paid. A payment that earns nothing is still recorded in ElysaPay's ledger, with the reason.</li>
+          <li>ElysaPay may change the rules from its admin panel. Each change is a new version, kept for good, and applies only to activity from then on; past SP stay as they were awarded. ElysaPay can also correct a balance (for example after a mistake or abuse), always with a recorded reason.</li>
         </ul>
-        <p>SP have no cash value. They cannot be bought, sold, sent to someone else or exchanged for money or tokens on HaPaPay.</p>
+        <p>SP have no cash value. They cannot be bought, sold, sent to someone else or exchanged for money or tokens on ElysaPay.</p>
         <h3>Invites</h3>
         <ul>
-          <li>Your invite link is under <em>SP</em> on the desk. Someone who opens it and then verifies a new wallet (one that has not yet paid anyone or funded a vault link through HaPaPay) joins with your invite, once and for good.</li>
-          <li>From then on you earn a share of the SP they earn, and a share of HaPaPay's 1% fee on each payment they send, in USDC (with the starting rules, half of the fee: 0.5% of the payment). Only a fee HaPaPay verified on chain counts: a transfer that did not go through HaPaPay's fee, and for now a vault link on Arc or Robinhood Chain, earns you SP but no USDC. A payment between the two of you, or to themselves, earns neither.</li>
-          <li>HaPaPay pays the USDC to your Solana address on Solana once you are owed at least $1.00; add the address under <em>Identities</em>. Each payout is recorded from its transaction on Solana, and the SP tab shows what you earned, what was paid and what is waiting.</li>
-          <li>Invite rewards come out of HaPaPay's share of the fee, never a payment's amount or a vault link's funds. HaPaPay may change the shares from its admin panel (each change is a new version, from then on) and does not pay rewards to accounts it has stopped for review. When HaPaPay reverses a payment's SP (for example a payment made only to farm rewards), its rewards go with it: a reward not paid yet is never paid, and one already paid is taken from your next rewards.</li>
+          <li>Your invite link is under <em>SP</em> on the desk. Someone who opens it and then verifies a new wallet (one that has not yet paid anyone or funded a vault link through ElysaPay) joins with your invite, once and for good.</li>
+          <li>From then on you earn a share of the SP they earn, and a share of ElysaPay's 1% fee on each payment they send, in USDC (with the starting rules, half of the fee: 0.5% of the payment). Only a fee ElysaPay verified on chain counts: a transfer that did not go through ElysaPay's fee, and for now a vault link on Arc or Robinhood Chain, earns you SP but no USDC. A payment between the two of you, or to themselves, earns neither.</li>
+          <li>ElysaPay pays the USDC to your Solana address on Solana once you are owed at least $1.00; add the address under <em>Identities</em>. Each payout is recorded from its transaction on Solana, and the SP tab shows what you earned, what was paid and what is waiting.</li>
+          <li>Invite rewards come out of ElysaPay's share of the fee, never a payment's amount or a vault link's funds. ElysaPay may change the shares from its admin panel (each change is a new version, from then on) and does not pay rewards to accounts it has stopped for review. When ElysaPay reverses a payment's SP (for example a payment made only to farm rewards), its rewards go with it: a reward not paid yet is never paid, and one already paid is taken from your next rewards.</li>
         </ul>
+      </section>
+
+      <section id="elysium" className="docs-section">
+        <h2>Elysium and HYPE</h2>
+        <p>Elysium is Kinetiq's layer 2 for the Hyperliquid ecosystem, focused on DeFi and trading: an Arbitrum Orbit chain (Nitro, AnyTrust) that settles to HyperEVM, takes HYPE as gas and makes a block about every 100 ms. One sequencer (run by Conduit) orders transactions by priority fee; there is no public mempool. ElysaPay pays verified handles in HYPE on it through the ElysaPay router.</p>
+        <h3>Paying in HYPE</h3>
+        <ol>
+          <li>Open the desk and choose the <em>Elysium</em> tab. Pick Testnet or Mainnet.</li>
+          <li>Choose the platform, write the handle and the amount, in HYPE or in dollars (converted at Hyperliquid's live HYPE mid; the review always shows the exact HYPE).</li>
+          <li><em>Review</em>: the server resolves the handle to its verified wallet, checks your balance and simulates the payment. The card lists the recipient, the amount, the 1% fee added on top and the total.</li>
+          <li><em>Sign and send</em>: the wallet switches to Elysium (adding it if needed) and signs exactly that call. ElysaPay records the payment only from the router's <code>Paid</code> event in the receipt.</li>
+        </ol>
+        <p>A plain HYPE transfer costs about 21,140 gas on Elysium, because the chain adds the cost of posting to HyperEVM. ElysaPay never hard-codes 21,000; the wallet takes the server's estimate with room above it.</p>
+        <h3>Networks</h3>
+        <table className="docs-table" tabIndex={0}>
+          <thead><tr><th>Network</th><th>Chain ID</th><th>Public RPC</th><th>Explorer</th><th>Gas</th></tr></thead>
+          <tbody>
+            <tr><td>{ELYSIUM_TESTNET.chainName}</td><td>{ELYSIUM_TESTNET.chainId}</td><td><code>{ELYSIUM_TESTNET.rpcUrl}</code></td><td><External href={ELYSIUM_TESTNET.explorerUrl!}>Explorer</External></td><td>HYPE</td></tr>
+            <tr><td>{ELYSIUM_MAINNET.chainName} mainnet</td><td>{ELYSIUM_MAINNET.chainId} (expected)</td><td>Published by Kinetiq at launch; an admin adds it</td><td>At launch</td><td>HYPE</td></tr>
+          </tbody>
+        </table>
+        <p>Testnet HYPE comes from <External href={ELYSIUM_TESTNET.faucetUrl!}>Kinetiq's faucet</External> or the <External href={ELYSIUM_TESTNET.bridgeUrl!}>1:1 bridge</External> from HyperEVM Testnet. Multicall3 is at <code>{MULTICALL3}</code>. Elysium mainnet is planned for November 9, 2026; ElysaPay keeps it switched off until an admin enters the official RPC and the server confirms it answers chain {ELYSIUM_MAINNET.chainId}.</p>
+        <h3>Contracts</h3>
+        <dl className="docs-contracts">
+          <div><dt>ElysaPay router</dt><dd><span>Pays native HYPE (or a plain ERC-20) to the recipient and the 1% fee, rounded up, to a treasury fixed at deployment, in one transaction; up to {10} people at once. It has no owner, no upgrade path and never holds funds. Its address on each network is in the live status above and in the Elysium tab.</span></dd></div>
+          <div><dt>ELYSA token</dt><dd><span>A capped ERC-20 only the admin wallet mints (one by one or as an airdrop of up to 200 wallets). Minting can be paused or closed forever; holders can always move and burn their tokens; no transfer pause, no blacklist.</span></dd></div>
+          <div><dt>Elysian Pass</dt><dd><span>An ERC-721 membership pass in tiers (Genesis, Builder, Trader, Community), minted by the admin wallet, optionally soulbound. Supply is capped and the metadata can be frozen for good.</span></dd></div>
+        </dl>
+        <h3>Markets</h3>
+        <p>The Elysium tab shows Hyperliquid perps (mid, 24-hour change, funding, open interest, volume) from Hyperliquid's public API. Kinetiq plans HyperCore market-data precompiles and order submission on Elysium after mainnet; until then nothing on Elysium itself reads HyperCore. Prices are information, not advice.</p>
       </section>
 
       <section id="networks" className="docs-section">
@@ -372,7 +404,7 @@ export default function DocsPage() {
         <h2>Security model</h2>
         <ul>
           <li><b>Your wallet signs everything that moves value.</b> The server cannot sign or broadcast a transfer, and it never holds tokens.</li>
-          <li><b>One sign-in.</b> The sign-in provider (Privy) creates and keeps the wallets of people who sign in with email or a social login; HaPaPay never sees their keys, and <em>Export key</em> shows a key only in the provider's own window. HaPaPay still asks the wallet itself to sign: once for your session, and once to add your Solana address.</li>
+          <li><b>One sign-in.</b> The sign-in provider (Privy) creates and keeps the wallets of people who sign in with email or a social login; ElysaPay never sees their keys, and <em>Export key</em> shows a key only in the provider's own window. ElysaPay still asks the wallet itself to sign: once for your session, and once to add your Solana address.</li>
           <li><b>What the server signs.</b> Vault claim authorizations, bound to the chain, the vault, the payment, the locked account, the token, the recipient wallet, the amount and a deadline at most ten minutes away.</li>
           <li><b>Exact review matching.</b> Your browser compares every prepared transaction with what you reviewed (network, token, sender, recipient, amount, fee, note) and refuses to open the wallet on any difference. On Solana it also caps the compute and the priority fee a transaction may ask for.</li>
           <li><b>Receipt verification.</b> History is built only from receipts that contain the exact reviewed transfer log. A transaction hash alone is never proof.</li>
@@ -384,10 +416,10 @@ export default function DocsPage() {
 
       <section id="fees" className="docs-section">
         <h2>Fees</h2>
-        <p>Every payment on Solana and Arc Mainnet, and on Robinhood Chain once its fee contracts are registered, carries a 1% HaPaPay fee, paid on top of the amount: the recipient receives exactly what you send, and the slip shows the fee and the total before you sign.</p>
+        <p>Every payment on Solana and Arc Mainnet, and on Robinhood Chain once its fee contracts are registered, carries a 1% ElysaPay fee, paid on top of the amount: the recipient receives exactly what you send, and the slip shows the fee and the total before you sign.</p>
         <ul>
-          <li><b>On Solana.</b> The fee moves in the same transaction as the payment, all of it to the HaPaPay treasury. There is no burn on Solana.</li>
-          <li><b>On Robinhood Chain and Arc, once their fee contracts are registered.</b> Your wallet signs an approval of exactly the amount plus the fee, then the payment. On Robinhood Chain, half goes to the burn vault, which can only buy and burn the token the operator names for it, and half goes to the HaPaPay operator. Nothing is burned on Arc, so the whole Arc fee goes to the operator, half of it through the fee forwarder.</li>
+          <li><b>On Solana.</b> The fee moves in the same transaction as the payment, all of it to the ElysaPay treasury. There is no burn on Solana.</li>
+          <li><b>On Robinhood Chain and Arc, once their fee contracts are registered.</b> Your wallet signs an approval of exactly the amount plus the fee, then the payment. On Robinhood Chain, half goes to the burn vault, which can only buy and burn the token the operator names for it, and half goes to the ElysaPay operator. Nothing is burned on Arc, so the whole Arc fee goes to the operator, half of it through the fee forwarder.</li>
           <li><b>Vault links.</b> The fee is held in the vault with the amount and paid only when the person claims it. If you take the tokens back, the fee comes back too.</li>
           <li><b>Small amounts.</b> The fee rounds down, so a payment of a few base units can carry none.</li>
           <li><b>Where it applies.</b> On every payment and vault link on Solana and Arc Mainnet, and on Robinhood Chain once its escrow and fee contracts are registered. On Robinhood Chain and Arc it runs through the fee contracts the network status above shows: until they are registered, Robinhood Chain and Arc Testnet send plain transfers without a fee, and Arc Mainnet waits for them.</li>
@@ -439,7 +471,7 @@ export default function DocsPage() {
         <h3>Deploy the Solana vault</h3>
         <ol className="docs-steps">
           <li>Create a new key used for nothing else, outside any chat or shared document (<code>npm run init:solana-attestor</code> writes one to a local folder without printing it), and set it as <code>SOLANA_CLAIM_ATTESTOR_PRIVATE_KEY</code> (Sensitive, Production). The server refuses the operator's or the treasury's key.</li>
-          <li>Set <code>SOLANA_OPERATOR_ADDRESS</code> to the Solana address that will deploy the program and own its settings, and redeploy. Sign in to the desk with that wallet once so the address is on its HaPaPay account.</li>
+          <li>Set <code>SOLANA_OPERATOR_ADDRESS</code> to the Solana address that will deploy the program and own its settings, and redeploy. Sign in to the desk with that wallet once so the address is on its ElysaPay account.</li>
           <li>Open <a href="/operator/stock-escrow">/operator/stock-escrow</a>, find the Solana vault card and press its deploy button with about 0.6 SOL in that wallet. The wallet asks once to fund a temporary deployment key in your browser; that key writes the program, hands its upgrade key to your wallet, and sends what is left back to you. The program's rent, about 0.57 SOL at today's rate, stays with it while it runs; the card reads the exact amount from Solana before the wallet opens.</li>
           <li>The server reads the program back (its code, your wallet as its upgrade key, the operator, the claim key, the treasury and the 1% fee) and turns Solana vault links on without a redeploy. If the deployment stops part way, the same card continues it, or closes it and returns its SOL.</li>
           <li>To close the program later and get its rent back, press <em>Stop new vault links</em> on the same card. Links already sent stay claimable, and senders can take theirs back after the window. Once the program holds no link and two minutes have passed, <em>Close the program</em> asks your wallet once and returns about 0.57 SOL. A program that still holds a link is never closed, because the tokens in it could not be paid out any more. Your wallet's upgrade key could also change the program's code, so keep that wallet safe.</li>
@@ -470,7 +502,7 @@ export default function DocsPage() {
           <li>Open <a href="/admin">/admin</a> with an admin wallet: one named in <code>ADMIN_WALLET_ADDRESSES</code> (wallet addresses separated by commas), or the operator wallet (<code>ROBINHOOD_OPERATOR_ADDRESS</code> or <code>ARC_MAINNET_OPERATOR_ADDRESS</code>).</li>
           <li>It shows SP totals, every account (by wallet, <code>github:handle</code> or Solana address) with its linked accounts, payments, open vault links and SP history, the SP ledger, payments and vault links on every network, and the audit log.</li>
           <li>Every change asks the admin wallet to sign that one change: SP rules (saved as a new version), adding or taking SP, reversing an SP entry, stopping an account's SP, awarding missing SP, pausing a feature and the desk notice. The change is written to the audit log, with the signature, before it runs. Pauses stop new payments or new vault links of one kind; claims, refunds and confirming a payment already signed are never paused.</li>
-          <li><em>Invites</em> shows who joined with an invite, the USDC inviters earned and who is owed $1.00 or more. To pay them, connect the Solana wallet that pays (it needs the USDC and a little SOL), prepare a payout, check the people and amounts, and sign it: up to eight people in one transaction. HaPaPay records it once Solana shows each amount, and nothing is ever paid automatically.</li>
+          <li><em>Invites</em> shows who joined with an invite, the USDC inviters earned and who is owed $1.00 or more. To pay them, connect the Solana wallet that pays (it needs the USDC and a little SOL), prepare a payout, check the people and amounts, and sign it: up to eight people in one transaction. ElysaPay records it once Solana shows each amount, and nothing is ever paid automatically.</li>
           <li>Set <code>CRON_SECRET</code> (any long random value) to let Vercel run a daily check that awards missing SP for every account. Without it, SP are still awarded whenever someone opens the desk or an admin runs the check.</li>
           <li>The SP ledger, the rule versions and the audit log only grow: the database refuses changes and deletions to their rows. Export them from the panel's <em>Data</em> section regularly, and use a database plan whose restore window covers the time you need (Neon's Free plan keeps 6 hours).</li>
         </ul>
@@ -480,13 +512,13 @@ export default function DocsPage() {
       <section id="legal" className="docs-section">
         <h2>Legal notes</h2>
         <ul>
-          <li>HaPaPay is not affiliated with, endorsed by, or officially connected with Robinhood Markets, Inc., Paxos, Circle or Arc, Solana, the xStocks issuer, or Privy.</li>
+          <li>ElysaPay is not affiliated with, endorsed by, or officially connected with Robinhood Markets, Inc., Paxos, Circle or Arc, Solana, the xStocks issuer, or Privy.</li>
           <li>xStocks are tokens that track shares and funds and give economic exposure, not ownership of the underlying shares. They are not for U.S. persons, and other regional restrictions apply. xStocks transfers and claims ask for your statement that you and the recipient are eligible; this is a self-attestation, not a legal review. Their issuer can pause transfers and move or burn balances. <External href="https://xstocks.fi">xStocks</External></li>
           <li>Robinhood Stock Tokens are tokenised debt securities that give economic exposure, not legal ownership of the underlying shares. They may not be offered, sold or delivered in the United States or to U.S. persons, and other regional restrictions apply. Mainnet Stock Token transfers and claims ask for your statement that you and the recipient are eligible; this is a self-attestation, not a legal review. <External href="https://docs.robinhood.com/chain/stock-tokens/">Stock Tokens</External></li>
           <li>USDG is issued by Paxos and USDC by Circle. Their issuers can pause transfers and freeze addresses.</li>
-          <li>SP are loyalty points with no cash value. They cannot be bought, sold, transferred or exchanged for money, tokens or anything else, and HaPaPay may change or end them.</li>
-          <li>Invite rewards in USDC are a share of HaPaPay's fee on payments by people who joined with your link, paid by HaPaPay at the rate in force when each payment was made. HaPaPay may change or end them for future payments. They are not a return on any token and not an investment.</li>
-          <li>Nothing on HaPaPay is investment, legal or tax advice. Blockchain transfers are final.</li>
+          <li>SP are loyalty points with no cash value. They cannot be bought, sold, transferred or exchanged for money, tokens or anything else, and ElysaPay may change or end them.</li>
+          <li>Invite rewards in USDC are a share of ElysaPay's fee on payments by people who joined with your link, paid by ElysaPay at the rate in force when each payment was made. ElysaPay may change or end them for future payments. They are not a return on any token and not an investment.</li>
+          <li>Nothing on ElysaPay is investment, legal or tax advice. Blockchain transfers are final.</li>
         </ul>
       </section>
     </article>

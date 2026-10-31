@@ -85,7 +85,7 @@ function recordedAsset(input: z.infer<typeof assetSchema>) {
 
 /** Why a prepared Solana transaction cannot carry this asset: SOL is not sent, anything else is not on the list. */
 function unlistedAsset(input: z.infer<typeof assetSchema>) {
-  return input.symbol.toUpperCase() === "SOL" ? NO_SOL_SENDING : "This asset is not on HaPaPay's Solana list.";
+  return input.symbol.toUpperCase() === "SOL" ? NO_SOL_SENDING : "This asset is not on ElysaPay's Solana list.";
 }
 
 const vaultRecipientSchema = z.object({
@@ -182,7 +182,7 @@ export function registerSolanaRoutes(app: express.Express, context: RouteContext
     if (!parsed.success) return void response.status(400).json({ error: "Enter a Solana address." });
     try {
       const owner = await solana.addresses.walletForSolana(parsed.data.address);
-      if (owner && owner !== session.address) return void response.status(409).json({ error: "This Solana address is already added to another HaPaPay wallet." });
+      if (owner && owner !== session.address) return void response.status(409).json({ error: "This Solana address is already added to another ElysaPay wallet." });
       const challenge = await solana.addresses.createSolanaChallenge(session.address, parsed.data.address);
       // A sign-in older than ten minutes also signs this message with the account's wallet.
       response.json({ ...challenge, walletSignature: !context.freshSession?.(session) });
@@ -225,7 +225,7 @@ export function registerSolanaRoutes(app: express.Express, context: RouteContext
     const wallet = await identities.resolve(platform, username);
     if (!wallet) return { ok: false, error: `@${username} on ${platformName(platform)} does not have a verified social identity.` };
     const address = await solana!.addresses.solana(wallet);
-    if (!address) return { ok: false, error: `@${username} on ${platformName(platform)} has not added a Solana address to HaPaPay yet.` };
+    if (!address) return { ok: false, error: `@${username} on ${platformName(platform)} has not added a Solana address to ElysaPay yet.` };
     return { ok: true, wallet, address };
   }
 
@@ -292,7 +292,7 @@ export function registerSolanaRoutes(app: express.Express, context: RouteContext
     if (!parsed.success) return void response.status(400).json({ error: "Invalid Solana receipt." });
     const input = parsed.data;
     const asset = recordedAsset(input.asset);
-    if (!asset) return void response.status(400).json({ error: "This asset is not on HaPaPay's Solana list." });
+    if (!asset) return void response.status(400).json({ error: "This asset is not on ElysaPay's Solana list." });
     const note = checkPaymentNote(input.note);
     if (!note.ok) return void response.status(400).json({ error: note.error });
     try {
@@ -415,7 +415,7 @@ export function registerSolanaRoutes(app: express.Express, context: RouteContext
     if (!parsed.success) return void response.status(400).json({ error: "Invalid Solana vault link confirmation." });
     const input = parsed.data;
     const asset = recordedAsset(input.asset);
-    if (!asset) return void response.status(400).json({ error: "This asset is not on HaPaPay's Solana list." });
+    if (!asset) return void response.status(400).json({ error: "This asset is not on ElysaPay's Solana list." });
     try {
       const payerAddress = await solana.addresses.solana(session.address);
       if (!payerAddress) return void response.status(400).json({ error: "Add a Solana address to your wallet before sending on Solana." });

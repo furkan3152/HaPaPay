@@ -18,7 +18,7 @@ async function main() {
       await pool.end();
     }
   }
-  console.log(options.checkOnly ? "HaPaPay PostgreSQL schema verification completed." : "HaPaPay PostgreSQL migrations and schema verification completed.");
+  console.log(options.checkOnly ? "ElysaPay PostgreSQL schema verification completed." : "ElysaPay PostgreSQL migrations and schema verification completed.");
 }
 
 /** Errors raised with fixed text, which cannot quote the connection string, so they are shown as written. */

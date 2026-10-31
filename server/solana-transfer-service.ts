@@ -260,7 +260,7 @@ export class SolanaTransferService {
     }
     const value = account.value;
     if (!value || value.owner !== SOLANA_TOKEN_PROGRAM_ADDRESSES[asset.program ?? "token"]) {
-      throw new SolanaTransferError(`${asset.symbol} is not the token HaPaPay lists on Solana right now, so nothing was prepared.`);
+      throw new SolanaTransferError(`${asset.symbol} is not the token ElysaPay lists on Solana right now, so nothing was prepared.`);
     }
     const mint = getMintDecoder().decode(getBase64Encoder().encode(value.data[0]));
     if (mint.decimals !== asset.decimals) throw new SolanaTransferError(`${asset.symbol} changed its decimals on chain, so nothing was prepared.`);
@@ -283,7 +283,7 @@ export class SolanaTransferService {
   checkMint(asset: SolanaAssetListing, state: SolanaMintState, unixSeconds: bigint) {
     if (state.paused) throw new SolanaTransferError(`The issuer has paused ${asset.symbol} transfers on Solana. Nothing was prepared.`);
     if (state.transferFeeBps > 0) throw new SolanaTransferError(`${asset.symbol} now charges a transfer fee on Solana, so the recipient would not get the full amount. Nothing was prepared.`);
-    if (state.hook) throw new SolanaTransferError(`${asset.symbol} now runs extra checks on every transfer, which HaPaPay does not support yet. Nothing was prepared.`);
+    if (state.hook) throw new SolanaTransferError(`${asset.symbol} now runs extra checks on every transfer, which ElysaPay does not support yet. Nothing was prepared.`);
     if (multiplierChangesSoon(state.scaled, unixSeconds)) {
       const at = new Date(Number(state.scaled!.newMultiplierEffectiveTimestamp) * 1000).toISOString().slice(11, 16);
       throw new SolanaTransferError(`${asset.symbol}'s balance multiplier changes at ${at} UTC, which would change the amount. Try again after that.`);
@@ -336,7 +336,7 @@ export class SolanaTransferService {
 
   /**
    * What a Solana address holds of SOL and of every listed asset, as a wallet shows it, for an account's view of its
-   * own Solana address. Mints HaPaPay
+   * own Solana address. Mints ElysaPay
    * does not list are left out; a listed xStock whose multiplier cannot be read just now is shown at a multiplier
    * of 1 rather than left out, so an address holding it never reads as empty (the desk would then offer to replace
    * a funded address). Undefined when Solana cannot be read.
@@ -426,7 +426,7 @@ export class SolanaTransferService {
    */
   async prepare(input: { sender: string; asset: SolanaAssetListing; payments: readonly SolanaPaymentInput[]; note?: string }): Promise<PreparedSolanaTransfer> {
     const { asset } = input;
-    // HaPaPay does not send SOL; records of SOL sent before then are still read.
+    // ElysaPay does not send SOL; records of SOL sent before then are still read.
     if (asset.kind === "native") throw new SolanaTransferError(NO_SOL_SENDING);
     const switchState = this.availability(asset);
     if (!switchState.enabled) throw new SolanaTransferError(switchState.reason ?? "Solana transfers are not available on this server.");
@@ -623,7 +623,7 @@ export class SolanaTransferService {
     // Sent from the treasury's own wallet, the fee goes from the treasury to itself and never leaves it: nothing is
     // asked of it and no fee is recorded.
     const ownFee = input.sender.address === treasury;
-    if (fee > 0n && !ownFee && (deltas.get(treasury) ?? 0n) !== fee) throw new SolanaTransferError("This transaction did not carry the 1% fee to HaPaPay.");
+    if (fee > 0n && !ownFee && (deltas.get(treasury) ?? 0n) !== fee) throw new SolanaTransferError("This transaction did not carry the 1% fee to ElysaPay.");
     const memos = this.memos(transaction);
     const expected = input.note ? `${PAYMENT_NOTE_PREFIX}${input.note}` : undefined;
     if (expected ? memos.length !== 1 || memos[0] !== expected : memos.length !== 0) {

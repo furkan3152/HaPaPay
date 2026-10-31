@@ -1,7 +1,7 @@
 import { formatUnits, parseUnits } from "viem";
 
 /**
- * HaPaPay's fee on Solana: 1% on top of each payment, rounded down per payment, all
+ * ElysaPay's fee on Solana: 1% on top of each payment, rounded down per payment, all
  * of it to the treasury in the same transaction. There is no router contract and no burn share on Solana.
  */
 export const SOLANA_FEE_BPS = 100n;

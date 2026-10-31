@@ -76,7 +76,7 @@ export class WalletAuthService {
     const message = createSiweMessage({
       domain: this.domain,
       address,
-      statement: "Sign in to HaPaPay to link verified social accounts to this wallet. This request does not move funds.",
+      statement: "Sign in to ElysaPay to link verified social accounts to this wallet. This request does not move funds.",
       uri: this.uri,
       version: "1",
       chainId: 1,

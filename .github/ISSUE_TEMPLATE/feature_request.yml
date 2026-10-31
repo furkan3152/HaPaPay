@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest a change to what HaPaPay does.
+description: Suggest a change to what ElysaPay does.
 labels: ["enhancement"]
 body:
   - type: textarea

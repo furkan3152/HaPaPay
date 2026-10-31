@@ -30,7 +30,7 @@ export type SolanaConfig = {
   /** Where the 1% fee goes, all of it. Payments are off without it. */
   treasury?: string;
   /**
-   * USDC and USDG, and claims of SOL vault links (HaPaPay no longer sends SOL). On by default once a treasury is set;
+   * USDC and USDG, and claims of SOL vault links (ElysaPay no longer sends SOL). On by default once a treasury is set;
    * `SOLANA_TRANSFERS=disabled` turns them off.
    */
   transfers: SolanaSwitch;

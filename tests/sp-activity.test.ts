@@ -79,7 +79,7 @@ describe("SP activity", () => {
     assert.equal(await sp.repository.balance(ALICE), 50.5);
     assert.equal((await activity.syncAccount(BOB, { links: false })).awarded, 99 + 10, "Bob's own payment on Arc");
     const plain = await sp.repository.entryBySource(`robinhood:${hash(6)}`);
-    assert.deepEqual([plain?.amount, plain?.reason], [0, "It did not pay HaPaPay's fee, so it earns no SP"]);
+    assert.deepEqual([plain?.amount, plain?.reason], [0, "It did not pay ElysaPay's fee, so it earns no SP"]);
   });
 
   it("keeps the fee each network verified on the payment's SP row, and none for a transfer that paid none", async () => {

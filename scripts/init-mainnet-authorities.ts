@@ -85,7 +85,7 @@ const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).hr
 if (invokedPath === import.meta.url) {
   const outputDirectory = process.argv[2]
     ? resolve(process.argv[2])
-    : join(homedir(), "Desktop", "HaPaPay Mainnet Credentials");
+    : join(homedir(), "Desktop", "ElysaPay Mainnet Credentials");
   const output = await initializeMainnetAuthorities({ outputDirectory });
   console.log(`Created the Arc Mainnet attestor keys at ${output.outputDirectory}.`);
   console.log("No private key was printed. Add both to the Production environment as sensitive variables.");

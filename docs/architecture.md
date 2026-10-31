@@ -1,6 +1,6 @@
 # Architecture
 
-HaPaPay is a single TypeScript codebase with three parts that share one set of domain rules:
+ElysaPay is a single TypeScript codebase with three parts that share one set of domain rules:
 
 - **The desk**, a React single-page app that reads requests, shows reviews and asks the user's wallet to sign.
 - **The API**, an Express server that understands requests, resolves verified identities, prepares exact
@@ -22,7 +22,7 @@ flowchart TB
         Check["Transaction review<br/>src/domain/*-review, matches*"]
         Wallet["Wallet<br/>Privy, injected EVM, Wallet Standard"]
     end
-    subgraph API["HaPaPay API (holds no user keys)"]
+    subgraph API["ElysaPay API (holds no user keys)"]
         Chat["Chat and intent<br/>server/chat-service.ts"]
         Ident["Identity<br/>OAuth, sessions, store"]
         Prep["Preparation services<br/>EVM and Solana"]
@@ -129,7 +129,7 @@ What it reads:
 - **Notes** after a marker (`note:`, `memo:`, `not:`) or a closing `for …`, up to 140 characters, written on chain.
 
 What it refuses to guess: a second asset, a dollar value of a stock, a part of an amount, a fee taken out of the
-amount, a network HaPaPay does not run, a wallet address in place of a handle, and anyone the request says not to pay.
+amount, a network ElysaPay does not run, a wallet address in place of a handle, and anyone the request says not to pay.
 Each gets one question, often with up to three complete requests to pick from, which are read again from scratch.
 
 ## Network routing

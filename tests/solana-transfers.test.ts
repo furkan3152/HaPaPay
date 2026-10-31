@@ -34,7 +34,7 @@ async function prepared(asset = SOLANA_USDC, people = 2, note?: string) {
 describe("Solana assets", () => {
   it("lists USDC and USDG first, then the verified xStocks, finds them by ticker or symbol, and lists no SOL", () => {
     assert.deepEqual(SOLANA_ASSETS.slice(0, 2).map(({ symbol }) => symbol), ["USDC", "USDG"]);
-    // HaPaPay sends stablecoins and stocks, not SOL.
+    // ElysaPay sends stablecoins and stocks, not SOL.
     assert.equal(SOLANA_ASSETS.some(({ symbol }) => symbol === "SOL"), false);
     assert.ok(SOLANA_XSTOCKS.length > 900);
     assert.equal(SOLANA_XSTOCK_COUNT, SOLANA_XSTOCKS.length, "the home page's xStock count is written with the list itself");

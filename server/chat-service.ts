@@ -258,7 +258,7 @@ async function readPayment(message: string, desk: Desk) {
   const noted = readNote(message);
   if (noted.error) return clarify({ message: noted.error }, "local");
   const { note } = noted;
-  // The product's own name is never an asset or a payee: "how does HaPaPay work" names neither an asset nor @work.
+  // The product's own name is never an asset or a payee: "how does ElysaPay work" names neither an asset nor @work.
   const namedProduct = new RegExp(PRODUCT_NAME.source, "i").test(noted.text);
   const owned = ownPlatformWritten(writtenAmounts(profileLinksAsHandles(noted.text.replace(PRODUCT_NAME, " ").replace(/\s{2,}/g, " ").trim())), desk);
   let text = typeof owned === "string" ? owned : await owned;
@@ -266,10 +266,10 @@ async function readPayment(message: string, desk: Desk) {
   // question cannot drift to Solana and draft another asset there.
   const named = readNetworkWords(text).networks;
   const keep = <T extends object>(result: T) => keepNetwork(result, named.length === 1 ? named[0] : undefined);
-  // A network HaPaPay does not run is said, never ignored: "on Ethereum" must not become a Solana draft.
+  // A network ElysaPay does not run is said, never ignored: "on Ethereum" must not become a Solana draft.
   const elsewhere = UNSUPPORTED_NETWORK.exec(wordsOf(text));
   if (elsewhere) {
-    return clarify({ message: `HaPaPay sends on Solana, Arc and Robinhood Chain; ${networkLabel(elsewhere[1])} is not one of them. Write the request without it, or with one of those.` }, "local");
+    return clarify({ message: `ElysaPay sends on Solana, Arc and Robinhood Chain; ${networkLabel(elsewhere[1])} is not one of them. Write the request without it, or with one of those.` }, "local");
   }
   // Asking for money, saying not to send, repeated payments or a payment for later: never a draft.
   const outside = outOfScope(text);
@@ -285,7 +285,7 @@ async function readPayment(message: string, desk: Desk) {
   }
   // A wallet address is not a handle, so it is never lowercased and asked for its platform.
   if (walletAddressRecipient(text)) {
-    return keep(clarify({ message: "HaPaPay pays people by their verified handle, not by wallet address. Write who receives it and where, for example: Send 5 USDC to @toly on X." }, "local"));
+    return keep(clarify({ message: "ElysaPay pays people by their verified handle, not by wallet address. Write who receives it and where, for example: Send 5 USDC to @toly on X." }, "local"));
   }
   // A number written for each person or for everyone beside another amount: which one is meant is asked.
   const twoAmounts = conflictingShare(text);
@@ -360,7 +360,7 @@ function multipliedAmount(text: string) {
   return [...text.matchAll(times)].some(([, asset]) => namesAnyAsset(asset));
 }
 
-/** The fee taken out of the amount, where HaPaPay adds it on top: "10 USDC minus fees", "fees included". */
+/** The fee taken out of the amount, where ElysaPay adds it on top: "10 USDC minus fees", "fees included". */
 const FEE_INSIDE = /\b(?:minus|less|net\s+of|excluding|exclusive\s+of)\s+(?:the\s+)?(?:fees?|commission)\b|\bafter\s+(?:the\s+)?(?:fees?|commission)(?=\s*(?:$|[,.;!?)]))|\b(?:including|incl\.?|inclusive\s+of)\s+(?:the\s+)?(?:fees?|commission)\b|\b(?:fees?|commission)\s+(?:included|inclusive|deducted)\b|\bkomisyon(?:u)?\s+(?:dahil|d[üu][şs][üu]l)/i;
 
 /** An EVM address or a Solana address (base58, 32 to 44 characters) written where a handle goes; "@0x…" is a handle. */
@@ -377,7 +377,7 @@ function walletAddressRecipient(text: string) {
   return undefined;
 }
 
-/** Networks people name that HaPaPay does not run. */
+/** Networks people name that ElysaPay does not run. */
 const UNSUPPORTED_NETWORK = /\b(?:on|via|over|using|through)\s+(?:the\s+)?(ethereum|eth\s+mainnet|base|polygon|matic|bsc|bnb\s+(?:smart\s+)?chain|binance(?:\s+smart\s+chain)?|arbitrum|optimism|avalanche|avax|tron|bitcoin|lightning|ton|aptos|near|cosmos|linea|scroll|zksync|blast|celo|gnosis|fantom|cardano|ripple|xrpl?)(?:\s+(?:network|chain|mainnet|blockchain))?\b/i;
 
 function networkLabel(word: string) {
@@ -593,7 +593,7 @@ async function vaultOffer(desk: Desk, platform: Platform, username: string): Pro
   if (exists === false) return { refusal: `There is no ${platformLabel(platform)} account named @${username}. Check how the handle is spelled.` };
   if (exists === "unavailable") {
     if (platform === "x") return { lock: "name" };
-    return { refusal: `${platformLabel(platform)} is not answering account lookups for HaPaPay right now, so the money cannot wait in the vault for @${username}. Try again later, or ask @${username} to join HaPaPay and link ${platformLabel(platform)} so you can pay them directly.` };
+    return { refusal: `${platformLabel(platform)} is not answering account lookups for ElysaPay right now, so the money cannot wait in the vault for @${username}. Try again later, or ask @${username} to join ElysaPay and link ${platformLabel(platform)} so you can pay them directly.` };
   }
   return { lock: "account" };
 }
@@ -605,9 +605,9 @@ async function vaultOffer(desk: Desk, platform: Platform, username: string): Pro
 function vaultReviewText(username: string, platform: Platform, symbol: string, vault: string, lock: VaultLock) {
   const name = platformLabel(platform);
   const window = `within the window you pick, ${STOCK_CLAIM_WINDOW_HOURS.default} hours to 30 days, or you take it back after that`;
-  if (lock === "account") return `@${username} is not on HaPaPay yet. You can keep the ${symbol} in the ${vault}; they claim it with their official ${name} account ${window}.`;
+  if (lock === "account") return `@${username} is not on ElysaPay yet. You can keep the ${symbol} in the ${vault}; they claim it with their official ${name} account ${window}.`;
   const why = platform === "x" ? " X is not answering account lookups right now, so it waits for the name instead of the account." : "";
-  return `@${username} is not on HaPaPay yet. You can keep the ${symbol} in the ${vault} for the ${name} name @${username}: whoever connects ${name} to HaPaPay with that name claims it ${window}.${why} Check how the name is spelled.`;
+  return `@${username} is not on ElysaPay yet. You can keep the ${symbol} in the ${vault} for the ${name} name @${username}: whoever connects ${name} to ElysaPay with that name claims it ${window}.${why} Check how the name is spelled.`;
 }
 
 /** Why the vault cannot hold the money for this person on this network, or undefined for a platform it never serves. */
@@ -624,7 +624,7 @@ function vaultClosed(networkName: string, vault: { enabled: boolean; reason?: st
  */
 function notJoinedYet(platform: Platform, username: string, closed: string | undefined) {
   const name = platformLabel(platform);
-  return `@${username} has not linked ${name} to HaPaPay yet.${closed ?? ""} Send @${username} your invite link from the SP tab; once they sign in and link ${name}, send it again and it goes straight to them.`;
+  return `@${username} has not linked ${name} to ElysaPay yet.${closed ?? ""} Send @${username} your invite link from the SP tab; once they sign in and link ${name}, send it again and it goes straight to them.`;
 }
 
 /** What a vault-link reply adds when the request has a note: a note rides only on a direct payment's `pay`. */
@@ -646,7 +646,7 @@ function platformQuestion(request: string, username: string, amount: string, ass
 }
 
 /**
- * The platforms where this handle has a verified HaPaPay account, as complete requests to pick from; when it has
+ * The platforms where this handle has a verified ElysaPay account, as complete requests to pick from; when it has
  * none, the platform the message names as the sender's own, since most people pay someone where they talk to them;
  * else every platform, so the choice is a press away. With only "for example … on X" written, the desk would seem to
  * know X alone.
@@ -751,21 +751,21 @@ function outOfScope(message: string): (Clarification & { now?: boolean }) | unde
     return { message: "A sent payment is final on chain and cannot be cancelled. Nothing is sent before you sign it in your wallet, and a vault link that nobody claims comes back to you when its window closes." };
   }
   if (before(ASKS_FIRST) || ASKS_IN_REQUEST.some(inRequest)) {
-    return { message: "HaPaPay sends from your own wallet; it cannot ask anyone for money. To get paid, verify an account under Identities and share its payment link." };
+    return { message: "ElysaPay sends from your own wallet; it cannot ask anyone for money. To get paid, verify an account under Identities and share its payment link." };
   }
-  if (REPEATED.test(text)) return { message: "HaPaPay sends each payment once. Send it, then write the request again for the next one." };
+  if (REPEATED.test(text)) return { message: "ElysaPay sends each payment once. Send it, then write the request again for the next one." };
   if (LATER.some((pattern) => pattern.test(text))) {
-    return { message: "HaPaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.", now: true };
+    return { message: "ElysaPay sends right away; it cannot schedule or repeat a payment. Send it when you want it to arrive.", now: true };
   }
   return undefined;
 }
 
-/** The product's own name, never an asset or a payee: "HaPaPay", "hapapay", "Ha Pa Pay". */
-const PRODUCT_NAME = /(?<![\w@.$-])ha\s*pa\s*pay(?!\w)/gi;
+/** The product's own name, never an asset or a payee: "ElysaPay", "elysapay", "Elysa Pay", and the earlier "ElysaPay". */
+const PRODUCT_NAME = /(?<![\w@.$-])(?:elysa\s*pay|ha\s*pa\s*pay)(?!\w)/gi;
 /** A question or a request for help, in English or Turkish: what the desk answers with what it does. */
 const ASKS = new RegExp(`\\?|^\\s*(?:what|how|why|who|where|when|which|can|could|does|do|is|are|will|should|tell\\s+me|explain|help)\\b|\\b(?:learn\\s+more|help\\s+me|how\\s+to)\\b|(?:^|[^\\wçğıöşü])(?:nedir|nas[ıi]l|neden|ni[çc]in|kimdir|nerede|hangi|yard[ıi]m|anlat)${TURKISH_END}`, "i");
 /** What a question about the desk gets: what it does and how to write a request, never a draft. */
-export const HELP_REPLY = "HaPaPay sends stablecoins (USDC and USDG) and stocks (xStocks and Stock Tokens) from your own wallet to a verified handle on GitHub, X, Telegram, Discord or Farcaster, with a 1% fee; someone who has not joined yet claims theirs from the vault once they connect that account. Write an amount, an asset and who receives it, for example: Send 5 USDC to @toly on X.";
+export const HELP_REPLY = "ElysaPay sends stablecoins (USDC and USDG) and stocks (xStocks and Stock Tokens) from your own wallet to a verified handle on GitHub, X, Telegram, Discord or Farcaster, with a 1% fee; someone who has not joined yet claims theirs from the vault once they connect that account. Write an amount, an asset and who receives it, for example: Send 5 USDC to @toly on X.";
 
 /**
  * A question about the desk itself: it asks something (or names the product) and states no amount, handle or asset,
@@ -808,7 +808,7 @@ function platformLabel(platform: Platform) {
 
 /** A USDC or dollar amount: "5 USDC", "$5", "5 dollars", "50 dolar". */
 const NAMES_USDC = /\busdc\b|\$\s*\d|\d\s*\$|\bdollars?\b|\bdolar|\busd\b|\bbucks\b/i;
-/** Currencies HaPaPay does not send. A ".eth" name is a handle, not ether. */
+/** Currencies ElysaPay does not send. A ".eth" name is a handle, not ether. */
 const OTHER_CURRENCY = /(?<![\w.@-])(?:usdt|tether|eth|ether|btc|bitcoin|sol|solana|bnb|xrp|doge|dogecoin|eurc|eur|euros?|gbp|pounds?|lira|tl)(?!\w)|[€£₺]/i;
 
 /**
@@ -987,7 +987,7 @@ function clarification(message: string, tokens: readonly StockTokenListing[], st
     if (!digits) return { message: `Write the amount in digits, for example: ${example(token, "2")}.` };
     return { message: `Write the amount before ${token}, for example: ${example(token, "2")}.` };
   }
-  if (OTHER_CURRENCY.test(message)) return { message: `HaPaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: ${example("USDC", "5")}.` };
+  if (OTHER_CURRENCY.test(message)) return { message: `ElysaPay sends USDC, USDG, xStocks and Robinhood Chain Stock Tokens, for example: ${example("USDC", "5")}.` };
   if (shares) return { message: "Name the Stock Token by its ticker, in token units, for example: Send 2 NVDA to @toly on X." };
   if (ten) return { message: `Write the amount in digits, for example: ${example("USDC", "10", "10")}.`, suggestions: choices("USDC", "10") };
   if (stated.length > 1) return { message: "Write one amount per request. Several people share one request when each gets the same amount, for example: Send 5 USDC each to @toly and @carol on X." };
@@ -1175,7 +1175,7 @@ function listedAmounts(listed: Listed, asset: { symbol: string; decimals: number
   return amounts;
 }
 
-/** A word that names an asset on any network or a currency HaPaPay does not send: SOL, TSLAx, NVDA, ETH, euros. */
+/** A word that names an asset on any network or a currency ElysaPay does not send: SOL, TSLAx, NVDA, ETH, euros. */
 function namesAnyAsset(word: string) {
   const plain = word.replace(/^\$/, "");
   return DOLLAR_WORD.test(plain) || OTHER_CURRENCY.test(plain) || Boolean(solanaAssetWord(plain, word.startsWith("$")))
@@ -1394,7 +1394,7 @@ function unpaidPeople(input: {
   const names = (group: BatchPerson[]) => joinList(group.map(({ username }) => `@${username}`));
   const byPlatform = PLATFORMS.map((platform) => input.unverified.filter((person) => person.platform === platform)).filter((group) => group.length);
   const lines = [
-    ...byPlatform.map((group) => `${names(group)} ${group.length > 1 ? "have" : "has"} no verified ${platformLabel(group[0].platform!)} account${group.length > 1 ? "s" : ""} on HaPaPay.`),
+    ...byPlatform.map((group) => `${names(group)} ${group.length > 1 ? "have" : "has"} no verified ${platformLabel(group[0].platform!)} account${group.length > 1 ? "s" : ""} on ElysaPay.`),
     ...(input.own.length ? [`${names(input.own)} ${input.own.length > 1 ? "are" : "is"} your own wallet.`] : []),
   ];
   const rest = payable.length > 1
@@ -1536,7 +1536,7 @@ function heldText(value: string) {
   return cut ? `${whole}.${cut}` : whole;
 }
 
-/** An amount and HaPaPay's 1% on top, the most a network's fee can add to it. */
+/** An amount and ElysaPay's 1% on top, the most a network's fee can add to it. */
 const withFee = (units: bigint) => units + units / 100n;
 
 /** The asset's symbol on its EVM home: USDC and USDG keep theirs, an xStock is its Robinhood Chain ticker. */
@@ -1546,7 +1546,7 @@ function homeSymbol(asset: SolanaAssetListing) {
 
 /**
  * What the signed-in sender's wallets hold of an asset on Solana and on its EVM home, read at once and each within
- * the wait, against what a payment of `total` (in the asset's Solana decimals) needs there with HaPaPay's 1% fee.
+ * the wait, against what a payment of `total` (in the asset's Solana decimals) needs there with ElysaPay's 1% fee.
  * Undefined when either cannot be read, or the home does not list the asset.
  */
 async function readHeld(desk: Desk, asset: SolanaAssetListing, home: EvmHome, total: bigint) {
@@ -1675,7 +1675,7 @@ async function readSolanaRequest(message: string, text: string, note: string | u
     ? { status: "found", asset: listedAsset, amount: listedHere.amounts[0].readings[0] ?? "1", written: listedWritten?.dollar ? "$" : listedWritten?.word?.replace(/^\$/, "") ?? listedAsset.symbol }
     : readSolanaAmount(body);
   if (reading.status === "none") {
-    // SOL named without an amount is answered here: HaPaPay does not send it.
+    // SOL named without an amount is answered here: ElysaPay does not send it.
     if (/(?<![\w@.$-])(?:sol|solana)(?![\w])/i.test(body)) return clarify({ message: NO_SOL_SENDING }, "local");
     // An xStock written with its "x" moves only on Solana, so its missing or unreadable amount is asked here, in it,
     // and not by the other networks' reader with a USDC example.
@@ -1827,7 +1827,7 @@ async function readSolanaRequest(message: string, text: string, note: string | u
     if (person.wallet) {
       if (!plain && home) return { evmText: body, because: await heldOnlyOnSolana(desk, asset, home, total, [person]) };
       return clarify({
-        message: `@${username} has not added a Solana address to HaPaPay yet, so nothing can reach them on Solana. Ask them to sign in to HaPaPay again, which adds one${home ? `, or send it ${home.words}` : ""}.`,
+        message: `@${username} has not added a Solana address to ElysaPay yet, so nothing can reach them on Solana. Ask them to sign in to ElysaPay again, which adds one${home ? `, or send it ${home.words}` : ""}.`,
         ...(home ? { suggestions: [withNote(`${requestText(amount, symbol === "USDC" || symbol === "USDG" ? symbol : asset.ticker, username, platform)} ${home.words}`, note)] } : {}),
       }, "local");
     }
@@ -1867,7 +1867,7 @@ async function readSolanaRequest(message: string, text: string, note: string | u
     const vaulted = unverified.filter(({ platform }) => solanaVaultHolds(solana, asset, platform!));
     const offered = [...(rest ? [rest] : []), ...vaulted.map((person) => single(person.username, person.platform!, share(person)))].slice(0, 3);
     const lines = [
-      ...(unverified.length ? [`${names(unverified)} ${unverified.length > 1 ? "have" : "has"} no verified account on HaPaPay.`] : []),
+      ...(unverified.length ? [`${names(unverified)} ${unverified.length > 1 ? "have" : "has"} no verified account on ElysaPay.`] : []),
       ...(withoutAddress.length ? [`${names(withoutAddress)} ${withoutAddress.length > 1 ? "have" : "has"} not added a Solana address yet${home ? `; you can pay them ${home.words} instead` : ""}.`] : []),
       ...(own.length ? [`${names(own)} ${own.length > 1 ? "are" : "is"} your own wallet.`] : []),
       ...(rest ? [`Pay ${names(payable)} now?`] : []),

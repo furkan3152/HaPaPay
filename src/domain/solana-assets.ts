@@ -5,7 +5,7 @@ export type SolanaTokenProgram = "token" | "token-2022";
 export type SolanaAssetKind = "native" | "cash" | "stock" | "etf";
 
 /**
- * Something HaPaPay moves on Solana. `symbol` is the issuer's own (SOL, USDC, TSLAx); `ticker` is what people
+ * Something ElysaPay moves on Solana. `symbol` is the issuer's own (SOL, USDC, TSLAx); `ticker` is what people
  * type (TSLA for TSLAx). A `scaled` mint uses Token-2022's scaled UI amount: wallets show the raw balance times a
  * multiplier the issuer moves for dividends and splits, so amounts are read and shown the way wallets show them.
  */
@@ -30,13 +30,13 @@ export const SOLANA_TOKEN_PROGRAM_ADDRESSES: Record<SolanaTokenProgram, string> 
 export const XSTOCK_DECIMALS = 8;
 
 /**
- * SOL itself. HaPaPay does not send it: it stays known so a request for it is answered, a wallet's SOL for network fees is shown, and records
+ * SOL itself. ElysaPay does not send it: it stays known so a request for it is answered, a wallet's SOL for network fees is shown, and records
  * written before then are read.
  */
 export const SOLANA_SOL: SolanaAssetListing = { symbol: "SOL", ticker: "SOL", name: "Solana", kind: "native", decimals: SOL_DECIMALS };
 
 /** What a request to send SOL is told, in the chat and by every route that prepares a Solana transaction. */
-export const NO_SOL_SENDING = "HaPaPay does not send SOL. It sends stablecoins (USDC and USDG) and stocks (xStocks on Solana, Stock Tokens on Robinhood Chain). Keep a little SOL in your wallet for Solana's network fees.";
+export const NO_SOL_SENDING = "ElysaPay does not send SOL. It sends stablecoins (USDC and USDG) and stocks (xStocks on Solana, Stock Tokens on Robinhood Chain). Keep a little SOL in your wallet for Solana's network fees.";
 
 /**
  * SPL Token's native mint, wrapped SOL. The vault program holds token accounts only, so a vault link for SOL holds it
@@ -45,7 +45,7 @@ export const NO_SOL_SENDING = "HaPaPay does not send SOL. It sends stablecoins (
  */
 export const WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112";
 
-/** Every listed token can wait in the Solana vault; SOL, which HaPaPay does not send, cannot. */
+/** Every listed token can wait in the Solana vault; SOL, which ElysaPay does not send, cannot. */
 export function vaultHoldsAsset(asset: Pick<SolanaAssetListing, "mint" | "kind">) {
   return Boolean(asset.mint) && asset.mint !== WRAPPED_SOL_MINT && asset.kind !== "native";
 }
@@ -80,7 +80,7 @@ export const SOLANA_USDG: SolanaAssetListing = {
 };
 export const SOLANA_ASSETS_VERIFIED_ON = "2026-10-04";
 
-/** USDC and USDG: the Solana stablecoins HaPaPay sends. The xStocks list lives in `solana-stocks.ts`; SOL is not sent. */
+/** USDC and USDG: the Solana stablecoins ElysaPay sends. The xStocks list lives in `solana-stocks.ts`; SOL is not sent. */
 export const SOLANA_BASE_ASSETS: readonly SolanaAssetListing[] = [SOLANA_USDC, SOLANA_USDG];
 
 export function isSolanaStock(asset: Pick<SolanaAssetListing, "kind">) {

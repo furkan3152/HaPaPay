@@ -1,6 +1,6 @@
 # Design system
 
-HaPaPay's interface is drawn in dots. The hero, the brand mark, the icons, the headings and even the way a pressed
+ElysaPay's interface is drawn in dots. The hero, the brand mark, the icons, the headings and even the way a pressed
 button reacts are made of the same dot grid, so the product feels like one object rather than a template with a logo
 on it. This document records the rules that keep it that way.
 
@@ -18,13 +18,29 @@ on it. This document records the rules that keep it that way.
 
 ## Layout
 
-- `/` is the home page: what HaPaPay does, how a payment works, what can be sent, the vault, and the trust model, each
+- `/` is the home page: what ElysaPay does, how a payment works, what can be sent, the vault, and the trust model, each
   card opening the section of `/docs` that explains it.
 - `/app` is the desk: two floating cards on a dotted desk. The payment column holds the request box, examples, the
   status line, the conversation and the slips; the side panel has five tabs: **Stocks** (the boards), **Activity**,
   **Claims**, **SP** and **Identities**.
 - `/docs`, `/operator/stock-escrow` and `/admin` reuse the same surfaces and type.
 - A slip (a review) lists its facts as rows: network, recipient, amount, fee, total, gas, note, then one primary action.
+
+## Elysium (ElysaPay)
+
+ElysaPay keeps every dot rule above and adds Elysium's look:
+
+- **Palette.** Deep night canvas (`#06090E`), Elysian mint (`#5CF2C9`) as the desk's accent for Elysium and HYPE, a pale
+  gold (`#E8C477`) for the mainnet countdown and rewards, and a night violet (`#8B7CFF`) only in the sky. Tokens:
+  `--elysium-mint`, `--elysium-gold`, `--elysium-violet`; the desk wears `data-network-theme="elysium"`.
+- **The hero** gathers into the *Elysian gate* (an arch over a four-pointed star, drawn in `DotMorph.tsx`) and the
+  dollar; typing `HYPE` focuses the gate. The morph engine itself is unchanged.
+- **The sky** is a dotted aurora: the desk's own lattice lights up in mint inside a soft band that drifts across the
+  page. It is driven by the ambient-motion pause control, stops under reduced motion, high contrast and print, and
+  never glows.
+- **Sound.** Short cues synthesised with Web Audio in a pentatonic scale (taps, opening a review, sending, success,
+  an error) and an optional voice that reads each review aloud. Both are per-viewer toggles in the top bar; sound never
+  carries information the text does not.
 
 ## Color
 

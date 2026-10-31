@@ -61,7 +61,7 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`;
 
 /**
  * Invites: the account's link, and what the people who joined with it earned it, in SP and
- * in USDC that HaPaPay pays on Solana. The shares are the rules in force, read from the server.
+ * in USDC that ElysaPay pays on Solana. The shares are the rules in force, read from the server.
  */
 function InviteCard({ referral }: { referral: ReferralSummary }) {
   const [copied, setCopied] = useState(false);
@@ -92,14 +92,14 @@ function InviteCard({ referral }: { referral: ReferralSummary }) {
       <div><dt>Paid to you</dt><dd>{formatUsdc(referral.fees.paid)}</dd></div>
     </dl>
     <p className="sp-invite-note">{referral.solanaAddress
-      ? `Waiting to be paid: ${formatUsdc(owed)}. HaPaPay pays from ${formatUsdc(referral.minimumPayout)} to your Solana address ${referral.solanaAddress.slice(0, 4)}…${referral.solanaAddress.slice(-4)}.`
+      ? `Waiting to be paid: ${formatUsdc(owed)}. ElysaPay pays from ${formatUsdc(referral.minimumPayout)} to your Solana address ${referral.solanaAddress.slice(0, 4)}…${referral.solanaAddress.slice(-4)}.`
       : `Waiting to be paid: ${formatUsdc(owed)}. Add a Solana address under Identities to receive USDC.`}</p>
     {referral.joined && <p className="sp-invite-note">You joined with someone's invite.</p>}
   </section>;
 }
 
 /**
- * SP, HaPaPay's social points: one balance for every network, the history of what earned it,
+ * SP, ElysaPay's social points: one balance for every network, the history of what earned it,
  * and how SP are earned. The server awards SP when it reads the balance, so this panel only shows what the ledger says.
  */
 export function SpPanel({ summary, rules, referral, loading, loadingMore, error, authenticated, onRefresh, onMore, onConnect }: SpPanelProps) {
@@ -110,7 +110,7 @@ export function SpPanel({ summary, rules, referral, loading, loadingMore, error,
       {authenticated && <button type="button" className="sp-refresh" onClick={onRefresh} disabled={loading} aria-label="Check SP again"><DotIcon name="refresh" size={16} /></button>}
     </div>
     {!authenticated ? <div className="sp-message">
-      <p>SP are social points for paying through HaPaPay. Connect your wallet to see your balance; one balance counts every network.</p>
+      <p>SP are social points for paying through ElysaPay. Connect your wallet to see your balance; one balance counts every network.</p>
       <button type="button" onClick={onConnect}>Connect wallet</button>
     </div> : error && !summary ? <div className="sp-error" role="alert">
       <p>{error}</p>
@@ -127,7 +127,7 @@ export function SpPanel({ summary, rules, referral, loading, loadingMore, error,
         <div><span>Today from payments and claims</span><b>{formatSp(summary.today)} / {formatSpBrief(summary.dailyCap)}</b></div>
         <span className="sp-meter" role="progressbar" aria-label="SP earned today" aria-valuemin={0} aria-valuemax={summary.dailyCap} aria-valuenow={summary.today}><i style={{ width: `${share}%` }} /></span>
       </div>
-      {summary.frozen && <p className="sp-frozen" role="status">Earning is stopped for this account while HaPaPay reviews it. Your balance stays as it is.</p>}
+      {summary.frozen && <p className="sp-frozen" role="status">Earning is stopped for this account while ElysaPay reviews it. Your balance stays as it is.</p>}
       {referral && <InviteCard referral={referral} />}
       {error && <p className="sp-error-inline" role="status">{error}</p>}
       <div className="sp-history">
@@ -150,6 +150,6 @@ export function SpPanel({ summary, rules, referral, loading, loadingMore, error,
       <summary>How SP are earned</summary>
       <EarnRules rules={rules} />
     </details>}
-    <p className="sp-legal">SP are HaPaPay's social points. They have no cash value and cannot be bought, sold or sent. HaPaPay may change how SP are earned; each change is recorded and applies from then on.</p>
+    <p className="sp-legal">SP are ElysaPay's social points. They have no cash value and cannot be bought, sold or sent. ElysaPay may change how SP are earned; each change is recorded and applies from then on.</p>
   </section>;
 }

@@ -1,6 +1,6 @@
 # Security model
 
-HaPaPay moves real assets, so its design starts from what must never happen: the service must never be able to spend
+ElysaPay moves real assets, so its design starts from what must never happen: the service must never be able to spend
 a user's money, pay someone the user did not review, or record a payment that did not happen. This document lists the
 trust boundaries, the controls behind each one, and the risks that remain.
 
@@ -13,7 +13,7 @@ flowchart LR
     subgraph U["Trusted by the user"]
         W["Wallet keys"]
     end
-    subgraph S["HaPaPay server"]
+    subgraph S["ElysaPay server"]
         A["Claim attestors<br/>(one per network)"]
         Sess["Session secret"]
         DB[("PostgreSQL")]

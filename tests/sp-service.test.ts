@@ -160,7 +160,7 @@ describe("SP awards", () => {
     await assert.rejects(() => sp.adjust({ actor: CAROL, account: ALICE, amount: 10, reason: "" }), /reason/);
     const half = await sp.adjust({ actor: CAROL, account: ALICE, amount: -12.5, reason: "Half of a refund" });
     assert.equal(half.amount, -12.5);
-    assert.equal(half.detail, "Taken by HaPaPay");
+    assert.equal(half.detail, "Taken by ElysaPay");
     assert.equal(await repository.balance(ALICE), 22.5);
     assert.ok(await repository.entry(added.id), "the adjustment row stays");
   });

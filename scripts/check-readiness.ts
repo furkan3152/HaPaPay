@@ -93,7 +93,7 @@ const report = buildConfigurationReadiness({
 if (process.argv.includes("--json")) {
   process.stdout.write(`${JSON.stringify({ ...report, ...(runtimeError ? { runtimeError } : {}) }, null, 2)}\n`);
 } else {
-  process.stdout.write(`HaPaPay configuration readiness\n`);
+  process.stdout.write(`ElysaPay configuration readiness\n`);
   process.stdout.write(`Network: ${report.network.chainName ?? report.network.environment}${report.network.chainId ? ` (${report.network.chainId})` : ""}\n`);
   for (const check of report.checks) {
     const marker = check.status === "ready" ? "PASS" : check.status === "unverified" ? "WAIT" : "MISS";

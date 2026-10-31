@@ -347,7 +347,7 @@ export function codeIsVaultBuild(code: Uint8Array | undefined) {
 }
 
 /**
- * HaPaPay's Solana vault: links for USDC, USDG and xStocks sent to
+ * ElysaPay's Solana vault: links for USDC, USDG and xStocks sent to
  * someone who has not joined, waiting for their account or their name (`vault-lock.ts`). The payer's wallet funds the
  * program; the recipient's wallet claims after the official provider proves the account the link waits for, and the
  * server's Solana attestor signs that one claim. The server builds unsigned transactions only and never signs or sends
@@ -414,7 +414,7 @@ export class SolanaVaultService {
       throw new SolanaUnavailableError("Solana could not be read just now. Try again in a moment.");
     }
     if (!deployed?.code) throw new SolanaTransferError("No upgradeable-loader program with code was found at this address on Solana.");
-    if (!codeIsVaultBuild(deployed.code)) throw new SolanaTransferError("This program's code is not the HaPaPay vault build this server accepts.");
+    if (!codeIsVaultBuild(deployed.code)) throw new SolanaTransferError("This program's code is not the ElysaPay vault build this server accepts.");
     if (deployed.authority !== undefined && deployed.authority !== config.operator) throw new SolanaTransferError("This program's upgrade authority is not the operator address set on this server.");
     // A refund needs only the reviewed code: it pays the payer back whatever the settings say now.
     if (options.codeOnly) return;
@@ -586,7 +586,7 @@ export class SolanaVaultService {
    */
   async prepare(input: { payer: string; asset: SolanaAssetListing; amount: string; platform: StockClaimPlatform; username: string; expiryHours: number; lock?: VaultLock }): Promise<PreparedSolanaVaultFunding> {
     const { asset } = input;
-    // HaPaPay does not send SOL: refused before anything is read.
+    // ElysaPay does not send SOL: refused before anything is read.
     if (asset.kind === "native") throw new SolanaTransferError(NO_SOL_SENDING);
     const availability = await this.availability();
     if (!availability.enabled || !availability.programId) throw new SolanaUnavailableError(availability.reason ?? "Vault links are off on Solana.");

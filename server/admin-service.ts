@@ -33,6 +33,8 @@ export const ADMIN_ACTIONS = {
   "sp.sync": "Award SP for confirmed activity that has none",
   "switches.set": "Pause or resume a feature",
   "notice.set": "Show or clear the desk notice",
+  "elysium.contract": "Register an Elysium contract",
+  "elysium.network": "Switch an Elysium network on or off",
 } as const;
 export type AdminAction = keyof typeof ADMIN_ACTIONS;
 export const isAdminAction = (value: unknown): value is AdminAction => typeof value === "string" && Object.prototype.hasOwnProperty.call(ADMIN_ACTIONS, value);
@@ -65,6 +67,13 @@ export function adminActionLines(action: AdminAction, payload: Record<string, un
     case "sp.sync": return [`Accounts: ${payload.account ? text(payload.account) : "every account"}${payload.after ? ` after ${text(payload.after)}` : ""}`];
     case "switches.set": return [`Feature: ${text(payload.key)}`, `Now: ${payload.paused ? "paused" : "running"}`, ...(payload.paused ? [`Message: ${text(payload.message) || "the standard pause message"}`] : [])];
     case "notice.set": return payload.text ? [`Notice (${payload.tone === "warning" ? "warning" : "info"}): ${text(payload.text)}`] : ["Notice: cleared"];
+    case "elysium.contract": return [`Network: ${text(payload.network)}`, `Contract: ${text(payload.kind)}`, `Address: ${text(payload.address) || "removed"}`];
+    case "elysium.network": return [
+      `Network: ${text(payload.network)}`,
+      `Now: ${payload.enabled ? "on" : "off"}`,
+      ...(payload.rpcUrl !== undefined ? [`RPC: ${text(payload.rpcUrl) || "none"}`] : []),
+      ...(payload.explorerUrl !== undefined ? [`Explorer: ${text(payload.explorerUrl) || "none"}`] : []),
+    ];
   }
 }
 
@@ -94,7 +103,7 @@ export class AdminAuthService {
   /** A one-time, five-minute message naming the wallet, the change and its exact payload (by hash). */
   async challenge(input: { address: string; action: AdminAction; payload: Record<string, unknown> }) {
     const address = getAddress(input.address);
-    if (!this.isAdmin(address)) throw new AdminRefusedError("This wallet is not an admin of HaPaPay.");
+    if (!this.isAdmin(address)) throw new AdminRefusedError("This wallet is not an admin of ElysaPay.");
     const id = this.nonce();
     const issuedAt = this.now();
     const expiresAt = issuedAt.getTime() + 5 * 60_000;
@@ -109,7 +118,7 @@ export class AdminAuthService {
       `Nonce: ${id}`,
       `Issued at: ${issuedAt.toISOString()}`,
       `Expiration: ${new Date(expiresAt).toISOString()}`,
-      "This changes HaPaPay's records. It does not move funds.",
+      "This changes ElysaPay's records. It does not move funds.",
     ].join("\n");
     await this.stateStore.put("admin-action", id, { address, action: input.action, hash, message, expiresAt } satisfies ActionChallenge, expiresAt);
     return { id, message, expiresAt: new Date(expiresAt).toISOString() };
@@ -121,7 +130,7 @@ export class AdminAuthService {
     if (!challenge) throw new AdminRefusedError("This approval was not found or was already used. Sign the change again.");
     if (challenge.expiresAt <= this.now().getTime()) throw new AdminRefusedError("This approval expired. Sign the change again.");
     const address = getAddress(input.address);
-    if (!this.isAdmin(address)) throw new AdminRefusedError("This wallet is not an admin of HaPaPay.");
+    if (!this.isAdmin(address)) throw new AdminRefusedError("This wallet is not an admin of ElysaPay.");
     if (challenge.address !== address || challenge.action !== input.action || challenge.hash !== payloadHash(input.payload)) {
       throw new AdminRefusedError("The signed change does not match this request. Nothing changed.");
     }

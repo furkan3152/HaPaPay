@@ -58,7 +58,7 @@ export async function solanaWalletFor(address: string | undefined): Promise<Sola
       // Declined or unavailable: the next wallet is asked.
     }
   }
-  throw new Error(`Open the Solana wallet with the address ${short(address)}, the one added to your HaPaPay wallet, and try again.`);
+  throw new Error(`Open the Solana wallet with the address ${short(address)}, the one added to your ElysaPay wallet, and try again.`);
 }
 
 /** A Solana wallet to add to the account: Privy's when signed in through it, else the first browser wallet found. */
@@ -67,7 +67,7 @@ export async function solanaWalletToAdd(): Promise<SolanaWalletHandle> {
   const fromPrivy = privy?.authenticated ? privy.solana() : undefined;
   if (fromPrivy) return fromPrivy;
   const [wallet] = standardSolanaWallets();
-  if (!wallet) throw new Error("No Solana wallet was found. Sign in with HaPaPay's one-step sign-in, or install a Solana wallet such as Phantom or Solflare.");
+  if (!wallet) throw new Error("No Solana wallet was found. Sign in with ElysaPay's one-step sign-in, or install a Solana wallet such as Phantom or Solflare.");
   return (connected = await connectStandardSolanaWallet(wallet));
 }
 
@@ -124,7 +124,7 @@ export async function signSolanaVaultAction(input: {
   onSubmitted?: (signature: string) => void;
 }) {
   const asset = vaultAssetByMint(input.mint);
-  if (!asset) throw new Error("This link does not hold a token on HaPaPay's Solana list. Nothing was signed.");
+  if (!asset) throw new Error("This link does not hold a token on ElysaPay's Solana list. Nothing was signed.");
   const handle = await solanaWalletFor(input.solanaAddress);
   const response = await fetch(`/api/solana/claims/${input.paymentId}/prepare-${input.action}`, {
     method: "POST",
