@@ -8,6 +8,7 @@ import { playCue, speak } from "../sound";
 import { evmProvider } from "../wallet/wallet-bridge";
 import { api, usd } from "./api";
 import { navigate } from "./router";
+import { cheer } from "./Mascot";
 import { useSession } from "./session";
 
 export const PLATFORMS: Platform[] = ["x", "github", "farcaster", "telegram", "discord"];
@@ -29,12 +30,14 @@ export function usePayment() {
     const provider = evmProvider();
     if (!wallet || !provider || !view) return;
     setStage({ kind: "signing" });
+    cheer("wow", "Check it in your wallet!", 0);
     try {
       if (prepared.to.toLowerCase() !== view.contracts.router?.toLowerCase()) throw new Error("The prepared payment does not go to the ElysaPay router this network lists. Nothing was signed.");
       const hash = await sendElysiumTransaction(provider, wallet, view, { to: prepared.to, data: prepared.data, value: BigInt(prepared.value), gas: BigInt(prepared.gas) });
       const sentAt = performance.now();
       playCue("send");
       setStage({ kind: "confirming", hash, sentAt });
+      cheer("think", "Riding the next Elysium block…", 0);
       let result = await confirm(hash);
       for (let attempt = 0; result.status === "pending" && attempt < 120; attempt++) {
         await new Promise((resolve) => setTimeout(resolve, attempt < 20 ? 250 : 1_000));
@@ -43,11 +46,13 @@ export function usePayment() {
       if (result.status !== "confirmed") throw new Error("The payment was sent but is not confirmed yet. It will show in your activity once it is.");
       const elapsed = Math.round(performance.now() - sentAt);
       playCue("success");
+      cheer("happy", "Landed on Elysium!", 4000);
       speak(spoken);
       setStage({ kind: "idle" });
       navigate(`/r/${view.id}/${hash}?ms=${elapsed}&fresh=1`);
     } catch (error) {
       playCue("error");
+      cheer("sad", "That didn't go through.", 3500);
       setStage({ kind: "error", text: error instanceof Error ? error.message.split("\n")[0] : "The payment did not go through." });
     }
   }

@@ -5,6 +5,7 @@ import { platformName } from "../../domain/payment-intent";
 import { api, short, usd } from "../api";
 import { linkProps } from "../router";
 import { useSession } from "../session";
+import { Mascot } from "../Mascot";
 
 /**
  * A payment's receipt, shareable by link: who paid which handles how much, the note, the block, and, right after
@@ -38,6 +39,7 @@ export function ReceiptPage({ network, hash }: { network: ElysiumNetworkId; hash
       {error ? <><h1>Receipt not found</h1><p className="muted">{error}</p></>
         : !rows || !first ? <p className="muted"><span className="spinner" /> Reading the receipt…</p>
         : <>
+          <div className="receipt-ely"><Mascot size={110} mood={fresh ? "happy" : "idle"} line={fresh ? "Landed!" : undefined} /></div>
           <p className="eyebrow">Paid on {ELYSIUM_CHAINS[network].chainName}</p>
           <h1 className="receipt-amount"><span className="aurora-text">{total.toLocaleString("en-US", { maximumFractionDigits: 6 })}</span> HYPE</h1>
           {session.hype && <p className="muted">≈ {usd(total * session.hype.mid)} at today's HYPE mid</p>}

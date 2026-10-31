@@ -4,7 +4,9 @@ import { short } from "./api";
 import { Logo } from "./Logo";
 import { linkProps, navigate, usePath } from "./router";
 import { SessionProvider, useSession } from "./session";
-import { Sky } from "./Sky";
+import { Desk } from "./Desk";
+import { Mascot } from "./Mascot";
+import { DecodeText } from "../components/DecodeText";
 import { BlockRiver, LiveDot, MarketTape, Ticker, useStats } from "./widgets";
 import { Home } from "./pages/Home";
 import { SendPage } from "./pages/Send";
@@ -55,7 +57,7 @@ function Shell() {
   let page: ReactNode;
   const pay = pathname.match(/^\/pay\/(github|x|telegram|discord|farcaster)\/([^/]{1,64})$/);
   const receipt = pathname.match(/^\/r\/(elysium-testnet|elysium-mainnet)\/(0x[0-9a-fA-F]{64})$/);
-  if (home) page = <Home motion={motion} />;
+  if (home) page = <Home motion={motion} onToggleMotion={() => setMotion((value) => !value)} />;
   else if (pathname === "/docs") page = <DocsPage />;
   else if (pathname === "/admin") page = <AdminGate />;
   else if (receipt) page = <ReceiptPage network={receipt[1] as "elysium-testnet" | "elysium-mainnet"} hash={receipt[2]} />;
@@ -70,7 +72,7 @@ function Shell() {
   else page = <NotFound />;
 
   return <div className={`elysa ${home ? "is-home" : ""}`}>
-    <Sky motion={motion} variant={home ? "hero" : "app"} />
+    <Desk motion={motion} />
     <TopBar pathname={pathname} />
     <Notice />
     <main className="elysa-main" key={pathname}>{page}</main>
@@ -92,9 +94,9 @@ function TopBar({ pathname }: { pathname: string }) {
   return <header className="topbar">
     <a className="topbar-brand" aria-label="ElysaPay home" {...linkProps("/")}><Logo /></a>
     <nav className="topbar-nav" aria-label="Main">
-      <a {...linkProps("/app")} aria-current={pathname.startsWith("/app") || pathname.startsWith("/pay") ? "page" : undefined}>App</a>
-      <a {...linkProps("/docs")} aria-current={pathname === "/docs" ? "page" : undefined}>Docs</a>
-      {session.wallet && <a {...linkProps("/admin")} aria-current={pathname === "/admin" ? "page" : undefined}>Admin</a>}
+      <a {...linkProps("/app")} aria-current={pathname.startsWith("/app") || pathname.startsWith("/pay") ? "page" : undefined}><DecodeText text="App" /></a>
+      <a {...linkProps("/docs")} aria-current={pathname === "/docs" ? "page" : undefined}><DecodeText text="Docs" /></a>
+      {session.wallet && <a {...linkProps("/admin")} aria-current={pathname === "/admin" ? "page" : undefined}><DecodeText text="Admin" /></a>}
     </nav>
     <div className="topbar-actions">
       <div className="net-switch" role="radiogroup" aria-label="Elysium network">
@@ -112,7 +114,7 @@ function TopBar({ pathname }: { pathname: string }) {
             <button role="menuitem" type="button" onClick={() => { setOpen(false); void session.disconnect(); }}>Disconnect</button>
           </div>}
         </div>
-        : <button type="button" className="btn btn-aurora" disabled={session.status === "connecting"} onClick={() => void session.connect()}>{session.status === "connecting" ? "Connecting…" : "Connect"}</button>}
+        : <button type="button" className="btn btn-aurora" disabled={session.status === "connecting"} onClick={() => void session.connect()}><DecodeText text={session.status === "connecting" ? "Connecting…" : "Connect"} /></button>}
     </div>
   </header>;
 }
@@ -145,11 +147,12 @@ function AppLayout({ pathname, children }: { pathname: string; children: ReactNo
   return <div className="app-grid">
     <nav className="app-rail" aria-label="App">
       {APP_TABS.map(([to, label, icon]) => <a key={to} {...linkProps(to)} aria-current={pathname === to || (to === "/app" && pathname.startsWith("/pay/")) ? "page" : undefined}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={icon} /></svg><span>{label}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={icon} /></svg><DecodeText text={label} />
       </a>)}
     </nav>
     <section className="app-main">{children}</section>
     <aside className="app-side" aria-label="Elysium right now">
+      <div className="side-ely"><Mascot size={120} line={TIPS[pathname] ?? TIPS["/app"]} /></div>
       <div className="glass side-card">
         <header><h2>{session.network?.chainName ?? "Elysium"}</h2><span className={`chip ${stats ? "chip-live" : ""}`}><LiveDot live={Boolean(stats)} />{stats ? "live" : session.network?.enabled ? "connecting" : "off"}</span></header>
         {stats ? <dl className="side-stats">
@@ -165,6 +168,15 @@ function AppLayout({ pathname, children }: { pathname: string; children: ReactNo
   </div>;
 }
 
+/** What Ely says on each page of the app (the page itself says the same in its own words). */
+const TIPS: Record<string, string> = {
+  "/app": "Type a handle, I'll find their wallet.",
+  "/app/split": "Ten friends, one signature!",
+  "/app/request": "Share your link, get paid in HYPE.",
+  "/app/activity": "Every payment, read from the chain.",
+  "/app/identity": "Link an account so people can pay you by name.",
+};
+
 function AdminGate() {
   const session = useSession();
   return <div className="page-narrow admin-wrap">
@@ -176,7 +188,7 @@ function AdminGate() {
 
 function NotFound() {
   return <div className="page-narrow center">
-    <div className="glass not-found"><h1>Lost in the clouds</h1><p className="muted">This page is not on ElysaPay.</p><a className="btn btn-aurora" {...linkProps("/")}>Back home</a></div>
+    <div className="glass not-found"><Mascot size={140} mood="sad" /><h1>Lost in the clouds</h1><p className="muted">This page is not on ElysaPay.</p><a className="btn btn-aurora" {...linkProps("/")}>Back home</a></div>
   </div>;
 }
 

@@ -1,7 +1,9 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { ProviderIcon } from "../../components/ProviderIcon";
 import { pct, usd } from "../api";
-import { LogoMark } from "../Logo";
+import { DotMorph } from "../../components/DotMorph";
+import { DotText } from "../../components/DotText";
+import { Mascot } from "../Mascot";
 import { linkProps } from "../router";
 import { useSession } from "../session";
 import { BlockRiver, LaunchCountdown, LiveDot, MarketTape, Reveal, Ticker, useStats } from "../widgets";
@@ -24,7 +26,7 @@ const FEATURES = [
   { title: "Your keys, your signature", text: "ElysaPay prepares and verifies; your wallet signs. Payments are recorded only from the chain's own receipt.", icon: "M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5z", span: "full" },
 ] as const;
 
-export function Home({ motion }: { motion: boolean }) {
+export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMotion: () => void }) {
   const session = useSession();
   const stats = useStats(session.networkId, Boolean(session.network?.rpcUrl));
   const [visit, setVisit] = useState(0);
@@ -40,11 +42,7 @@ export function Home({ motion }: { motion: boolean }) {
     <section className="hero">
       <div className="hero-copy">
         <a className="pill" {...linkProps("/app")}><LiveDot live={Boolean(stats)} /> Live on Elysium Testnet · mainnet Nov 9</a>
-        <h1 className="hero-title">
-          <span className="line">Pay anyone</span>
-          <span className="line">on <span className="aurora-text">Elysium</span></span>
-          <span className="line">by their name.</span>
-        </h1>
+        <DotText as="h1" className="hero-title" text="Pay anyone on Elysium by their name" />
         <p className="lead">ElysaPay turns a social handle into a payment address on Elysium, the DeFi layer 2 for Hyperliquid. Type <b>@alice</b>, review, sign. It lands in about a tenth of a second.</p>
         <div className="hero-cta">
           <a className="btn btn-aurora btn-lg" {...linkProps("/app")}>Launch app <span aria-hidden="true">→</span></a>
@@ -57,18 +55,12 @@ export function Home({ motion }: { motion: boolean }) {
         </dl>
       </div>
 
-      <div className="hero-art" aria-hidden="true">
-        <div className="orbit">
-          <div className="orbit-ring r1" /><div className="orbit-ring r2" /><div className="orbit-ring r3" />
-          <div className="orbit-core"><LogoMark size={88} /><span className="core-pulse" /></div>
-          {ORBIT.map((entry, index) => <div key={entry.handle} className={`orbit-node ${index === visit ? "is-target" : ""}`} style={{ "--a": `${(index / ORBIT.length) * 360 - 90}deg` } as CSSProperties}>
-            <span className="node-chip"><ProviderIcon provider={entry.platform} />@{entry.handle}</span>
-          </div>)}
-          <div key={visit} className="comet-run" style={{ "--a": `${(visit / ORBIT.length) * 360 - 90}deg` } as CSSProperties}><span className="comet-head" /></div>
-        </div>
-        <div className="hero-receipt glass" key={`r-${visit}`}>
+      <div className="hero-art">
+        <DotMorph shapes={["ely", "@", "$"]} motion={motion} onToggleMotion={onToggleMotion} />
+        <div className="hero-ely"><Mascot size={150} mood="wave" line="Hi, I'm Ely. Who are we paying?" /></div>
+        <div className="hero-receipt panel" key={`r-${visit}`} aria-hidden="true">
           <span className="tick">✓</span>
-          <div><b>{target.amount} HYPE → @{target.handle}</b><small>confirmed in a block · example</small></div>
+          <div><b>{target.amount} HYPE → @{target.handle}</b><small><ProviderIcon provider={target.platform} /> confirmed in a block · example</small></div>
         </div>
       </div>
     </section>
@@ -134,8 +126,8 @@ export function Home({ motion }: { motion: boolean }) {
 
     <Reveal>
       <section className="cta glass">
-        <LogoMark size={56} />
-        <h2>Your name is your address.</h2>
+        <Mascot size={130} mood="happy" />
+        <DotText as="h2" text="Your name is your address" />
         <p className="muted">Link an account, share a link, get paid on Elysium.</p>
         <a className="btn btn-aurora btn-lg" {...linkProps("/app")}>Launch app <span aria-hidden="true">→</span></a>
       </section>
