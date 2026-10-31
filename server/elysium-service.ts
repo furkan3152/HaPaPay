@@ -1,8 +1,8 @@
 import { createPublicClient, decodeEventLog, encodeFunctionData, fallback, getAddress, http, isAddress, parseAbiItem, type Address, type Hex, type PublicClient } from "viem";
 import { ELYSA_PASS_ARTIFACT, ELYSA_PAY_ROUTER_ARTIFACT, ELYSA_TOKEN_ARTIFACT } from "../src/domain/elysium-artifacts.js";
 import {
-  ELYSIUM_CHAINS, ELYSIUM_MAINNET, ELYSIUM_MAINNET_LAUNCH, ELYSIUM_NETWORK_IDS, elysiumFee, elysiumNoteBytes, formatHype, parseHype,
-  type ElysiumContractKind, type ElysiumContracts, type ElysiumLiveStats, type ElysiumMarket, type ElysiumNetworkId, type ElysiumNetworkView, type ElysiumPaymentRecord,
+  ELYSIUM_BATCH_MAX, ELYSIUM_CHAINS, ELYSIUM_MAINNET, ELYSIUM_MAINNET_LAUNCH, ELYSIUM_NETWORK_IDS, elysiumFee, elysiumNoteBytes, formatHype, parseHype,
+  type ElysiumBlock, type ElysiumContractKind, type ElysiumContracts, type ElysiumLiveStats, type ElysiumMarket, type ElysiumNetworkId, type ElysiumNetworkView, type ElysiumPaymentRecord,
 } from "../src/domain/elysium.js";
 import type { Platform } from "../src/domain/payment-intent.js";
 import type { AdminSettingsRepository } from "./admin-service.js";
@@ -21,6 +21,9 @@ const OWNER_ABI = [parseAbiItem("function owner() view returns (address)")];
 const TREASURY_ABI = [parseAbiItem("function treasury() view returns (address)")];
 /** About what a router payment costs in gas on Elysium (call, two transfers, the event, the parent-chain posting). */
 const PAYMENT_GAS = 60_000n;
+/** How many recent blocks the block river keeps. */
+const BLOCK_WINDOW = 36;
+const cachedBlocks = (cached: { blocks: ElysiumBlock[] } | undefined) => cached?.blocks ?? [];
 const HYPERLIQUID_INFO = "https://api.hyperliquid.xyz/info";
 /** The perps the desk's market strip shows, HYPE first. */
 const MARKET_COINS = ["HYPE", "BTC", "ETH", "SOL", "PURR", "FARTCOIN"] as const;
@@ -73,6 +76,7 @@ export class ElysiumService {
   private readonly clients = new Map<string, ReturnType<NonNullable<ElysiumServiceOptions["client"]>>>();
   private readonly statsCache = new Map<ElysiumNetworkId, { at: number; value: ElysiumLiveStats }>();
   private marketsCache?: { at: number; value: ElysiumMarket[] };
+  private readonly blockCache = new Map<ElysiumNetworkId, { at: number; blocks: ElysiumBlock[]; pending?: Promise<ElysiumBlock[]> }>();
 
   constructor(private readonly options: ElysiumServiceOptions) {
     this.fetcher = options.fetch ?? fetch;
@@ -114,7 +118,7 @@ export class ElysiumService {
     if (!client) {
       client = this.options.client
         ? this.options.client(network, urls)
-        : createPublicClient({ transport: fallback(urls.map((url) => http(url, { timeout: 8_000, retryCount: 1 }))) });
+        : createPublicClient({ transport: fallback(urls.map((url) => http(url, { timeout: 8_000, retryCount: 1, batch: { batchSize: 40, wait: 8 } }))) });
       this.clients.set(key, client);
     }
     return client;
@@ -178,6 +182,46 @@ export class ElysiumService {
     };
     this.statsCache.set(network, { at: Date.now(), value });
     return value;
+  }
+
+  /**
+   * The newest blocks, newest first: what the desk's block river draws. Elysium makes a block about every 100 ms, so
+   * the server keeps the last ones and reads only the blocks it has not seen, at most once a second and in one batched
+   * request, however many people watch.
+   */
+  async blocks(network: ElysiumNetworkId, count = BLOCK_WINDOW): Promise<ElysiumBlock[]> {
+    const cached = this.blockCache.get(network);
+    if (cached && Date.now() - cached.at < 1_000) return cached.blocks.slice(0, count);
+    if (cached?.pending) return (await cached.pending).slice(0, count);
+    const read = (async () => {
+      const client = await this.client(network);
+      const latest = await client.getBlockNumber();
+      const known = cached?.blocks ?? [];
+      const newest = known[0] ? BigInt(known[0].number) : -1n;
+      const from = latest - BigInt(BLOCK_WINDOW - 1) > newest ? latest - BigInt(BLOCK_WINDOW - 1) : newest + 1n;
+      const numbers: bigint[] = [];
+      for (let number = latest; number >= from && number >= 0n; number--) numbers.push(number);
+      const fresh = await Promise.all(numbers.map((blockNumber) => client.getBlock({ blockNumber }).catch(() => undefined)));
+      const blocks = [
+        ...fresh.filter((block): block is NonNullable<typeof block> => Boolean(block)).map((block): ElysiumBlock => ({
+          number: String(block.number),
+          timestamp: Number(block.timestamp),
+          txCount: block.transactions.length,
+          gasUsed: block.gasUsed.toString(),
+          baseFeeGwei: block.baseFeePerGas === null || block.baseFeePerGas === undefined ? null : Number(block.baseFeePerGas) / 1e9,
+        })),
+        ...known,
+      ].slice(0, BLOCK_WINDOW);
+      this.blockCache.set(network, { at: Date.now(), blocks });
+      return blocks;
+    })();
+    this.blockCache.set(network, { at: cached?.at ?? 0, blocks: cachedBlocks(cached), pending: read });
+    try {
+      return (await read).slice(0, count);
+    } catch (error) {
+      this.blockCache.set(network, { at: 0, blocks: cachedBlocks(cached) });
+      throw error;
+    }
   }
 
   /** Hyperliquid perps (HYPE first): mid, 24h change, volume, open interest and funding; cached for fifteen seconds. */
@@ -321,6 +365,120 @@ export class ElysiumService {
       fee: fee.toString(),
       display: { amount: formatHype(amount), fee: formatHype(fee), total: formatHype(value) },
       note: input.note?.trim() ?? "",
+    };
+  }
+
+  /**
+   * Several HYPE payments in one transaction (`payNativeBatch`), up to ten verified handles, each with its own amount
+   * and its own 1% fee, one note for all. Every handle is resolved now; one that has no verified wallet stops the
+   * whole batch before anything is signed.
+   */
+  async prepareBatch(input: { network: ElysiumNetworkId; sender: Address; recipients: Array<{ platform: Platform; username: string; amount: string }>; note?: string }) {
+    const { view, router } = await this.openNetwork(input.network);
+    if (!input.recipients.length || input.recipients.length > ELYSIUM_BATCH_MAX) throw new ElysiumRequestError(`A split pays 1 to ${ELYSIUM_BATCH_MAX} people.`);
+    const note = elysiumNoteBytes(input.note ?? "");
+    if (!note) throw new ElysiumRequestError("The note can be at most 160 bytes.");
+    const rows = [];
+    const seen = new Set<string>();
+    for (const entry of input.recipients) {
+      const username = entry.username.trim().replace(/^@/, "").toLowerCase();
+      const amount = parseHype(entry.amount);
+      if (!amount) throw new ElysiumRequestError(`Write the amount for @${username} in HYPE, for example 0.5.`);
+      const recipient = await this.options.resolve(entry.platform, username);
+      if (!recipient) throw new ElysiumRequestError(`@${username} has not verified a wallet on ElysaPay yet, so nothing was prepared.`, 404);
+      const address = getAddress(recipient);
+      if (address === getAddress(input.sender)) throw new ElysiumRequestError(`@${username} is linked to your own wallet.`);
+      if (seen.has(address)) throw new ElysiumRequestError(`@${username} appears twice in the split.`);
+      seen.add(address);
+      rows.push({ platform: entry.platform, username, recipient: address, amount, fee: elysiumFee(amount) });
+    }
+    const total = rows.reduce((sum, row) => sum + row.amount, 0n);
+    const fees = rows.reduce((sum, row) => sum + row.fee, 0n);
+    const value = total + fees;
+    const data = encodeFunctionData({ abi: ELYSA_PAY_ROUTER_ARTIFACT.abi, functionName: "payNativeBatch", args: [rows.map((row) => row.recipient), rows.map((row) => row.amount), note] });
+    const client = await this.client(input.network);
+    const balance = await client.getBalance({ address: input.sender });
+    if (balance < value) throw new ElysiumRequestError(`Your wallet holds ${formatHype(balance)} HYPE on ${view.chainName}; this split needs ${formatHype(value)} HYPE plus gas.`, 409);
+    const gas = await client.estimateGas({ account: input.sender, to: router, value, data }).catch(() => undefined);
+    if (gas === undefined) throw new ElysiumRequestError("The chain refused this split in a simulation, so the wallet was not opened.", 409);
+    return {
+      network: input.network,
+      chainId: view.chainIdHex,
+      to: router,
+      value: value.toString(),
+      data,
+      gas: ((gas * 125n) / 100n).toString(),
+      recipients: rows.map((row) => ({ platform: row.platform, username: row.username, recipient: row.recipient, amount: formatHype(row.amount), fee: formatHype(row.fee) })),
+      display: { amount: formatHype(total), fee: formatHype(fees), total: formatHype(value) },
+      note: input.note?.trim() ?? "",
+    };
+  }
+
+  /**
+   * Records a split from its receipt: one record for each `Paid` event to a wallet one of the named handles resolves
+   * to now. Every named handle must have been paid, or nothing is recorded.
+   */
+  async confirmBatch(input: { network: ElysiumNetworkId; sender: Address; hash: string; recipients: Array<{ platform: Platform; username: string }> }): Promise<{ status: "pending" } | { status: "confirmed"; payments: ElysiumPaymentRecord[] }> {
+    if (!/^0x[0-9a-fA-F]{64}$/.test(input.hash)) throw new ElysiumRequestError("That is not a transaction hash.");
+    const hash = input.hash.toLowerCase() as Hex;
+    const known = await this.receipt(input.network, hash);
+    if (known.length) return { status: "confirmed", payments: known };
+    const read = await this.paidEvents(input.network, input.sender, hash);
+    if (read === "pending") return { status: "pending" };
+    const payments: ElysiumPaymentRecord[] = [];
+    const used = new Set<number>();
+    for (const entry of input.recipients) {
+      const username = entry.username.trim().replace(/^@/, "").toLowerCase();
+      const expected = await this.options.resolve(entry.platform, username);
+      const index = read.events.findIndex((event, at) => !used.has(at) && expected && getAddress(event.args.recipient) === getAddress(expected));
+      if (index < 0) throw new ElysiumRequestError(`This transaction did not pay the wallet @${username} has verified.`);
+      used.add(index);
+      payments.push(this.record(input.network, hash, read.blockNumber, read.events[index], entry.platform, username));
+    }
+    for (const [index, payment] of payments.entries()) await this.options.settings.set(`elysium.payment.${input.network}.${hash}.${index}`, payment, payment.payer);
+    return { status: "confirmed", payments };
+  }
+
+  /** A payment's public receipt: every recorded payment of one transaction (one, or each person of a split). */
+  async receipt(network: ElysiumNetworkId, hash: string) {
+    if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) throw new ElysiumRequestError("That is not a transaction hash.");
+    const rows = await this.options.settings.list<ElysiumPaymentRecord>(`elysium.payment.${network}.${hash.toLowerCase()}`);
+    return [...rows.entries()].sort(([a], [b]) => a.localeCompare(b, "en", { numeric: true })).map(([, entry]) => entry.value);
+  }
+
+  /** The `Paid` events of a mined, successful transaction this wallet sent to the registered router. */
+  private async paidEvents(network: ElysiumNetworkId, sender: Address, hash: Hex) {
+    const { router } = await this.openNetwork(network);
+    const client = await this.client(network);
+    const receipt = await client.getTransactionReceipt({ hash }).catch(() => null);
+    if (!receipt) return "pending" as const;
+    if (receipt.status !== "success") throw new ElysiumRequestError("This transaction failed on chain. Nothing was paid.");
+    if (getAddress(receipt.from) !== getAddress(sender)) throw new ElysiumRequestError("This transaction was not sent by your wallet.", 403);
+    if (!receipt.to || getAddress(receipt.to) !== router) throw new ElysiumRequestError("This transaction did not go to the ElysaPay router.");
+    const events = receipt.logs.filter((log) => getAddress(log.address) === router).flatMap((log) => {
+      try {
+        return [decodeEventLog({ abi: [PAID_EVENT], data: log.data, topics: log.topics })];
+      } catch {
+        return [];
+      }
+    }).filter((event) => getAddress(event.args.payer) === getAddress(sender));
+    return { events, blockNumber: receipt.blockNumber };
+  }
+
+  private record(network: ElysiumNetworkId, hash: Hex, blockNumber: bigint, event: { args: { payer: Address; recipient: Address; amount: bigint; fee: bigint; note: Hex } }, platform: Platform, username: string): ElysiumPaymentRecord {
+    return {
+      network,
+      hash,
+      payer: getAddress(event.args.payer),
+      recipient: getAddress(event.args.recipient),
+      platform,
+      username,
+      token: "HYPE",
+      amount: formatHype(event.args.amount, 18),
+      fee: formatHype(event.args.fee, 18),
+      note: Buffer.from(event.args.note.slice(2), "hex").toString("utf8"),
+      blockNumber: blockNumber.toString(),
+      confirmedAt: this.now().toISOString(),
     };
   }
 

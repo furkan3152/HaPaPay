@@ -45,41 +45,28 @@ describe("the Privy bridge", () => {
     assert.equal(await whenPrivyReady(30), undefined, "and nothing comes after the time is up");
   });
 
-  it("builds one set of controls and one config, and renders only when its props change", async () => {
-    const [bridge, app] = await Promise.all([
+  it("builds one set of controls and one config for Elysium, and renders only when its props change", async () => {
+    const [bridge, session] = await Promise.all([
       readFile(new URL("../src/wallet/PrivyBridge.tsx", import.meta.url), "utf8"),
-      readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../src/elysa/session.tsx", import.meta.url), "utf8"),
     ]);
     assert.match(bridge, /const controls = useMemo<PrivyControls>\(\(\) => \(\{/);
-    assert.match(bridge, /useEffect\(\(\) => registerPrivy\(controls, `\$\{ready\}\|\$\{authenticated\}\|\$\{evmAddress\}\|\$\{solanaAddress\}\|\$\{embedded\.evm \?\? ""\}\|\$\{embedded\.solana \?\? ""\}`\), \[controls, ready, authenticated, evmAddress, solanaAddress, embedded\.evm, embedded\.solana\]\);/);
-    assert.match(bridge, /const connectors = useMemo\(\(\) => toSolanaWalletConnectors\(\), \[\]\);/);
+    assert.match(bridge, /useEffect\(\(\) => registerPrivy\(controls, `\$\{ready\}\|\$\{authenticated\}\|\$\{evmAddress\}\|\$\{embedded \?\? ""\}`\), \[controls, ready, authenticated, evmAddress, embedded\]\);/);
     assert.match(bridge, /const config = useMemo<PrivyClientConfig>\(/);
+    assert.match(bridge, /walletChainType: "ethereum-only"/, "one EVM wallet, on Elysium only");
+    assert.match(bridge, /supportedChains: \[elysiumTestnet\]/);
+    assert.doesNotMatch(bridge, /@privy-io\/react-auth\/solana|toSolanaWalletConnectors|createOnLogin: "all-users" \}, solana/, "no Solana wallet is made or connected");
     assert.match(bridge, /export default memo\(PrivyBridge\);/);
-    // The desk fetches Privy's chunk as it opens, and an early Connect waits for the sign-in.
-    assert.match(app, /if \(!homePage && !docsPage && !notFoundPage\) void loadPrivyBridge\(\)\.catch\(\(\) => undefined\);/);
     // With a browser wallet on the device Privy is waited for ten seconds, then that wallet signs in.
-    assert.match(app, /privy = await whenPrivyReady\(injected \? PRIVY_FALLBACK_MS : PRIVY_READY_TIMEOUT_MS\);/);
-    assert.doesNotMatch(app, /The sign-in is still loading\. Try again in a moment\./);
+    assert.match(session, /privy = await whenPrivyReady\(window\.ethereum \? 10_000 : 30_000\);/);
+    // The session is the wallet's signature of the server's challenge.
+    assert.match(session, /await api<\{ address: string \}>\("\/api\/auth\/verify"/);
   });
 
-  /**
-   * A wallet Privy made: the desk can open Privy's own export window for it, never for anyone else's wallet,
-   * and never sees the key.
-   */
   it("exports only a wallet Privy made for this sign-in, through Privy's own window", async () => {
-    const [bridge, app] = await Promise.all([
-      readFile(new URL("../src/wallet/PrivyBridge.tsx", import.meta.url), "utf8"),
-      readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
-    ]);
-    assert.match(bridge, /import \{ PrivyProvider, useExportWallet, /);
-    assert.match(bridge, /useExportWallet as useExportSolanaWallet/);
-    assert.match(bridge, /const own = family === "evm" \? made\.evm\?\.toLowerCase\(\) === address\.toLowerCase\(\) : made\.solana === address;/);
-    assert.match(bridge, /if \(!now\.authenticated \|\| !own\) throw new Error\("Only a wallet Privy made for this sign-in can be exported here\./);
-    assert.match(bridge, /await \(family === "evm" \? now\.exportEvm\(\{ address \}\) : now\.exportSolana\(\{ address \}\)\);/);
-    // The desk offers it only for those wallets, and says what export means.
-    assert.match(app, /const exportableSolana = Boolean\(session\.solanaAddress && privyMade\.solana === session\.solanaAddress\);/);
-    assert.match(app, /\{exportableSolana && <button type="button" className="export-action"/);
-    assert.match(app, /Export key opens Privy's own window with the private key of a wallet Privy made for you\. ElysaPay never sees it;/);
-    assert.doesNotMatch(app, /privateKey|exportedKey|seedPhrase/, "the desk never handles a key itself");
+    const bridge = await readFile(new URL("../src/wallet/PrivyBridge.tsx", import.meta.url), "utf8");
+    assert.match(bridge, /if \(!now\.authenticated \|\| embeddedWallet\(now\.wallets\)\?\.toLowerCase\(\) !== address\.toLowerCase\(\)\) throw new Error\("Only a wallet Privy made for this sign-in can be exported here\."\);/);
+    assert.match(bridge, /await now\.exportWallet\(\{ address \}\);/);
+    assert.doesNotMatch(bridge, /privateKey|exportedKey|seedPhrase/, "the site never handles a key itself");
   });
 });

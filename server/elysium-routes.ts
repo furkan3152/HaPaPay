@@ -26,6 +26,20 @@ const prepareSchema = z.object({
   amount: z.string().trim().min(1).max(40),
   note: z.string().max(400).optional(),
 });
+const batchSchema = z.object({
+  network: networkSchema,
+  recipients: z.array(z.object({
+    platform: platformSchema,
+    username: z.string().trim().min(1).max(65).regex(/^@?[A-Za-z0-9_.-]{1,64}$/, "Write each handle, for example @alice."),
+    amount: z.string().trim().min(1).max(40),
+  })).min(1).max(10),
+  note: z.string().max(400).optional(),
+});
+const confirmBatchSchema = z.object({
+  network: networkSchema,
+  hash: z.string().regex(/^0x[0-9a-fA-F]{64}$/, "That is not a transaction hash."),
+  recipients: z.array(z.object({ platform: platformSchema, username: z.string().trim().min(1).max(65) })).min(1).max(10),
+});
 const confirmSchema = z.object({
   network: networkSchema,
   hash: z.string().regex(/^0x[0-9a-fA-F]{64}$/, "That is not a transaction hash."),
@@ -67,6 +81,53 @@ export function registerElysiumRoutes(app: express.Express, context: RouteContex
     if (!context.elysium) return void unavailable(response);
     try {
       response.json(await context.elysium.stats(network(request)));
+    } catch (error) {
+      failed(response, error);
+    }
+  });
+
+  app.get("/api/elysium/blocks/:network", readLimit, async (request, response) => {
+    if (!context.elysium) return void unavailable(response);
+    try {
+      response.json({ blocks: await context.elysium.blocks(network(request)) });
+    } catch (error) {
+      failed(response, error);
+    }
+  });
+
+  // A payment's public receipt: anyone with the link sees who paid which handle how much, as the chain already shows.
+  app.get("/api/elysium/receipts/:network/:hash", readLimit, async (request, response) => {
+    if (!context.elysium) return void unavailable(response);
+    try {
+      const payments = await context.elysium.receipt(network(request), String(request.params.hash));
+      if (!payments.length) return void response.status(404).json({ error: "No ElysaPay payment is recorded for this transaction." });
+      response.json({ payments });
+    } catch (error) {
+      failed(response, error);
+    }
+  });
+
+  app.post("/api/elysium/payments/prepare-batch", context.protectedIngress, writeLimit, async (request, response) => {
+    if (!context.elysium) return void unavailable(response);
+    const session = context.session(request);
+    if (!session) return void response.status(401).json({ error: "Connect and sign with your wallet first." });
+    try {
+      const pause = await context.paused?.();
+      if (pause) return void response.status(503).json({ error: pause.message });
+      const body = batchSchema.parse(request.body ?? {});
+      response.json(await context.elysium.prepareBatch({ ...body, recipients: body.recipients.map((entry) => ({ ...entry, platform: entry.platform as Platform })), sender: session.address }));
+    } catch (error) {
+      failed(response, error);
+    }
+  });
+
+  app.post("/api/elysium/payments/confirm-batch", context.protectedIngress, writeLimit, async (request, response) => {
+    if (!context.elysium) return void unavailable(response);
+    const session = context.session(request);
+    if (!session) return void response.status(401).json({ error: "Connect and sign with your wallet first." });
+    try {
+      const body = confirmBatchSchema.parse(request.body ?? {});
+      response.json(await context.elysium.confirmBatch({ ...body, recipients: body.recipients.map((entry) => ({ ...entry, platform: entry.platform as Platform })), sender: session.address }));
     } catch (error) {
       failed(response, error);
     }

@@ -41,13 +41,14 @@ September 22.
 | | What ElysaPay adds for Elysium |
 |---|---|
 | **HYPE to a handle** | The desk's *Elysium* tab pays a verified handle in HYPE through `ElysaPayRouter`: 1% fee on top, recipient gets exactly the amount, one transaction, recorded only from its `Paid` event. |
+| **Split and pay links** | `payNativeBatch` pays up to ten verified handles in one transaction; `/pay/x/alice?amount=5` opens a filled-in payment, and every payment has a public receipt at `/r/…`. |
 | **Dollars in, HYPE out** | Write the amount in dollars; it is converted at Hyperliquid's live HYPE mid and the review shows the exact HYPE. |
 | **The chain's pulse** | Live block height, measured block time and what a payment costs in gas right now, read from Elysium. |
 | **Trading tape** | Hyperliquid perps (HYPE, BTC, ETH, SOL, ...) with 24h change, funding, open interest and volume. Kinetiq plans HyperCore precompiles on Elysium after mainnet; the tape reads Hyperliquid's public API until then. |
 | **Admin console** | `/admin` → *Elysium*: deploy the router, the **ELYSA** token and the **Elysian Pass** from your own wallet on testnet or mainnet, mint one by one or as airdrops, pause or close minting, freeze metadata, move ownership in two steps, register contracts with a signed change, switch networks on and off, and follow a mainnet launch checklist with a countdown. Every transaction is read back and written to the audit log. |
 | **Mainnet gate** | Mainnet stays off until an admin enters Kinetiq's official RPC and the server confirms it answers chain 99901. |
 | **Sound and voice** | Soft synthesized cues (Web Audio, no files) and an optional voice that reads each review aloud; both per-viewer toggles. |
-| **Elysian design** | Deep night and mint with a pale gold for launches, a dotted aurora that drifts behind the desk, and the dot-morph hero now gathering into the Elysian gate. The dot mechanics are unchanged. |
+| **Elysium-only interface** | A new app (`src/elysa`): an animated Elysian sky (clouds, stars, payment comets), glass panels and the aurora palette, the new "Ascent" mark, a live block river of Elysium's ~100 ms blocks, Send, Split (up to ten people in one transaction), Request links with QR codes, Activity, Identity and shareable receipts that show how fast Elysium confirmed the payment. |
 
 The contracts are in [`contracts/elysium`](contracts/elysium) with Forge tests in
 [`foundry-test/Elysium.t.sol`](foundry-test/Elysium.t.sol); the server is

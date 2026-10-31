@@ -126,6 +126,9 @@ export type ElysiumLiveStats = {
   readAt: string;
 };
 
+/** One block as the block river draws it. */
+export type ElysiumBlock = { number: string; timestamp: number; txCount: number; gasUsed: string; baseFeeGwei: number | null };
+
 export type ElysiumMarket = {
   coin: string;
   mid: number;

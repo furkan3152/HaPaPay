@@ -58,8 +58,9 @@ describe("the pages' Solana RPC", () => {
       const source = await readFile(new URL(file, import.meta.url), "utf8");
       assert.equal(/createSolanaRpc(Subscriptions)?\(SOLANA_MAINNET\.rpcUrl/.test(source), false, `${file} reads Solana's public endpoint`);
     }
+    // ElysaPay's sign-in makes no Solana wallet at all, so Privy reads no Solana endpoint.
     const privy = await readFile(new URL("../src/wallet/PrivyBridge.tsx", import.meta.url), "utf8");
-    assert.match(privy, /solanaRpcs\(solanaRpcUrl\)/, "Privy's embedded Solana wallets use the page's RPC");
+    assert.doesNotMatch(privy, /createSolanaRpc/);
   });
 });
 

@@ -169,6 +169,33 @@ describe("Elysium payments on a real EVM", () => {
     await assert.rejects(service.readAdminTransaction("elysium-testnet", mint, sender.address), /not sent by your wallet/);
     await assert.rejects(service.readAdminTransaction("elysium-testnet", hash, sender.address), /neither deployed/);
 
+    // The public receipt of the single payment.
+    const single = await service.receipt("elysium-testnet", hash);
+    assert.equal(single.length, 1);
+    assert.equal(single[0].username, "alice");
+
+    // A split pays several verified handles in one transaction, each with its own fee, and records each of them.
+    handles.set("github:carol", stranger.address);
+    await assert.rejects(service.prepareBatch({ network: "elysium-testnet", sender: sender.address, recipients: [{ platform: "x", username: "alice", amount: "1" }, { platform: "x", username: "alice", amount: "1" }] }), /appears twice/);
+    await assert.rejects(service.prepareBatch({ network: "elysium-testnet", sender: sender.address, recipients: [{ platform: "x", username: "alice", amount: "1" }, { platform: "x", username: "ghost", amount: "1" }] }), /has not verified/);
+    const split = await service.prepareBatch({ network: "elysium-testnet", sender: sender.address, note: "dinner", recipients: [{ platform: "x", username: "alice", amount: "0.5" }, { platform: "github", username: "carol", amount: "0.25" }] });
+    assert.equal(split.value, (parseEther("0.75") + parseEther("0.0075")).toString());
+    assert.equal(split.recipients.length, 2);
+    const splitHash = await senderWallet.sendTransaction({ to: split.to, data: split.data, value: BigInt(split.value), gas: BigInt(split.gas) });
+    await publicClient.waitForTransactionReceipt({ hash: splitHash });
+    await assert.rejects(service.confirmBatch({ network: "elysium-testnet", sender: sender.address, hash: splitHash, recipients: [{ platform: "x", username: "me" }] }), /did not pay the wallet @me/);
+    const confirmedSplit = await service.confirmBatch({ network: "elysium-testnet", sender: sender.address, hash: splitHash, recipients: [{ platform: "x", username: "alice" }, { platform: "github", username: "carol" }] });
+    assert.equal(confirmedSplit.status, "confirmed");
+    const splitReceipt = await service.receipt("elysium-testnet", splitHash);
+    assert.deepEqual(splitReceipt.map((row) => [row.username, row.amount, row.note]), [["alice", "0.5", "dinner"], ["carol", "0.25", "dinner"]]);
+    assert.equal((await service.history(sender.address)).length, 3);
+
+    // The block river reads the newest blocks, newest first.
+    const river = await service.blocks("elysium-testnet");
+    assert.ok(river.length >= 3);
+    assert.ok(BigInt(river[0].number) > BigInt(river[1].number));
+    assert.ok(river.some((block) => block.txCount > 0));
+
     // Mainnet cannot be switched on with an RPC on another chain (here, the testnet simulation).
     await assert.rejects(service.setNetwork("elysium-mainnet", { enabled: true, rpcUrl: "https://rpc.elysium.example" }, admin.address), /not Elysium mainnet/);
     await assert.rejects(service.setNetwork("elysium-mainnet", { enabled: true, rpcUrl: "https://testnet-rpc.elysium.example" }, admin.address), /testnet RPC/);

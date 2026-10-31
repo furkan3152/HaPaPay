@@ -73,7 +73,7 @@ type InvitesView = {
 type Note = { tone: "ok" | "error"; text: string };
 type Change = (action: string, payload: Record<string, unknown>, done: string) => Promise<unknown>;
 
-const TABS = { overview: "Overview", elysium: "Elysium", accounts: "Accounts", ledger: "SP ledger", rules: "SP rules", invites: "Invites", activity: "Activity", controls: "Pauses and notice", audit: "Audit log", data: "Data" } as const;
+const TABS = { elysium: "Elysium", overview: "Overview", accounts: "Accounts", ledger: "SP ledger", rules: "SP rules", invites: "Invites", activity: "Activity", controls: "Pauses and notice", audit: "Audit log", data: "Data" } as const;
 type Tab = keyof typeof TABS;
 const NETWORK_NAMES: Record<string, string> = { solana: "Solana", arc: "Arc", robinhood: "Robinhood Chain", elysium: "Elysium" };
 
@@ -96,7 +96,7 @@ const count = (value: number) => Math.trunc(value).toLocaleString("en-US");
 
 export default function AdminPage({ wallet, walletVerifying, message, onConnect }: { wallet?: string; walletVerifying: boolean; message?: string; onConnect: () => void }) {
   const [me, setMe] = useState<{ configured: boolean; admin: boolean }>();
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>("elysium");
   const [note, setNote] = useState<Note>();
   const [busy, setBusy] = useState(false);
   const [account, setAccount] = useState<string>();

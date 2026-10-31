@@ -79,7 +79,7 @@ describe("invites", () => {
 
   it("keeps Solana's transaction libraries out of what the desk loads first", () => {
     // The desk's first chunk reads invite codes and links on every page; only /admin and the server build a payout.
-    for (const file of ["src/domain/referrals.ts", "src/referral-desk.ts", "src/components/SpPanel.tsx"]) {
+    for (const file of ["src/domain/referrals.ts", "src/referral-desk.ts", "src/elysa/session.tsx", "src/elysa/ElysaApp.tsx"]) {
       const source = readFileSync(file, "utf8");
       assert.doesNotMatch(source, /from\s+["'](?:@solana|@solana-program)\//, `${file} imports a Solana library`);
       assert.doesNotMatch(source, /from\s+["'][./]*(?:domain\/)?(?:solana-[\w-]+|referral-payout)(?:\.js)?["']/, `${file} imports a Solana module`);

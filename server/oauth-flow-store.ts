@@ -64,5 +64,7 @@ function safeReturnPath(input?: string) {
   // A Solana vault link's claim page, so its GitHub and X Connect can return to it.
   if (parseSolanaClaimPath(input)) return input;
   if (/^\/pay\/(github|x|telegram|discord|farcaster)\/[^/?#]{1,64}$/.test(input)) return input;
+  // ElysaPay's app pages (the identity page links accounts and returns to itself).
+  if (/^\/app(?:\/[a-z-]{1,24})?$/.test(input)) return input;
   throw new InvalidOAuthReturnPathError();
 }
