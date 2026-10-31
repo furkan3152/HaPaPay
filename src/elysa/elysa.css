@@ -194,7 +194,8 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .hero-stats i, .tape i { font-style: normal; font-family: var(--font-mono); font-size: .62em; color: var(--mint-text); }
 .hero-stats i[data-up='false'], .tape [data-up='false'] i { color: var(--rose); }
 .hero-art { position: relative; overflow: hidden; display: grid; place-items: center; padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--card); animation: page-in .45s var(--ease) .06s both; }
-.hero-art .dot-morph { position: relative; width: 100%; height: min(440px, 100%); min-height: 280px; }
+.hero-art { padding-top: 120px; }
+.hero-art .dot-morph { position: relative; width: 100%; height: min(400px, 100%); min-height: 280px; }
 .dot-morph canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .dot-morph-pause { position: absolute; right: 0; bottom: 0; width: 36px; height: 36px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 0; border-radius: 10px; opacity: .55; }
 .dot-morph-pause svg { width: 16px; height: 16px; }
@@ -202,10 +203,6 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .hero-ely .ely-bubble { left: 0; transform: none; animation-name: bubble-left; }
 .hero-ely .ely-bubble::after { left: 60px; }
 @keyframes bubble-left { from { opacity: 0; transform: translateY(6px) scale(.95); } }
-.hero-receipt { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; animation: receipt-in .5s var(--ease) both; }
-.hero-receipt b { display: block; font: 600 14px var(--font-mono); }
-.hero-receipt small { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
-.hero-receipt small svg { width: 12px; height: 12px; }
 .tick { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--on-mint); background: var(--mint); font-weight: 800; }
 @keyframes receipt-in { from { opacity: 0; transform: translateY(-8px); } }
 
@@ -217,7 +214,8 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .tape small { margin-left: 6px; color: var(--muted); }
 @keyframes tape { to { transform: translateX(-50%); } }
 
-.section { display: grid; gap: 22px; padding: clamp(24px, 3.4vw, 44px); background: var(--panel); border: 1px solid var(--line); border-radius: var(--card); }
+.section { position: relative; display: grid; gap: 24px; padding: clamp(34px, 4vw, 56px) 0 8px; }
+.section::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 50% / 8px 2px repeat-x; }
 .section-head { max-width: 720px; }
 .section-head h2, .elysium-copy h2, .cta h2 { margin: 10px 0 10px; font: 900 clamp(26px, 3vw, 38px)/1.08 var(--font-display); letter-spacing: .03em; text-transform: uppercase; }
 .section-head p, .elysium-copy > p { margin: 0; }
@@ -225,7 +223,7 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 
 .river { display: grid; gap: 12px; }
 .river-track { display: flex; gap: 8px; overflow: hidden; padding: 4px 2px 8px; -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent); mask-image: linear-gradient(90deg, #000 72%, transparent); }
-.river-block { --heat: 0; position: relative; flex: none; width: 104px; padding: 12px; display: grid; gap: 6px; border-radius: 12px; background: var(--paper); border: 1px solid color-mix(in srgb, var(--mint) calc(15% + var(--heat) * 60%), var(--line)); }
+.river-block { --heat: 0; position: relative; flex: none; width: 104px; padding: 12px; display: grid; gap: 6px; border-radius: 12px; background: var(--panel); border: 1px solid color-mix(in srgb, var(--mint) calc(15% + var(--heat) * 60%), var(--line)); }
 .river-block::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle, color-mix(in srgb, var(--mint) calc(var(--heat) * 70%), transparent) 1.2px, transparent 1.7px) 0 0 / 7px 7px; pointer-events: none; }
 .river-block span { position: relative; color: var(--muted); font: 500 11px var(--font-mono); }
 .river-block b { position: relative; font: 900 22px var(--font-display); color: var(--ink); }
@@ -244,26 +242,34 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .bento > .bento-wide { grid-column: span 2; }
 .bento > .bento-full { grid-column: 1 / -1; }
-.bento-card { position: relative; isolation: isolate; overflow: hidden; height: 100%; padding: 22px; display: grid; align-content: start; gap: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: none; transition: transform .25s var(--ease), border-color .25s; }
+.bento-card { position: relative; isolation: isolate; overflow: hidden; height: 100%; padding: 24px; display: grid; align-content: start; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: none; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .35s var(--ease), border-color .25s; will-change: transform; }
 .bento-card::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle, color-mix(in srgb, var(--mint-text) 55%, transparent) 1px, transparent 1.5px) 0 0 / 7px 7px; -webkit-mask-image: radial-gradient(150px circle at var(--x, 50%) var(--y, 0%), #000, transparent 70%); mask-image: radial-gradient(150px circle at var(--x, 50%) var(--y, 0%), #000, transparent 70%); opacity: 0; transition: opacity .3s; }
-.bento-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--mint) 45%, transparent); }
+.bento-card:hover { border-color: color-mix(in srgb, var(--mint) 45%, transparent); }
+.bento-card:hover svg { animation: icon-pop .5s var(--ease); }
+@keyframes icon-pop { 40% { transform: scale(1.18) rotate(-6deg); } }
 .bento-card:hover::before { opacity: 1; }
 .bento-card svg { width: 38px; height: 38px; padding: 8px; border-radius: 10px; background: var(--mint-soft); fill: none; stroke: var(--mint-text); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .bento-card h3 { margin: 6px 0 0; font: 900 19px var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
 .bento-card p { margin: 0; color: var(--slate); font-size: 14.5px; }
 
-.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
-.steps li { position: relative; height: 100%; padding: 22px; background: var(--paper); box-shadow: none; }
+.steps { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin: 0; padding: 0; list-style: none; }
+/* A line of dots that flows from one step to the next. */
+.steps::before { content: ''; position: absolute; left: 8%; right: 8%; top: 46px; height: 4px; background: radial-gradient(circle, var(--mint) 1.6px, transparent 2.1px) 0 50% / 12px 4px repeat-x; opacity: .6; }
+:root[data-motion='on'] .steps::before { animation: flow 1.6s linear infinite; }
+@keyframes flow { to { background-position: 12px 50%; } }
+.steps li { position: relative; min-width: 0; }
+.step-card { position: relative; z-index: 1; height: 100%; padding: 24px; background: var(--panel); box-shadow: none; }
+.steps li > .reveal { height: 100%; }
 .steps h3 { margin: 14px 0 6px; font: 900 18px var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
 .steps p { margin: 0; color: var(--slate); font-size: 14.5px; }
 .step-n { display: inline-block; color: var(--mint-text); font: 900 34px/1 var(--font-display); }
 
 .elysium { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 30px; }
 .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; }
-.facts li { padding: 16px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); }
+.facts li { padding: 16px 18px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
 .facts b { display: block; color: var(--mint-text); font: 900 28px var(--font-display); letter-spacing: .03em; }
 .facts span { color: var(--muted); font-size: 13.5px; }
-.launch { padding: 26px; text-align: center; background: var(--paper); box-shadow: none; }
+.launch { padding: 26px; text-align: center; background: var(--panel); }
 .launch h3 { margin: 6px 0 16px; font: 900 20px var(--font-display); letter-spacing: .05em; text-transform: uppercase; }
 .countdown { display: flex; justify-content: center; gap: 10px; }
 .countdown > span { display: grid; gap: 6px; min-width: 62px; padding: 12px 8px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
@@ -272,10 +278,13 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .countdown small { color: var(--muted); font: 600 10.5px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; }
 @keyframes digit { from { opacity: .3; transform: translateY(-5px); } }
 
-.cta { display: grid; justify-items: center; gap: 8px; padding: 40px 24px 46px; text-align: center; }
+.cta { display: grid; justify-items: center; gap: 8px; margin-top: 30px; padding: 30px 24px 46px; text-align: center; }
 
 /* ---- App ---- */
-.app-grid { width: min(1320px, calc(100% - 28px)); margin: 18px auto 40px; display: grid; grid-template-columns: 200px minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.app-grid { width: min(1340px, calc(100% - 28px)); margin: 18px auto 40px; display: grid; grid-template-columns: 200px minmax(0, 1fr) 300px; grid-template-areas: 'rail main side'; gap: 18px; align-items: start; }
+.app-rail { grid-area: rail; }
+.app-main { grid-area: main; }
+.app-side { grid-area: side; }
 .app-rail { position: sticky; top: 84px; display: grid; gap: 2px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--card); }
 .app-rail a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--muted); text-decoration: none; border-radius: 12px; font: 900 15px var(--font-display); letter-spacing: .07em; text-transform: uppercase; transition: background .2s, color .2s; }
 .app-rail a svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -283,7 +292,8 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 .app-rail a[aria-current='page'] { color: var(--mint-text); background: var(--mint-soft); }
 .app-main { min-width: 0; }
 .app-side { position: sticky; top: 84px; display: grid; gap: 12px; min-width: 0; }
-.side-ely { display: grid; justify-items: center; padding-top: 64px; }
+.side-ely { display: grid; justify-items: center; padding-top: 70px; }
+.side-ely .ely-bubble { max-width: 260px; }
 .side-card { padding: 18px; display: grid; gap: 14px; }
 .side-card header { display: flex; align-items: center; justify-content: space-between; }
 .side-card h2 { margin: 0; font: 900 18px var(--font-display); letter-spacing: .05em; text-transform: uppercase; }
@@ -451,38 +461,100 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
 @keyframes vt-out { to { opacity: 0; } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(6px); } }
 
-/* ---- Responsive ---- */
-@media (max-width: 1180px) {
-  .app-grid { grid-template-columns: 180px minmax(0, 1fr); }
-  .app-side { grid-column: 1 / -1; position: static; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+/* ---- New pieces ---- */
+/* The hero's ticket that writes itself. */
+.ticket { position: absolute; top: 18px; right: 18px; z-index: 2; width: 220px; padding: 14px 16px; display: grid; gap: 6px; background: var(--paper); border: 1px solid var(--line-strong); border-radius: 14px; box-shadow: 0 14px 30px rgba(0, 0, 0, .35); animation: ticket-in .45s var(--ease) both; }
+.ticket::before, .ticket::after { content: ''; position: absolute; top: 58%; width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line-strong); }
+.ticket::before { left: -8px; clip-path: inset(0 0 0 50%); }
+.ticket::after { right: -8px; clip-path: inset(0 50% 0 0); }
+.ticket-row { display: flex; align-items: center; gap: 8px; color: var(--slate); font: 600 14px var(--font-mono); }
+.ticket-row svg { width: 15px; height: 15px; }
+.caret { display: inline-block; width: 7px; height: 15px; margin-left: 2px; vertical-align: -2px; background: radial-gradient(circle, var(--mint-text) 1.2px, transparent 1.6px) 0 0 / 3.5px 3.5px; animation: caret 1s steps(2) infinite; }
+.is-sent .caret { visibility: hidden; }
+.ticket-amount { font: 900 30px/1 var(--font-display); letter-spacing: .03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ticket-amount small { color: var(--muted); font: 600 12px var(--font-mono); }
+.ticket-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.4px) 0 0 / 6px 2px repeat-x; color: var(--muted); font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: .1em; }
+.stamp { padding: 3px 8px; border: 2px dotted var(--mint); border-radius: 6px; color: var(--mint-text); font: 900 14px var(--font-display); letter-spacing: .14em; opacity: 0; transform: scale(1.8) rotate(-14deg); }
+.is-sent .stamp { animation: stamp .4s cubic-bezier(.3, 1.6, .5, 1) forwards; }
+@keyframes ticket-in { from { opacity: 0; transform: translateY(-10px) scale(.97); } }
+@keyframes caret { 50% { opacity: 0; } }
+@keyframes stamp { to { opacity: 1; transform: scale(1) rotate(-8deg); } }
+
+/* Section headings draw a row of dots under themselves as they arrive. */
+.section-head h2::after { content: ''; display: block; width: 0; height: 4px; margin-top: 14px; background: radial-gradient(circle, var(--mint) 1.6px, transparent 2.1px) 0 50% / 9px 4px repeat-x; transition: width 1s var(--ease) .2s; }
+.reveal.is-in .section-head h2::after, .section-head.is-in h2::after { width: 126px; }
+
+/* Ely peeks over the footer's edge and pops up when someone comes close. */
+.footer { position: relative; }
+.footer-ely { position: absolute; right: clamp(16px, 6vw, 90px); top: 0; transform: translateY(-58%); transition: transform .5s var(--ease); }
+.footer-ely:hover { transform: translateY(-82%); }
+
+/* ---- Layout by width ---- */
+@media (max-width: 1279px) {
+  .app-grid { grid-template-columns: 196px minmax(0, 1fr); grid-template-areas: 'rail main' 'rail side'; }
+  .app-side { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .side-ely { grid-column: 1 / -1; padding-top: 0; justify-items: start; }
+  /* Ely sits beside its words here, not under them. */
+  .side-ely .ely { display: flex; flex-direction: row-reverse; align-items: center; justify-content: flex-end; gap: 14px; width: auto; }
+  .side-ely .ely { width: 100%; }
+  .side-ely .ely-bubble { position: relative; bottom: auto; left: auto; transform: none; animation-name: bubble-left; width: auto; max-width: none; flex: 0 1 auto; min-width: 0; text-align: left; }
+  .side-ely .ely-bubble::after { left: -6px; bottom: 50%; transform: translateY(50%) rotate(135deg); }
+  .app-side .tape { grid-column: 1 / -1; align-self: start; }
+  .app-side .side-card { grid-column: 1 / -1; }
 }
 @media (max-width: 920px) {
   .hero, .elysium { grid-template-columns: 1fr; }
   .hero { min-height: auto; }
-  .hero-art { min-height: 420px; }
+  .hero-art { min-height: 400px; padding: 16px; }
+  .hero-art .dot-morph { height: 300px; min-height: 0; }
   .bento, .steps { grid-template-columns: 1fr; }
   .bento > .bento-wide, .bento > .bento-full { grid-column: auto; }
-  .app-grid { grid-template-columns: 1fr; }
-  .app-rail { position: sticky; top: 64px; z-index: 5; display: flex; overflow-x: auto; padding: 6px; }
-  .app-rail a { flex: none; padding: 9px 12px; }
+  .steps::before { left: 34px; right: auto; top: 0; bottom: 0; width: 4px; height: auto; background: radial-gradient(circle, var(--mint) 1.6px, transparent 2.1px) 50% 0 / 4px 12px repeat-y; }
+  @keyframes flow { to { background-position: 50% 12px; } }
+  .app-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'main' 'side'; margin-bottom: 96px; }
+  /* The sections become a tab bar at the bottom of the screen. */
+  .app-rail { position: fixed; z-index: 45; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); top: auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; padding: 6px; box-shadow: 0 -10px 30px rgba(0, 0, 0, .45); }
+  .app-rail a { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 2px; font-size: 10.5px; letter-spacing: .04em; text-align: center; }
+  .app-rail a svg { width: 20px; height: 20px; }
   .app-side { grid-template-columns: 1fr; }
-  .side-ely { display: none; }
-  .request-grid, .docs { grid-template-columns: 1fr; }
-  .docs-nav { position: static; display: flex; flex-wrap: wrap; }
+  .request-grid, .docs { grid-template-columns: minmax(0, 1fr); }
+  .docs-nav { position: static; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .docs-nav a { flex: none; }
   .topbar-nav { display: none; }
+  .footer-ely { display: none; }
+  .elysa:has(.app-grid) .footer { padding-bottom: 110px; }
 }
 @media (max-width: 600px) {
+  .home { width: calc(100% - 24px); }
   .topbar { grid-template-columns: auto 1fr; gap: 8px; padding: 10px 12px; }
   .topbar-actions { justify-content: flex-end; gap: 6px; }
   .net-switch, .sound-toggles .icon-btn + .icon-btn { display: none; }
-  .elysa-wordmark { font-size: 17px; letter-spacing: .06em; }
+  .elysa-wordmark { font-size: 16px; letter-spacing: .05em; }
+  .elysa-mark { width: 30px; height: 30px; }
+  .hero-copy { padding: 26px 20px; }
+  .hero-cta .btn { flex: 1 1 100%; }
+  .hero-stats { gap: 18px; }
+  .hero-stats dd { font-size: 20px; }
+  .ticket { top: 12px; right: 12px; left: 12px; width: auto; }
+  .hero-art { min-height: 430px; padding-top: 120px; }
+  .hero-art .dot-morph { height: 230px; }
+  .hero-ely { left: 50%; bottom: 10px; transform: translateX(-50%) scale(.8); transform-origin: bottom center; }
+  .hero-ely .ely-bubble { display: none; }
+  .page-card { padding: 20px 16px; border-radius: 18px; }
   .kpis { grid-template-columns: 1fr; }
-  .split-rows li { grid-template-columns: 22px minmax(0, 1fr) 100px 34px; }
+  .split-rows li { grid-template-columns: 22px minmax(0, 1fr) 96px 34px; }
   .split-rows .platforms { grid-column: 2 / -1; grid-row: 2; }
   .rows > div { grid-template-columns: 1fr; gap: 2px; }
-  .hero-receipt { display: none; }
-  .hero-ely { left: 50%; transform: translateX(-50%); }
+  .countdown { gap: 6px; }
+  .countdown > span { min-width: 0; flex: 1; }
+  .countdown-large b { font-size: 32px; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .facts b { font-size: 22px; }
+  .footer-inner nav { gap: 14px; }
 }
+.docs-body { min-width: 0; }
+.docs-body p, .docs-body li, .docs-body code, .page-head h1 { overflow-wrap: anywhere; }
+.docs-body table { display: block; max-width: 100%; overflow-x: auto; }
 
 /* ---- Motion preferences ---- */
 :root[data-motion='off'] .ely-svg, :root[data-motion='off'] .ely-hem, :root[data-motion='off'] .ely-star, :root[data-motion='off'] .live-dot.is-live::after, :root[data-motion='off'] .flight-path { animation: none; }
@@ -497,3 +569,4 @@ a:hover .elysa-mark-free, .elysa-logo:hover .elysa-mark-free { transform: transl
   .decode-live { display: none; }
   .decode-size { visibility: visible; }
 }
+.elysa:has(.app-grid) .footer-ely { display: none; }

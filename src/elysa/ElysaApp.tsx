@@ -194,6 +194,7 @@ function NotFound() {
 
 function Footer({ motion, onMotion }: { motion: boolean; onMotion: () => void }) {
   return <footer className="footer">
+    <div className="footer-ely"><Mascot size={84} /></div>
     <div className="footer-inner">
       <div><Logo size={26} /><p className="muted">Pay anyone on Elysium by their name. Your wallet signs every payment.</p></div>
       <nav aria-label="Footer">

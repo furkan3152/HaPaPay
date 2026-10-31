@@ -3,7 +3,7 @@ import { ProviderIcon } from "../../components/ProviderIcon";
 import { pct, usd } from "../api";
 import { DotMorph } from "../../components/DotMorph";
 import { DotText } from "../../components/DotText";
-import { Mascot } from "../Mascot";
+import { cheer, Mascot } from "../Mascot";
 import { linkProps } from "../router";
 import { useSession } from "../session";
 import { BlockRiver, LaunchCountdown, LiveDot, MarketTape, Reveal, Ticker, useStats } from "../widgets";
@@ -32,7 +32,7 @@ export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMoti
   const [visit, setVisit] = useState(0);
   useEffect(() => {
     if (!motion) return;
-    const timer = window.setInterval(() => setVisit((value) => (value + 1) % ORBIT.length), 2600);
+    const timer = window.setInterval(() => setVisit((value) => (value + 1) % ORBIT.length), 4200);
     return () => window.clearInterval(timer);
   }, [motion]);
   const target = ORBIT[visit];
@@ -58,10 +58,7 @@ export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMoti
       <div className="hero-art">
         <DotMorph shapes={["ely", "@", "$"]} motion={motion} onToggleMotion={onToggleMotion} />
         <div className="hero-ely"><Mascot size={150} mood="wave" line="Hi, I'm Ely. Who are we paying?" /></div>
-        <div className="hero-receipt panel" key={`r-${visit}`} aria-hidden="true">
-          <span className="tick">✓</span>
-          <div><b>{target.amount} HYPE → @{target.handle}</b><small><ProviderIcon provider={target.platform} /> confirmed in a block · example</small></div>
-        </div>
+        <PayTicket entry={target} key={`t-${visit}`} motion={motion} />
       </div>
     </section>
 
@@ -82,7 +79,9 @@ export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMoti
             const box = event.currentTarget.getBoundingClientRect();
             event.currentTarget.style.setProperty("--x", `${event.clientX - box.left}px`);
             event.currentTarget.style.setProperty("--y", `${event.clientY - box.top}px`);
-          }}>
+            event.currentTarget.style.setProperty("--rx", `${((event.clientY - box.top) / box.height - 0.5) * -6}deg`);
+            event.currentTarget.style.setProperty("--ry", `${((event.clientX - box.left) / box.width - 0.5) * 8}deg`);
+          }} onPointerLeave={(event) => { event.currentTarget.style.setProperty("--rx", "0deg"); event.currentTarget.style.setProperty("--ry", "0deg"); }}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d={feature.icon} /></svg>
             <h3>{feature.title}</h3>
             <p>{feature.text}</p>
@@ -98,7 +97,7 @@ export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMoti
           ["Link your accounts", "Sign in with your wallet and link the handles people know you by, each through its own official sign-in."],
           ["Name who you pay", "Pick a platform, write the handle and an amount in HYPE or dollars. Review shows the wallet, the fee and the total."],
           ["Sign, and it lands", "Your wallet signs. Elysium confirms it in a block or two, and you get a receipt you can share."],
-        ].map(([title, text], index) => <Reveal key={title} delay={index * 120}><li className="glass"><span className="step-n">{index + 1}</span><h3>{title}</h3><p>{text}</p></li></Reveal>)}
+        ].map(([title, text], index) => <li key={title}><Reveal delay={index * 120}><div className="step-card glass"><span className="step-n">{index + 1}</span><h3>{title}</h3><p>{text}</p></div></Reveal></li>)}
       </ol>
     </section>
 
@@ -132,5 +131,30 @@ export function Home({ motion, onToggleMotion }: { motion: boolean; onToggleMoti
         <a className="btn btn-aurora btn-lg" {...linkProps("/app")}>Launch app <span aria-hidden="true">→</span></a>
       </section>
     </Reveal>
+  </div>;
+}
+
+/**
+ * The hero's ticket: an example payment that writes itself. The handle types in, the amount counts up, a dot stamp
+ * says SENT, and every Ely on the page hops. It is an illustration, labelled as one.
+ */
+function PayTicket({ entry, motion }: { entry: (typeof ORBIT)[number]; motion: boolean }) {
+  const full = `@${entry.handle}`;
+  const [typed, setTyped] = useState(motion ? 0 : full.length);
+  const [amount, setAmount] = useState(motion ? 0 : Number(entry.amount));
+  const [sent, setSent] = useState(!motion);
+  useEffect(() => {
+    if (!motion) return;
+    const timers: number[] = [];
+    for (let index = 1; index <= full.length; index++) timers.push(window.setTimeout(() => setTyped(index), 120 + index * 75));
+    const counting = 300 + full.length * 75;
+    for (let step = 1; step <= 12; step++) timers.push(window.setTimeout(() => setAmount((Number(entry.amount) * step) / 12), counting + step * 45));
+    timers.push(window.setTimeout(() => { setSent(true); cheer("happy", undefined, 1200); }, counting + 12 * 45 + 350));
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [entry, motion, full.length]);
+  return <div className={`ticket ${sent ? "is-sent" : ""}`} aria-hidden="true">
+    <div className="ticket-row"><ProviderIcon provider={entry.platform} /><span className="ticket-handle">{full.slice(0, typed)}<i className="caret" /></span></div>
+    <div className="ticket-amount">{amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} <small>HYPE</small></div>
+    <div className="ticket-foot"><span>example</span><span className="stamp">SENT</span></div>
   </div>;
 }
