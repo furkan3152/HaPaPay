@@ -44,7 +44,7 @@
     "@solana/kit": "8.4.0",
     "@vercel/functions": "^3.9.7",
     "@wallet-standard/app": "1.1.1",
-    "dotenv": "^16.6.1",
+    "dotenv": "^18.0.9",
     "express": "5.2.1",
     "express-rate-limit": "^8.7.0",
     "helmet": "^8.1.0",
