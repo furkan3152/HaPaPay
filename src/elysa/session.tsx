@@ -59,19 +59,26 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    providersRequest.current = api<{ providers: Provider[]; privyAppId: string | null }>("/api/providers").then((value) => {
+    let stopped = false;
+    // A cold server can refuse the very first reads for a moment: each is read again until it answers.
+    const retry = <T,>(read: () => Promise<T>, attempt = 0): Promise<T> => read().catch((error) => {
+      if (stopped || attempt >= 6) throw error;
+      return new Promise<T>((resolve, reject) => setTimeout(() => retry(read, attempt + 1).then(resolve, reject), 1_500 * (attempt + 1)));
+    });
+    providersRequest.current = retry(() => api<{ providers: Provider[]; privyAppId: string | null }>("/api/providers")).then((value) => {
       setProviders(value.providers.filter((provider) => ["github", "x", "telegram", "discord", "farcaster"].includes(provider.id)));
       setPrivyAppId(value.privyAppId ?? undefined);
       return value;
     });
-    void api<{ authenticated: boolean; address?: string }>("/api/me").then(async (me) => {
+    providersRequest.current.catch(() => undefined);
+    void retry(() => api<{ authenticated: boolean; address?: string }>("/api/me")).then(async (me) => {
       if (me.authenticated && me.address) {
         setWallet(me.address);
         setStatus("ready");
         await refreshProfile();
       } else setStatus("anonymous");
     }).catch(() => setStatus("anonymous"));
-    const readNetworks = () => api<{ networks: ElysiumNetworkView[]; paused: { message: string } | null }>("/api/elysium").then((value) => {
+    const readNetworks = () => retry(() => api<{ networks: ElysiumNetworkView[]; paused: { message: string } | null }>("/api/elysium")).then((value) => {
       setNetworks(value.networks);
       setPaused(value.paused?.message);
       // Mainnet becomes the default the moment it is open, unless the visitor chose a network.
@@ -86,7 +93,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (query.get("linked")) setNotice(`Your ${query.get("linked")} account is linked.`);
     if (query.get("link_error")) setNotice(`${query.get("link_error")} was not linked (${query.get("reason") ?? "failed"}).`);
     if (query.get("linked") || query.get("link_error")) window.history.replaceState(null, "", window.location.pathname);
-    return () => window.clearInterval(timer);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
   }, [refreshProfile]);
 
   const connect = useCallback(async () => {
