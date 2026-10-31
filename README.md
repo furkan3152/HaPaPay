@@ -273,6 +273,10 @@ itself. More in [docs/architecture.md](docs/architecture.md) and [docs/protocol.
 └── Dockerfile                Container build
 ```
 
+The compiled Solana program, `public/solana/hapapay_vault.so`, is committed on purpose: it is the exact build whose size
+and SHA-256 the server and the desk check against the deployed program (see [docs/protocol.md](docs/protocol.md)), so
+it changes only through `npm run build:solana-vault` with the pinned toolchain.
+
 ## Security at a glance
 
 - No custody. The server prepares exact transactions, checks balances and allowances (and simulates on Robinhood
@@ -366,8 +370,8 @@ The desk also serves its own user and operator guide at `/docs`.
 
 ## Live deployment
 
-A live instance runs on Arc Mainnet at
-[siglos-pay.vercel.app](https://siglos-pay.vercel.app), served under the project's earlier name **Siglos Pay**.
+A live HaPaPay instance runs on Arc Mainnet at [siglos-pay.vercel.app](https://siglos-pay.vercel.app). Its hostname
+and page title still carry the project's earlier name, **Siglos Pay**; the code and the product are HaPaPay.
 
 ## Disclaimer
 
